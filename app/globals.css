@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* body background color */
+.body {
+  background-color: #c2e0e0;
+}
+
+.shadowBlack\/
+
+/* homepage background color */
+.navbar {
+  padding-top: 20px;
+  background-color: #0a8f27;
+  padding: 20px;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  /* Optional: Adjust z-index to control the stacking order */
+}
