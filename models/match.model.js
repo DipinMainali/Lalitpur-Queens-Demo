@@ -1,6 +1,6 @@
 // import mongoose from "mongoose";
 // const matchSchema = new mongoose.Schema({
-//   team1: {
+//   opponent: {
 //     type: String,
 //     required: true,
 //   },

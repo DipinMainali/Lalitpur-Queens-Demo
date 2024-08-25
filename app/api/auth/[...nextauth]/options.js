@@ -1,6 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-import { dbConnect } from "@/backend/db";
-import { User } from "@/backend/models/models";
+import dbConnection from "@/utils/dbconnection";
+import User from "@/models/user.model";
 
 const options = {
   providers: [
@@ -15,7 +15,7 @@ const options = {
         },
       },
       authorize: async (credentials, req) => {
-        await dbConnect();
+        await dbConnection();
         const user = await User.findOne({
           type: "admin",
           username: credentials?.username,
