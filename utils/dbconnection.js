@@ -1,36 +1,36 @@
-import { connect, ConnectionStates } from "mongoose";
+"use server";
+
+import mongoose from "mongoose";
 import dotenv from "dotenv";
-dotenv.config({
-  path: __dirname + "/.env.local",
-});
-const MONGO_URI =
-  "mongodb+srv://nikeshmainali:mainalinikesh@volleyball.q14jj.mongodb.net/Volleyball?retryWrites=true&w=majority&appName=Volleyball";
+import User from "@/models/user.model.js";
 
-if (!MONGO_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
-  );
-}
+dotenv.config();
 
-/**
- 
-Global is used here to maintain a cached connection across hot reloads
-in development. This prevents connections from growing exponentially
-during API Route usage.
-*/
-
-export default async function dbConnect() {
-  const connection = {
-    isConnected: null,
-  };
-
+const dbConnection = async () => {
   try {
-    if (connection.isConnected) {
+    if (!process.env.MONGO_URI) {
+      console.log("MONGO_URI not found in .env file");
       return;
     }
-    const db = await connect(MONGO_URI);
-    connection.isConnected = db.connections[0].readyState;
-  } catch (e) {
-    console.error(e);
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("Database connected successfully");
+    const admin = new User({
+      username: "admin",
+      password: "admin",
+      type: "admin",
+    });
+
+    const existingAdmin = await User.findOne({ username: "admin" });
+    if (existingAdmin) {
+      console.log("Admin already exists");
+      return;
+    }
+    await admin.save();
+    console.log("Admin created successfully");
+  } catch (error) {
+    console.log(error);
+    console.log("Database connection failed");
   }
-}
+};
+
+export default dbConnection;
