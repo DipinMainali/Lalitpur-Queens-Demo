@@ -31,7 +31,7 @@ const createAdmin = async () => {
     const user = await User.findOne({ type: "admin" });
     if (!user) {
       await User.create(Admin);
-      console.log("Admin created successfully");
+      console.log("Admin has been created successfully ");
     } else {
       console.log("Admin already exists");
     }
