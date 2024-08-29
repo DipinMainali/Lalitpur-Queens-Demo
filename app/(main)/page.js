@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import MatchCard from "../components/MatchCard";
-import NewsCard from "../components/NewsCard";
+import MatchCard from "@/components/MatchCard";
+import NewsCard from "@/components/NewsCard";
 export default function Home() {
   return (
     <>
@@ -83,6 +83,52 @@ export default function Home() {
               image="/images/news-3.jpeg"
               date="April 5, 2024"
             />
+          </div>
+        </div>
+      </section>
+      {/* Add a section for sponsors */}
+
+      <section className="py-16 bg-queens-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
+            Our Sponsors
+          </h2>
+          <h3 className="text-xl font-semibold mb-8 text-center text-queens-midnight">
+            Title Sponsors
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="flex justify-center items-center">
+              <Image
+                src="/images/sponsor-1.png"
+                alt="Sponsor 1"
+                width={150}
+                height={150}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <Image
+                src="/images/sponsor-2.png"
+                alt="Sponsor 2"
+                width={150}
+                height={150}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <Image
+                src="/images/sponsor-3.png"
+                alt="Sponsor 3"
+                width={150}
+                height={150}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <Image
+                src="/images/sponsor-4.png"
+                alt="Sponsor 4"
+                width={150}
+                height={150}
+              />
+            </div>
           </div>
         </div>
       </section>

@@ -1,6 +1,52 @@
+"use client";
 import React from "react";
+import { useState } from "react";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [status, setStatus] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        setStatus("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setStatus("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      setStatus("An error occurred. Please try again.");
+    }
+  };
+
   return (
     <form className="max-w-lg mx-auto p-8 bg-queens-white">
       <div className="mb-6 flex items-center">
@@ -29,6 +75,21 @@ export default function Contact() {
           type="email"
           id="email"
           name="email"
+          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
+          required
+        />
+      </div>
+      <div className="mb-6 flex items-center">
+        <label
+          htmlFor="subject"
+          className="text-queens-midnight font-medium w-1/3"
+        >
+          Subject
+        </label>
+        <input
+          type="text"
+          id="subject"
+          name="subject"
           className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           required
         />

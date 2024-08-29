@@ -1,6 +1,7 @@
+// app/admin/players/form.js
 "use client";
-import { createPlayer } from "@/actions/player.action";
-import React, { useState } from "react";
+import { useState, useRef } from "react";
+import RichTextEditor from "./RichTextEditor"; // Import your RichTextEditor component
 
 export default function PlayerForm() {
   const [player, setPlayer] = useState({
@@ -11,19 +12,48 @@ export default function PlayerForm() {
     position: "",
     jerseyNumber: "",
     nationality: "",
-    image: "",
+    image: null, // For the image file
+    bio: "", // Assuming you want a bio field with rich text
   });
 
+  const fileInputRef = useRef(null); // Ref for file input
+
   const handleChange = (e) => {
-    setPlayer({ ...player, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setPlayer((prevPlayer) => ({ ...prevPlayer, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setPlayer((prevPlayer) => ({ ...prevPlayer, image: e.target.files[0] }));
+  };
+
+  const handleBioChange = (content) => {
+    setPlayer((prevPlayer) => ({ ...prevPlayer, bio: content }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    try {
-      await createPlayer(player);
-      console.log("submitted successfully");
+
+    const formData = new FormData();
+    formData.append("firstName", player.firstName);
+    formData.append("lastName", player.lastName);
+    formData.append("DOB", player.DOB);
+    formData.append("height", player.height);
+    formData.append("position", player.position);
+    formData.append("jerseyNumber", player.jerseyNumber);
+    formData.append("nationality", player.nationality);
+    formData.append("image", player.image);
+    formData.append("bio", player.bio);
+
+    const res = await fetch("/api/players", {
+      method: "POST",
+      body: formData,
+    });
+    const jsonRes = await res.json();
+    if (jsonRes.success) {
+      alert("Player saved successfully");
+
+      // Clear the form and file input
       setPlayer({
         firstName: "",
         lastName: "",
@@ -32,22 +62,24 @@ export default function PlayerForm() {
         position: "",
         jerseyNumber: "",
         nationality: "",
-        image: "",
+        image: null,
+        bio: "",
       });
-    } catch (error) {
-      console.log("failed to submit the form, error: ", error);
+      fileInputRef.current.value = ""; // Clear the file input field
+    } else {
+      alert(jsonRes.message || "Failed to save player");
     }
   };
 
   return (
     <form
-      className="max-w-lg mx-auto p-8 bg-queens-white shadow-lg rounded-lg"
       onSubmit={handleSubmit}
+      className="max-w-lg mx-auto p-6 bg-queens-white rounded-lg shadow-md"
     >
-      <div className="mb-6 flex items-center">
+      <div className="mb-4">
         <label
           htmlFor="firstName"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           First Name
         </label>
@@ -55,16 +87,17 @@ export default function PlayerForm() {
           type="text"
           id="firstName"
           name="firstName"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.firstName}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="lastName"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           Last Name
         </label>
@@ -72,30 +105,35 @@ export default function PlayerForm() {
           type="text"
           id="lastName"
           name="lastName"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.lastName}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
-        <label htmlFor="DOB" className="text-queens-midnight font-medium w-1/3">
+
+      <div className="mb-4">
+        <label
+          htmlFor="DOB"
+          className="block text-queens-black font-semibold mb-2"
+        >
           Date of Birth
         </label>
         <input
           type="date"
           id="DOB"
           name="DOB"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.DOB}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="height"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           Height (cm)
         </label>
@@ -103,16 +141,17 @@ export default function PlayerForm() {
           type="number"
           id="height"
           name="height"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.height}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="position"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           Position
         </label>
@@ -120,16 +159,17 @@ export default function PlayerForm() {
           type="text"
           id="position"
           name="position"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.position}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="jerseyNumber"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           Jersey Number
         </label>
@@ -137,16 +177,17 @@ export default function PlayerForm() {
           type="number"
           id="jerseyNumber"
           name="jerseyNumber"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.jerseyNumber}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="nationality"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
           Nationality
         </label>
@@ -154,37 +195,47 @@ export default function PlayerForm() {
           type="text"
           id="nationality"
           name="nationality"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
           value={player.nationality}
           onChange={handleChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         />
       </div>
-      <div className="mb-6 flex items-center">
+
+      <div className="mb-4">
         <label
           htmlFor="image"
-          className="text-queens-midnight font-medium w-1/3"
+          className="block text-queens-black font-semibold mb-2"
         >
-          Image URL
+          Image
         </label>
         <input
-          type="text"
+          type="file"
           id="image"
           name="image"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
-          value={player.image}
-          onChange={handleChange}
-          required
+          accept="image/*"
+          onChange={handleFileChange}
+          className="w-full px-3 py-2 border border-queens-black rounded-lg"
+          ref={fileInputRef} // Set ref here
         />
       </div>
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          className="bg-queens-green text-queens-white py-2 px-4 rounded-lg hover:bg-queens-midnight transition duration-300"
+
+      <div className="mb-4">
+        <label
+          htmlFor="bio"
+          className="block text-queens-black font-semibold mb-2"
         >
-          Submit
-        </button>
+          Bio
+        </label>
+        <RichTextEditor value={player.bio} onChange={handleBioChange} />
       </div>
+
+      <button
+        type="submit"
+        className="bg-queens-green text-queens-white py-2 px-4 rounded-lg hover:bg-queens-midnight transition duration-300"
+      >
+        Submit
+      </button>
     </form>
   );
 }

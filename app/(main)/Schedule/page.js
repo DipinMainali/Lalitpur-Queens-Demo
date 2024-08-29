@@ -1,7 +1,7 @@
 // pages/schedule.js
 import React from "react";
-import ScheduleCard from "../../components/ScheduleCard";
-import PointsTable from "../../components/PointsTable";
+import ScheduleCard from "@/components/ScheduleCard";
+import PointsTable from "@/components/PointsTable";
 
 const scheduleData = [
   {

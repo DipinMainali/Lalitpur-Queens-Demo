@@ -37,6 +37,9 @@ const playerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+  },
 });
 const Player = mongoose.models.Player || mongoose.model("Player", playerSchema);
 export default Player;
