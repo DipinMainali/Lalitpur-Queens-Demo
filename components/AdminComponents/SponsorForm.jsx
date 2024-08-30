@@ -1,12 +1,16 @@
 // app/admin/sponsors/form.js
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SponsorForm() {
   const [name, setName] = useState("");
   const [logo, setLogo] = useState(null);
   const [website, setWebsite] = useState("");
   const [tier, setTier] = useState("");
+  const router = useRouter();
+
+  const fileInputRef = useRef(null); // Ref for file input
 
   const handleFileChange = (event) => {
     setLogo(event.target.files[0]);
@@ -22,8 +26,30 @@ export default function SponsorForm() {
     formData.append("tier", tier);
 
     console.log("Form Data:", { name, logo, website, tier });
+    const res = await fetch("/api/sponsors", {
+      method: "POST",
+      body: formData,
+    });
+    const jsonRes = await res.json();
+    if (jsonRes.success) {
+      alert(jsonRes.message);
+
+      // Clear the form
+      setName("");
+      setLogo(null);
+      setWebsite("");
+      setTier("");
+      fileInputRef.current.value = ""; // Clear the file input field
+
+      // Redirect to the sponsors page
+
+      router.back();
+    } else {
+      alert("Failed to save sponsor: ", jsonRes.message);
+    }
 
     // TODO: Add code to send the form data to your backend
+
     // e.g., await fetch('/api/sponsors', { method: 'POST', body: formData });
   };
 
@@ -60,6 +86,7 @@ export default function SponsorForm() {
           type="file"
           id="logo"
           accept="image/*"
+          ref={fileInputRef}
           onChange={handleFileChange}
           className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required

@@ -32,6 +32,12 @@ const matchSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    default: "pending",
+    required: true,
+    enum: ["pending", "completed"],
+  },
 });
 const Match = mongoose.models.Match || mongoose.model("Match", matchSchema);
 export default Match;

@@ -30,8 +30,22 @@ export default function Players() {
     console.log(`Edit player with jersey number: ${jerseyNumber}`);
   };
 
-  const handleDelete = (jerseyNumber) => {
-    console.log(`Delete player with jersey number: ${jerseyNumber}`);
+  const handleDelete = async (id) => {
+    console.log(`Delete player with id: ${id}`);
+    try {
+      const res = await fetch(`/api/players/${id}`, {
+        method: "DELETE",
+      });
+      const jsonRes = await res.json();
+      if (jsonRes.success) {
+        alert("Player deleted successfully");
+        setPlayers(players.filter((player) => player._id !== id));
+      } else {
+        alert("Failed to delete player");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -81,7 +95,7 @@ export default function Players() {
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
-                      onClick={() => handleDelete(player.jerseyNumber)}
+                      onClick={() => handleDelete(player._id)}
                       className="text-queens-green hover:text-queens-midnight transition duration-300"
                     >
                       <FontAwesomeIcon icon={faTrash} />

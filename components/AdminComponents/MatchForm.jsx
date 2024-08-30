@@ -1,14 +1,49 @@
 // app/admin/matches/form.js
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MatchForm() {
-  const [opponent, setOpponent] = useState("");
+  const [opponentId, setOpponentId] = useState("");
+  const [opponents, setOpponents] = useState([]);
+  const [opponent, setOpponent] = useState({});
   const [venue, setVenue] = useState("Dasarath Stadium");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [status, setStatus] = useState("");
   const [result, setResult] = useState("");
+
+  useEffect(() => {
+    const fetchOpponents = async () => {
+      try {
+        const res = await fetch("/api/teams");
+        const jsonRes = await res.json();
+        if (jsonRes.success) {
+          setOpponents(jsonRes.data);
+        } else {
+          console.error(jsonRes.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchOpponents();
+  }, []);
+
+  const router = useRouter();
+  const selectOpponent = (e) => {
+    setOpponentId(e.target.value);
+    const selectedOpponent = opponents.find(
+      (team) => team._id === e.target.value
+    );
+    if (selectedOpponent) {
+      setOpponent({
+        name: selectedOpponent.name,
+        logo: selectedOpponent.logo,
+      });
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -21,8 +56,18 @@ export default function MatchForm() {
       status,
       result,
     };
-
-    console.log("Form Data:", matchData);
+    console.log("opponents:", opponents);
+    console.log("Match Data:", JSON.stringify(matchData));
+    const res = await fetch("/api/matches/", {
+      method: "POST",
+      body: JSON.stringify(matchData),
+    });
+    const jsonRes = await res.json();
+    if (jsonRes.success) {
+      alert(jsonRes.message);
+    } else {
+      alert(jsonRes.message || "Failed to save match");
+    }
 
     // TODO: Add code to send the form data to your backend
     // e.g., await fetch('/api/matches', { method: 'POST', body: JSON.stringify(matchData), headers: { 'Content-Type': 'application/json' } });
@@ -40,14 +85,20 @@ export default function MatchForm() {
         >
           Opponent
         </label>
-        <input
+        <select
           type="text"
           id="opponent"
-          value={opponent}
-          onChange={(e) => setOpponent(e.target.value)}
+          value={opponentId}
+          onChange={selectOpponent}
           className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
-        />
+        >
+          {opponents.map((team) => (
+            <option key={team._id} value={team._id}>
+              {team.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-4">

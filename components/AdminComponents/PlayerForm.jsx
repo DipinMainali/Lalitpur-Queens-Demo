@@ -2,6 +2,7 @@
 "use client";
 import { useState, useRef } from "react";
 import RichTextEditor from "./RichTextEditor"; // Import your RichTextEditor component
+import { useRouter } from "next/navigation";
 
 export default function PlayerForm() {
   const [player, setPlayer] = useState({
@@ -17,6 +18,7 @@ export default function PlayerForm() {
   });
 
   const fileInputRef = useRef(null); // Ref for file input
+  const route = useRouter();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,6 +68,7 @@ export default function PlayerForm() {
         bio: "",
       });
       fileInputRef.current.value = ""; // Clear the file input field
+      route.back();
     } else {
       alert(jsonRes.message || "Failed to save player");
     }
