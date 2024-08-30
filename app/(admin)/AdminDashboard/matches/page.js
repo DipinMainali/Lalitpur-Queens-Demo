@@ -107,9 +107,7 @@ export default function Matches() {
                     {match.time}
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
-                    {new Date(match.date) > new Date()
-                      ? "Upcoming"
-                      : "Completed"}
+                    {match.status}
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     {match.result}

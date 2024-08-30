@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 export default function MatchForm() {
   const [opponentId, setOpponentId] = useState("");
   const [opponents, setOpponents] = useState([]);
-  const [opponent, setOpponent] = useState({});
+
   const [venue, setVenue] = useState("Dasarath Stadium");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [status, setStatus] = useState("");
   const [result, setResult] = useState("");
+
+  const route = useRouter();
 
   useEffect(() => {
     const fetchOpponents = async () => {
@@ -31,22 +33,14 @@ export default function MatchForm() {
     fetchOpponents();
   }, []);
 
-  const router = useRouter();
-  const selectOpponent = (e) => {
-    setOpponentId(e.target.value);
-    const selectedOpponent = opponents.find(
-      (team) => team._id === e.target.value
-    );
-    if (selectedOpponent) {
-      setOpponent({
-        name: selectedOpponent.name,
-        logo: selectedOpponent.logo,
-      });
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const opponent = opponents.find((team) => team._id === opponentId);
+    if (!opponent) {
+      alert("Please select a valid opponent");
+      return;
+    }
 
     const matchData = {
       opponent,
@@ -56,8 +50,7 @@ export default function MatchForm() {
       status,
       result,
     };
-    console.log("opponents:", opponents);
-    console.log("Match Data:", JSON.stringify(matchData));
+
     const res = await fetch("/api/matches/", {
       method: "POST",
       body: JSON.stringify(matchData),
@@ -65,6 +58,13 @@ export default function MatchForm() {
     const jsonRes = await res.json();
     if (jsonRes.success) {
       alert(jsonRes.message);
+      setOpponentId("");
+      setVenue("Dasarath Stadium");
+      setDate("");
+      setTime("");
+      setStatus("");
+      setResult("");
+      route.back();
     } else {
       alert(jsonRes.message || "Failed to save match");
     }
@@ -85,14 +85,16 @@ export default function MatchForm() {
         >
           Opponent
         </label>
+
         <select
           type="text"
           id="opponent"
           value={opponentId}
-          onChange={selectOpponent}
+          onChange={(e) => setOpponentId(e.target.value)}
           className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         >
+          <option value="">Select Opponent</option>
           {opponents.map((team) => (
             <option key={team._id} value={team._id}>
               {team.name}
@@ -153,24 +155,46 @@ export default function MatchForm() {
 
       <div className="mb-4">
         <label
-          htmlFor="result"
+          htmlFor="status"
           className="block text-queens-black font-semibold mb-2"
         >
-          Result
+          Status
         </label>
         <select
-          id="result"
-          value={result}
-          onChange={(e) => setResult(e.target.value)}
+          id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
           className="w-full px-3 py-2 border border-queens-black rounded-lg"
           required
         >
-          <option value="">Select Result</option>
-          <option value="Win">Win</option>
-          <option value="Loss">Loss</option>
-          <option value="Draw">Draw</option>
+          <option value="">Select Status</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
         </select>
       </div>
+
+      {status === "Completed" && (
+        <div className="mb-4">
+          <label
+            htmlFor="result"
+            className="block text-queens-black font-semibold mb-2"
+          >
+            Result
+          </label>
+          <select
+            id="result"
+            value={result}
+            onChange={(e) => setResult(e.target.value)}
+            className="w-full px-3 py-2 border border-queens-black rounded-lg"
+            required
+          >
+            <option value="">Select Result</option>
+            <option value="Win">Win</option>
+            <option value="Loss">Loss</option>
+            <option value="Draw">Draw</option>
+          </select>
+        </div>
+      )}
 
       <button
         type="submit"

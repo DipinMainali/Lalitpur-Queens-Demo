@@ -30,14 +30,23 @@ const matchSchema = new mongoose.Schema({
   },
   result: {
     type: String,
-    required: true,
   },
   status: {
     type: String,
-    default: "pending",
+
     required: true,
-    enum: ["pending", "completed"],
   },
 });
+
+// pre saving logic
+
+matchSchema.pre("save", function (next) {
+  const match = this;
+  if (match.status === "completed" && !match.result) {
+    return next(new Error("Match result is required"));
+  }
+  next();
+});
+
 const Match = mongoose.models.Match || mongoose.model("Match", matchSchema);
 export default Match;
