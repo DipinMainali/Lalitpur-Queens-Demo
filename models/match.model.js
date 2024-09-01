@@ -12,7 +12,8 @@ const teamSchema = new mongoose.Schema({
 });
 const matchSchema = new mongoose.Schema({
   opponent: {
-    type: teamSchema,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "teamSchema",
     required: true,
   },
   venue: {
@@ -30,10 +31,10 @@ const matchSchema = new mongoose.Schema({
   },
   result: {
     type: String,
+    default: "not played",
   },
   status: {
     type: String,
-
     required: true,
   },
 });
@@ -42,7 +43,7 @@ const matchSchema = new mongoose.Schema({
 
 matchSchema.pre("save", function (next) {
   const match = this;
-  if (match.status === "completed" && !match.result) {
+  if (match.status === "Completed" && !match.result) {
     return next(new Error("Match result is required"));
   }
   next();

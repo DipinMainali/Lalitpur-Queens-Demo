@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 export default async function generateUniqueSlug(news, next) {
   let slug = news.slug || news.title.toLowerCase().replace(/\s+/g, "-");
 

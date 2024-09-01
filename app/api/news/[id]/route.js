@@ -58,3 +58,22 @@ export async function PATCH(req, { params }) {
     );
   }
 }
+
+//get specific news filtered from id
+export async function GET(_req, { params }) {
+  await dbConnection();
+
+  try {
+    const news = await News.findOne({ _id: params.id });
+
+    return NextResponse.json({ success: true, data: news });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Internal Server Error",
+      },
+      { status: error.status || 500 }
+    );
+  }
+}

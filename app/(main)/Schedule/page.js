@@ -1,7 +1,8 @@
-// pages/schedule.js
+"use client";
 import React from "react";
 import ScheduleCard from "@/components/ScheduleCard";
 import PointsTable from "@/components/PointsTable";
+import { useState, useEffect } from "react";
 
 const scheduleData = [
   {
@@ -19,14 +20,15 @@ const scheduleData = [
   // Add more matches as needed
 ];
 
-const pointsTableData = [
-  { team: "Lalitpur Queens", played: 2, won: 2, lost: 0, points: 6 },
-  { team: "Kathmandu Royals", played: 2, won: 1, lost: 1, points: 3 },
-  { team: "Pokhara Panthers", played: 2, won: 0, lost: 2, points: 0 },
-  // Add more teams as needed
-];
-
 export default function SchedulePage() {
+  const [pointsTableData, setPointsTableData] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/standings/")
+      .then((response) => response.json())
+      .then((res) => setPointsTableData(res.data));
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">

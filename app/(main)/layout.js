@@ -1,6 +1,7 @@
 // app/layout.js
 import { Inter } from "next/font/google";
 import Header from "@/components/Header";
+import Sponsers from "@/components/Sponsers";
 import Footer from "@/components/Footer";
 
 import "@/app/globals.css";
@@ -19,6 +20,9 @@ export default function RootLayout({ children }) {
         <div className="flex flex-col min-h-screen">
           <Header />
           <main className="flex-grow">{children}</main>
+
+          <Sponsers />
+
           <Footer />
         </div>
       </body>

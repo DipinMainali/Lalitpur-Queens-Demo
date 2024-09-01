@@ -1,4 +1,4 @@
-import Player from "@/models/player.model";
+import Standing from "@/models/standing.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 
@@ -6,7 +6,7 @@ export async function DELETE(_req, { params }) {
   await dbConnection();
 
   try {
-    const contact = await Player.findOneAndDelete({ _id: params.id });
+    const contact = await Standing.findOneAndDelete({ _id: params.id });
 
     return NextResponse.json({ success: true, data: contact });
   } catch (error) {
@@ -20,37 +20,18 @@ export async function DELETE(_req, { params }) {
   }
 }
 
-//patch request -editing existing player
+//patch request -editing existing standing
 export async function PATCH(req, { params }) {
   await dbConnection();
 
   try {
     const body = await req.json();
 
-    const player = await Player.findOneAndUpdate({ _id: params.id }, body, {
+    const standing = await Standing.findOneAndUpdate({ _id: params.id }, body, {
       new: true,
     });
 
-    return NextResponse.json({ success: true, data: player });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: error.message || "Internal Server Error",
-      },
-      { status: error.status || 500 }
-    );
-  }
-}
-
-//get specific player filtered from id
-export async function GET(_req, { params }) {
-  await dbConnection();
-
-  try {
-    const player = await Player.findOne({ _id: params.id });
-
-    return NextResponse.json({ success: true, data: player });
+    return NextResponse.json({ success: true, data: standing });
   } catch (error) {
     return NextResponse.json(
       {

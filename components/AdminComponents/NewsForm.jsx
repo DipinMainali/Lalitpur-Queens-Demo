@@ -1,12 +1,15 @@
 // app/admin/news/form.js
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import RichTextEditor from "./RichTextEditor";
+import { useRouter } from "next/navigation";
 
 export default function NewsForm() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
+  const router = useRouter();
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (event) => {
     setImage(event.target.files[0]);
@@ -21,8 +24,27 @@ export default function NewsForm() {
     if (image) {
       formData.append("image", image);
     }
-
     console.log("Form Data:", { title, content, image });
+
+    const res = await fetch("/api/news", {
+      method: "POST",
+      body: formData,
+    });
+    const jsonRes = await res.json();
+    if (jsonRes.success) {
+      alert(jsonRes.message);
+
+      // Clear the form and file input
+      setTitle("");
+      setContent("");
+      setImage(null);
+      fileInputRef.current.value = ""; // Clear the file input field
+
+      // Redirect to the news page
+      router.back("/admin/news");
+    } else {
+      alert("Failed to save news: ", jsonRes.message);
+    }
 
     // TODO: Add code to send the form data to your backend
     // e.g., await fetch('/api/news', { method: 'POST', body: formData });
@@ -69,6 +91,7 @@ export default function NewsForm() {
         </label>
         <input
           type="file"
+          ref={fileInputRef}
           id="image"
           accept="image/*"
           onChange={handleFileChange}
