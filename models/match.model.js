@@ -12,8 +12,7 @@ const teamSchema = new mongoose.Schema({
 });
 const matchSchema = new mongoose.Schema({
   opponent: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "teamSchema",
+    type: teamSchema,
     required: true,
   },
   venue: {

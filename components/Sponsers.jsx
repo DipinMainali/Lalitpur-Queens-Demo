@@ -64,6 +64,15 @@ export default function Sponsors() {
                 </div>
               ))}
             </div>
+            {/* Styled Section Break */}
+            <div className="relative my-8">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t-4 border-gradient-to-r from-queens-emerald via-queens-blue to-queens-green"></div>
+              </div>
+              <div className="relative flex justify-center">
+                <span className="px-4 bg-white text-sm text-queens-midnight font-semibold"></span>
+              </div>
+            </div>
           </div>
         ))}
       </div>

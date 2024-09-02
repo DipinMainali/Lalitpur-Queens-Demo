@@ -40,6 +40,12 @@ const playerSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
+
+  //featured player or not only one player can be featured
+  featured: {
+    type: Boolean,
+    default: false,
+  },
 });
 const Player = mongoose.models.Player || mongoose.model("Player", playerSchema);
 export default Player;

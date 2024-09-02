@@ -52,6 +52,7 @@ export async function POST(req) {
       jerseyNumber: formData.get("jerseyNumber"),
       nationality: formData.get("nationality"),
       bio: formData.get("bio"),
+      featured: formData.get("featured"),
     };
 
     const newPlayer = new Player(playerData);

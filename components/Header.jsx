@@ -47,10 +47,10 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/Schedule"
+                href="/Matches"
                 className="hover:text-queens-emerald transition duration-300"
               >
-                Schedule
+                Matches
               </Link>
             </li>
             <li>

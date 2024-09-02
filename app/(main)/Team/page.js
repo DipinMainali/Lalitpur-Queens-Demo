@@ -49,6 +49,7 @@ export default function Team() {
                 key={member._id} // Assuming each player object has a unique _id
                 firstName={member.firstName}
                 lastName={member.lastName}
+                jerseyNumber={member.jerseyNumber}
                 position={member.position}
                 image={member.image}
               />

@@ -1,16 +1,23 @@
 // components/TeamMember.js
 import Image from "next/image";
 
-export default function TeamMember({ firstName, lastName, position, image }) {
+export default function TeamMember({
+  firstName,
+  lastName,
+  jerseyNumber,
+  position,
+  image,
+}) {
   return (
-    <div className="bg-white w-[400px] rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white w-[400px] rounded-lg shadow-md overflow-hidden ">
       <Image
         src={image}
         alt={firstName + " " + lastName}
         width={600}
         height={500}
-        className="w-full h-64 object-cover"
+        className="w-full h-48 object-cover"
       />
+
       <div className="p-4">
         <h3 className="text-xl font-semibold mb-1">
           {firstName + " " + lastName}

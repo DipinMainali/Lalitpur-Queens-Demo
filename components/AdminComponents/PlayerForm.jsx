@@ -35,6 +35,15 @@ export default function PlayerForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // If the featured checkbox is checked, update all other players to be non-featured
+    if (player.featured) {
+      await fetch("/api/players/unfeature", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
 
     const formData = new FormData();
     formData.append("firstName", player.firstName);
@@ -46,6 +55,7 @@ export default function PlayerForm() {
     formData.append("nationality", player.nationality);
     formData.append("image", player.image);
     formData.append("bio", player.bio);
+    formData.append("featured", false); // Assuming you have a featured field
 
     const res = await fetch("/api/players", {
       method: "POST",
@@ -231,6 +241,25 @@ export default function PlayerForm() {
           Bio
         </label>
         <RichTextEditor value={player.bio} onChange={handleBioChange} />
+      </div>
+
+      <div className="mb-4">
+        <label
+          htmlFor="featured"
+          className="block text-queens-black font-semibold mb-2"
+        >
+          Featured
+        </label>
+        <input
+          type="checkbox"
+          checked={player.featured}
+          onChange={(e) =>
+            setPlayer((prevPlayer) => ({
+              ...prevPlayer,
+              featured: e.target.checked,
+            }))
+          }
+        />
       </div>
 
       <button

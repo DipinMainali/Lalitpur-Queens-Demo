@@ -72,6 +72,10 @@ export default function Players() {
               <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
                 Name
               </th>
+
+              <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
+                Featured
+              </th>
               <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
                 Action
               </th>
@@ -86,6 +90,9 @@ export default function Players() {
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     {player.firstName} {player.lastName}
+                  </td>
+                  <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
+                    {player.featured ? "Yes" : "No"}
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     <button
