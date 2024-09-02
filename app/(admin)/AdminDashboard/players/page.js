@@ -4,10 +4,12 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Players() {
   const [players, setPlayers] = useState([]);
 
+  const router = useRouter();
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
@@ -26,8 +28,12 @@ export default function Players() {
     fetchPlayers();
   }, []);
 
-  const handleEdit = (jerseyNumber) => {
-    console.log(`Edit player with jersey number: ${jerseyNumber}`);
+  const handleEdit = (id) => {
+    try {
+      router.push(`/AdminDashboard/players/edit/${id}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -96,7 +102,7 @@ export default function Players() {
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     <button
-                      onClick={() => handleEdit(player.jerseyNumber)}
+                      onClick={() => handleEdit(player._id)}
                       className="text-queens-green hover:text-queens-midnight transition duration-300 mr-4"
                     >
                       <FontAwesomeIcon icon={faEdit} />

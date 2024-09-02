@@ -42,3 +42,35 @@ export async function PATCH(req, { params }) {
     );
   }
 }
+
+//get standing by unique id
+export async function GET(request, { params }) {
+  await dbConnection();
+
+  try {
+    const { id } = params; // Extract ID from params
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const standing = await Standing.findById(id);
+
+    if (!standing) {
+      return NextResponse.json(
+        { success: false, message: "Standing not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: standing });
+  } catch (error) {
+    console.error("Error fetching standing:", error); // Log the error
+    return NextResponse.json(
+      { success: false, message: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

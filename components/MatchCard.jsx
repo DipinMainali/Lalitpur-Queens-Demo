@@ -1,4 +1,5 @@
 // components/MatchCard.js
+import Image from "next/image";
 
 export default function MatchCard({
   date,
@@ -9,9 +10,15 @@ export default function MatchCard({
   opponentLogo,
 }) {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div
+      className="bg-white bg-imagerounded-lg shadow-md p-6"
+      style={{
+        backgroundImage: `url('/images/match-card-bg.png')`,
+        opacity: 0.5,
+      }}
+    >
       <div className="flex items-center justify-between mb-4">
-        <div className="text-lg font-semibold">{date}</div>
+        <div className="text-lg font-bold">{date}</div>
         {opponentLogo && (
           <img
             src={opponentLogo}
@@ -24,7 +31,9 @@ export default function MatchCard({
       <div className="text-gray-600">{location}</div>
       <div className="text-gray-600">{time}</div>
       {result && (
-        <div className="mt-4 text-lg font-bold text-green-500">{result}</div>
+        <div className="mt-4 text-lg font-bold text-queens-midnight">
+          {result}
+        </div>
       )}
     </div>
   );

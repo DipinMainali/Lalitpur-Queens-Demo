@@ -32,7 +32,7 @@ export default function Sponsors() {
   }, {});
 
   return (
-    <section className="py-16 bg-queens-white">
+    <section className="py-16 bg-queens-emerald bg-opacity-5">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
           Our Sponsors
@@ -64,7 +64,7 @@ export default function Sponsors() {
                 </div>
               ))}
             </div>
-            {/* Styled Section Break */}
+            {/* Styled Section Break
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t-4 border-gradient-to-r from-queens-emerald via-queens-blue to-queens-green"></div>
@@ -72,7 +72,7 @@ export default function Sponsors() {
               <div className="relative flex justify-center">
                 <span className="px-4 bg-white text-sm text-queens-midnight font-semibold"></span>
               </div>
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

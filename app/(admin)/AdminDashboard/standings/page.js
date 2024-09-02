@@ -4,10 +4,12 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Standings() {
   const [standings, setStandings] = useState([]);
 
+  const router = useRouter();
   useEffect(() => {
     const fetchStandings = async () => {
       try {
@@ -27,41 +29,13 @@ export default function Standings() {
   }, []);
 
   const handleEdit = (id) => {
-    console.log(`Edit standing with id: ${id}`);
+    router.push(`/AdminDashboard/standings/edit/${id}`);
   };
-
-  const handleDelete = async (id) => {
-    console.log(`Delete standing with id: ${id}`);
-    try {
-      const res = await fetch(`/api/standings/${id}`, {
-        method: "DELETE",
-      });
-      const jsonRes = await res.json();
-      if (jsonRes.success) {
-        alert("Standing deleted successfully");
-        setStandings(standings.filter((standing) => standing._id !== id));
-      } else {
-        alert("Failed to delete standing");
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
     <div className="space-y-8">
       <h1 className="text-4xl font-bold text-queens-white text-center">
         Standings Management
       </h1>
-      <div className="flex justify-end mb-4">
-        <Link
-          href="/AdminDashboard/standings/add"
-          className="bg-queens-green text-queens-white py-2 px-4 rounded-lg hover:bg-queens-midnight transition duration-300 flex items-center"
-        >
-          <FontAwesomeIcon icon={faPlus} className="mr-2" />
-          Add New
-        </Link>
-      </div>
 
       <div className="overflow-x-auto bg-queens-white p-6 rounded-lg shadow-lg">
         <table className="min-w-full bg-queens-white">
@@ -130,12 +104,6 @@ export default function Standings() {
                       className="text-queens-green hover:text-queens-midnight transition duration-300 mr-4"
                     >
                       <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(standing._id)}
-                      className="text-queens-green hover:text-queens-midnight transition duration-300"
-                    >
-                      <FontAwesomeIcon icon={faTrash} />
                     </button>
                   </td>
                 </tr>

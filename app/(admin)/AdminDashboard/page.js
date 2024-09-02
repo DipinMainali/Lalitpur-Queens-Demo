@@ -7,6 +7,7 @@ import {
   faHandshake,
   faNewspaper,
   faUsers,
+  faTrophy,
 } from "@fortawesome/free-solid-svg-icons";
 
 const navItems = [
@@ -18,6 +19,7 @@ const navItems = [
   { name: "Sponsors", href: "/AdminDashboard/sponsors", icon: faHandshake },
   { name: "News", href: "/AdminDashboard/news", icon: faNewspaper },
   { name: "Players", href: "/AdminDashboard/players", icon: faUsers },
+  { name: "Standings", href: "/AdminDashboard/standings", icon: faTrophy },
 ];
 
 export default function AdminDashboard() {

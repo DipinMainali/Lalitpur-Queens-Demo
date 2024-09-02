@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const PointsTable = ({ data }) => {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto ">
       <table className="min-w-full bg-white">
         <thead>
           <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">

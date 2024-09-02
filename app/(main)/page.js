@@ -145,21 +145,21 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative bg-queens-green text-queens-white py-24 md:py-32">
+      <section className="relative  mb-12 text-queens-white py-24 md:py-32">
         <div className="absolute inset-0">
           <Image
             src="/images/hero-bg.jpg"
             alt="Volleyball court"
             layout="fill"
             objectFit="cover"
-            className="opacity-30"
+            className="opacity-50"
           />
         </div>
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <h1 className="text-4xl md:text-6xl   text-queens-midnight font-bold mb-4">
             Lalitpur Queens
           </h1>
-          <p className="text-xl md:text-2xl mb-8">
+          <p className="text-xl md:text-2xl mb-8 text-queens-green  ">
             Empowering women through volleyball
           </p>
           <Link
@@ -171,7 +171,7 @@ export default function Home() {
         </div>
       </section>
       {/* Matches Section */}
-      <section className="py-16 bg-queens-white">
+      <section className="py-16  bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Upcoming Matches Section */}
@@ -179,7 +179,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
                 Upcoming Matches
               </h2>
-              <div className="grid grid-cols-1 gap-8">
+              <div className="grid grid-cols-1 gap-8 ">
                 {upcomingMatches.length > 0 && (
                   <MatchCard
                     key={upcomingMatches[0]._id}
@@ -216,8 +216,8 @@ export default function Home() {
         </div>
       </section>
       {/* Our Queens Section */}
-      <section className="py-12 bg-queens-emerald">
-        <div className="container mx-auto px-4">
+      <section className="py-12 ">
+        <div className="container mx-auto px-3">
           <h2 className="text-3xl font-bold mb-6 text-center text-queens-midnight">
             Our Queens
           </h2>
@@ -266,7 +266,7 @@ export default function Home() {
       </section>
       <div className="flex flex-col md:flex-row">
         {/* Points Table Section */}
-        <div className="md:w-1/2 p-4 bg-white shadow-lg rounded-lg hover:bg-queens-emerald transition-colors duration-300">
+        <div className="md:w-1/2 p-4 bg-white shadow-lg mt-12 mb-16 rounded-lg hover:bg-queens-emerald transition-colors duration-300">
           <h2 className="text-2xl font-semibold mb-4 text-queens-midnight">
             Points Table
           </h2>
@@ -295,28 +295,6 @@ export default function Home() {
               ))}
             </tbody>
           </table>
-
-          {/* Featured Player Section */}
-          <div className="md:w-1/2 mt-8 md:mt-0 md:ml-8 p-4 bg-white shadow-lg rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-queens-midnight">
-              Featured Player
-            </h2>
-            <div className="flex items-center space-x-4">
-              <img
-                src={featuredPlayer.image}
-                alt={featuredPlayer.name}
-                className="w-20 h-20 rounded-full shadow-lg"
-              />
-              <div>
-                <h3 className="text-xl font-bold">{featuredPlayer.name}</h3>
-                <p className="text-gray-600">{featuredPlayer.position}</p>
-                <p className="text-gray-600">
-                  Matches: {featuredPlayer.matches}
-                </p>
-                <p className="text-gray-600">Points: {featuredPlayer.points}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </>

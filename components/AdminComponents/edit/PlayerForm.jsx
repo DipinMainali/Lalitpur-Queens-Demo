@@ -1,8 +1,9 @@
 // app/admin/players/form.js
 "use client";
 import { useState, useRef } from "react";
-import RichTextEditor from "./RichTextEditor"; // Import your RichTextEditor component
+import RichTextEditor from "../RichTextEditor"; // Import your RichTextEditor component
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function PlayerForm() {
   const [player, setPlayer] = useState({
@@ -17,6 +18,8 @@ export default function PlayerForm() {
     bio: "", // Assuming you want a bio field with rich text
     featured: false, // Assuming you have a featured field
   });
+
+  const { id } = useParams();
 
   const fileInputRef = useRef(null); // Ref for file input
   const route = useRouter();
@@ -49,8 +52,8 @@ export default function PlayerForm() {
     formData.append("bio", player.bio);
     formData.append("featured", player.featured); // Assuming you have a featured field
 
-    const res = await fetch("/api/players", {
-      method: "POST",
+    const res = await fetch("/api/players/${}", {
+      method: "PATCH",
       body: formData,
     });
     const jsonRes = await res.json();
