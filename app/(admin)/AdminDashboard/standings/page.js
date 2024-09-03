@@ -8,8 +8,28 @@ import { useRouter } from "next/navigation";
 
 export default function Standings() {
   const [standings, setStandings] = useState([]);
+  const [teams, setTeams] = useState([]);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const res = await fetch("/api/teams");
+        const jsonRes = await res.json();
+        if (jsonRes.success) {
+          setTeams(jsonRes.data);
+        } else {
+          console.error(jsonRes.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchTeams();
+  }, []);
+
   useEffect(() => {
     const fetchStandings = async () => {
       try {

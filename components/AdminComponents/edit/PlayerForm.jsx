@@ -1,11 +1,17 @@
 // app/admin/players/form.js
+
 "use client";
-import { useState, useRef } from "react";
-import RichTextEditor from "../RichTextEditor"; // Import your RichTextEditor component
+import { useState, useRef, useEffect } from "react";
+import RichTextEditor from "../RichTextEditor";
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
 
 export default function PlayerForm() {
+  const fileInputRef = useRef(null);
+  const pathname = usePathname();
+  const id = pathname.split("/").pop();
+  const route = useRouter();
+
   const [player, setPlayer] = useState({
     firstName: "",
     lastName: "",
@@ -14,15 +20,41 @@ export default function PlayerForm() {
     position: "",
     jerseyNumber: "",
     nationality: "",
-    image: null, // For the image file
-    bio: "", // Assuming you want a bio field with rich text
-    featured: false, // Assuming you have a featured field
+    image: null,
+    bio: "",
+    featured: false,
   });
 
-  const { id } = useParams();
+  const [currentImagePath, setCurrentImagePath] = useState(null); // To store the image path
 
-  const fileInputRef = useRef(null); // Ref for file input
-  const route = useRouter();
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchPlayer = async () => {
+      try {
+        const res = await fetch(`/api/players/${id}`);
+        const jsonRes = await res.json();
+        if (jsonRes.success) {
+          const fetchedPlayer = jsonRes.data;
+
+          // Set the state for the player
+          setPlayer((prevPlayer) => ({
+            ...prevPlayer,
+            ...fetchedPlayer,
+            DOB: fetchedPlayer.DOB ? fetchedPlayer.DOB.split("T")[0] : "", // Format the DOB
+          }));
+
+          // Set the current image path
+          setCurrentImagePath(fetchedPlayer.image);
+        } else {
+          console.error(jsonRes.message);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPlayer();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,42 +73,38 @@ export default function PlayerForm() {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("firstName", player.firstName);
-    formData.append("lastName", player.lastName);
-    formData.append("DOB", player.DOB);
-    formData.append("height", player.height);
-    formData.append("position", player.position);
-    formData.append("jerseyNumber", player.jerseyNumber);
-    formData.append("nationality", player.nationality);
-    formData.append("image", player.image);
-    formData.append("bio", player.bio);
-    formData.append("featured", player.featured); // Assuming you have a featured field
-
-    const res = await fetch("/api/players/${}", {
-      method: "PATCH",
-      body: formData,
+    Object.entries(player).forEach(([key, value]) => {
+      formData.append(key, value);
     });
-    const jsonRes = await res.json();
-    if (jsonRes.success) {
-      alert("Player saved successfully");
 
-      // Clear the form and file input
-      setPlayer({
-        firstName: "",
-        lastName: "",
-        DOB: "",
-        height: "",
-        position: "",
-        jerseyNumber: "",
-        nationality: "",
-        image: null,
-        bio: "",
-        featured: false,
+    try {
+      const res = await fetch(`/api/players/${id}`, {
+        method: "PATCH",
+        body: formData,
       });
-      fileInputRef.current.value = ""; // Clear the file input field
-      route.back();
-    } else {
-      alert(jsonRes.message || "Failed to save player");
+      const jsonRes = await res.json();
+      if (jsonRes.success) {
+        alert("Player saved successfully");
+        setPlayer({
+          firstName: "",
+          lastName: "",
+          DOB: "",
+          height: "",
+          position: "",
+          jerseyNumber: "",
+          nationality: "",
+          image: null,
+          bio: "",
+          featured: false,
+        });
+        fileInputRef.current.value = "";
+        route.back();
+      } else {
+        alert(jsonRes.message || "Failed to save player");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while saving the player.");
     }
   };
 
@@ -218,6 +246,15 @@ export default function PlayerForm() {
         >
           Image
         </label>
+        {currentImagePath && (
+          <div className="mb-2">
+            <img
+              src={currentImagePath}
+              alt="Current Player Image"
+              className="max-w-full h-auto"
+            />
+          </div>
+        )}
         <input
           type="file"
           id="image"
@@ -225,7 +262,7 @@ export default function PlayerForm() {
           accept="image/*"
           onChange={handleFileChange}
           className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          ref={fileInputRef} // Set ref here
+          ref={fileInputRef}
         />
       </div>
 

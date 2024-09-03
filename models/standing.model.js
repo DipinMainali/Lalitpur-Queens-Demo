@@ -6,6 +6,7 @@ const standingSchema = new mongoose.Schema({
     required: true,
   },
   played: {
+    //positive type number
     type: Number,
     required: true,
   },

@@ -4,9 +4,11 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Matches() {
   const [matches, setMatches] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -28,6 +30,12 @@ export default function Matches() {
 
   const handleEdit = (id) => {
     console.log(`Edit match with id: ${id}`);
+
+    try {
+      router.push(`/AdminDashboard/matches/edit/${id}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDelete = async (id) => {

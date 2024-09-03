@@ -30,7 +30,7 @@ const saveNewsImage = async (file, newsTitle) => {
   return relativePath;
 };
 
-export default saveNewsImage;
+export { saveNewsImage };
 
 export async function POST(req) {
   await dbConnection();

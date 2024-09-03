@@ -6,7 +6,9 @@ export async function DELETE(_req, { params }) {
   await dbConnection();
 
   try {
-    const contact = await Match.findOneAndDelete({ _id: params.id });
+    const contact = await Match.findOneAndDelete({ _id: params.id }, body, {
+      new: true,
+    });
 
     return NextResponse.json({ success: true, data: contact });
   } catch (error) {
@@ -30,6 +32,39 @@ export async function PATCH(req, { params }) {
     const match = await Match.findOneAndUpdate({ _id: params.id }, body, {
       new: true,
     });
+
+    return NextResponse.json({ success: true, data: match });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Internal Server Error",
+      },
+      { status: error.status || 500 }
+    );
+  }
+}
+//get match by unique id
+export async function GET(request, { params }) {
+  await dbConnection();
+
+  try {
+    const { id } = params; // Extract ID from params
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const match = await Match.findById(id);
+
+    if (!match) {
+      return NextResponse.json(
+        { success: false, message: "Match not found" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ success: true, data: match });
   } catch (error) {

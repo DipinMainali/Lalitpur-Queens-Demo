@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 export default function Team() {
   const router = useRouter();
   const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchTeamMembers = async () => {
       try {
@@ -14,6 +16,7 @@ export default function Team() {
         const jsonRes = await res.json();
         if (jsonRes.success) {
           setTeamMembers(jsonRes.data);
+          setLoading(false);
         } else {
           console.error(jsonRes.message);
         }
@@ -25,6 +28,9 @@ export default function Team() {
     fetchTeamMembers();
   }, []);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div>
       <Head>

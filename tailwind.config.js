@@ -10,10 +10,10 @@ module.exports = {
       colors: {
         /* CSS HEX */
         "queens-black": "#000000",
-        "queens-emerald": "#76C288",
+        "queens-emerald": "#23af1c",
         "queens-white": "#FFFFFF",
-        "queens-blue": "#0A75BA",
-        "queens-green": "#009622",
+        "queens-blue": "#0574e7",
+        "queens-green": "#e6bb1a",
         "queens-midnight": "#055765",
       },
     },

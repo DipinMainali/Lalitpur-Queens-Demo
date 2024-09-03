@@ -39,7 +39,7 @@ export default function Sponsors() {
       const jsonRes = await res.json();
       if (jsonRes.success) {
         alert("Player deleted successfully");
-        setPlayers(players.filter((player) => player._id !== id));
+        setSponsors(sponsors.filter((sponsor) => sponsor._id !== id));
       } else {
         alert("Failed to delete player");
       }

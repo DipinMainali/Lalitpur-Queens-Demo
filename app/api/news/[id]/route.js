@@ -1,6 +1,7 @@
 import News from "@/models/news.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
+import { saveNewsImage } from "../route";
 
 export async function DELETE(_req, { params }) {
   await dbConnection();
@@ -23,31 +24,42 @@ export async function DELETE(_req, { params }) {
 //patch request -editing existing news
 export async function PATCH(req, { params }) {
   await dbConnection();
+  const { id } = params;
 
   try {
-    const body = await req.json();
+    const formData = await req.formData(); // Parse the request body from form data
 
-    if (body.title) {
-      // Generate a new slug from the updated title
-      let slug = body.title.toLowerCase().replace(/\s+/g, "-");
-
-      // Check if the generated slug is unique
-      let existingNews = await News.findOne({ slug });
-      let count = 1;
-      while (existingNews && existingNews._id.toString() !== params.id) {
-        slug = `${body.title.toLowerCase().replace(/\s+/g, "-")}-${count++}`;
-        existingNews = await News.findOne({ slug });
-      }
-
-      // Assign the unique slug to the body
-      body.slug = slug;
+    const news = await News.findById(id);
+    if (!news) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "News not found",
+        },
+        { status: 404 }
+      );
     }
 
-    const news = await News.findOneAndUpdate({ _id: params.id }, body, {
-      new: true,
-    });
+    const imageFile = formData.get("image");
+    let imagePath = news.image;
 
-    return NextResponse.json({ success: true, data: news });
+    if (imageFile && imageFile instanceof File) {
+      imagePath = await saveNewsImage(imageFile, formData.get("title"));
+    }
+    news.image = imagePath;
+    news.title = formData.get("title");
+    news.content = formData.get("content");
+
+    const savedNews = await news.save();
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: savedNews,
+        message: "News saved successfully",
+      },
+      { status: 200 }
+    ); // Set the status code here
   } catch (error) {
     return NextResponse.json(
       {

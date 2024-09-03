@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function News() {
   const [newsArticles, setNewsArticles] = useState([]);
@@ -26,8 +27,15 @@ export default function News() {
     fetchNews();
   }, []);
 
+  const router = useRouter();
+
   const handleEdit = (id) => {
     console.log(`Edit news article with id: ${id}`);
+    try {
+      router.push(`/AdminDashboard/news/edit/${id}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDelete = async (id) => {

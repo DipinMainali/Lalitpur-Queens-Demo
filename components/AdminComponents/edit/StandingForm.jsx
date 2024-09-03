@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function StandingForm({ standing }) {
   const [formData, setFormData] = useState({
-    team: standing?.team.name || standing.team.name,
+    team: standing?.team.name || "",
+    logo: standing?.team.logo || "",
     played: standing?.played || 0,
     won: standing?.won || 0,
     drawn: standing?.drawn || 0,
@@ -18,6 +19,7 @@ export default function StandingForm({ standing }) {
     if (standing) {
       setFormData({
         team: standing.team.name,
+        logo: standing.team.logo,
         played: standing.played,
         won: standing.won,
         drawn: standing.drawn,
@@ -29,12 +31,57 @@ export default function StandingForm({ standing }) {
     }
   }, [standing]);
 
+  const Router = useRouter();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // Ensure only positive numbers or zero are allowed
+    if (name !== "team" && name !== "logo" && value < 0) {
+      return;
+    }
     setFormData({
       ...formData,
       [name]: value,
     });
+  };
+
+  const onSave = async (data) => {
+    const formData = {
+      played: Number(data.played),
+      won: Number(data.won),
+      drawn: Number(data.drawn),
+      lost: Number(data.lost),
+      points: Number(data.points),
+      setWon: Number(data.setWon),
+      setLost: Number(data.setLost),
+    };
+
+    try {
+      const res = await fetch(`/api/standings/${standing._id}`, {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
+      });
+      const jsonRes = await res.json();
+      if (jsonRes.success) {
+        alert("Standing updated successfully");
+        // Clear the form
+        setFormData({
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          points: 0,
+          setWon: 0,
+          setLost: 0,
+        });
+        Router.back();
+      } else {
+        alert("Failed to update standing");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -45,7 +92,7 @@ export default function StandingForm({ standing }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Team
         </label>
         <input
@@ -54,12 +101,12 @@ export default function StandingForm({ standing }) {
           value={formData.team}
           onChange={handleChange}
           readOnly
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Played
         </label>
         <input
@@ -67,23 +114,27 @@ export default function StandingForm({ standing }) {
           name="played"
           value={formData.played}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">Won</label>
+        <label className="block text-sm font-semibold text-queens-white">
+          Won
+        </label>
         <input
           type="number"
           name="won"
           value={formData.won}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Drawn
         </label>
         <input
@@ -91,12 +142,13 @@ export default function StandingForm({ standing }) {
           name="drawn"
           value={formData.drawn}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Lost
         </label>
         <input
@@ -104,12 +156,13 @@ export default function StandingForm({ standing }) {
           name="lost"
           value={formData.lost}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Points
         </label>
         <input
@@ -117,12 +170,13 @@ export default function StandingForm({ standing }) {
           name="points"
           value={formData.points}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Set Won
         </label>
         <input
@@ -130,12 +184,13 @@ export default function StandingForm({ standing }) {
           name="setWon"
           value={formData.setWon}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-gray-700">
+        <label className="block text-sm font-semibold text-queens-white">
           Set Lost
         </label>
         <input
@@ -143,7 +198,8 @@ export default function StandingForm({ standing }) {
           name="setLost"
           value={formData.setLost}
           onChange={handleChange}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          min="0"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 

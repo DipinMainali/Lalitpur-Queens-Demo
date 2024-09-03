@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import MatchCard from "@/components/MatchCard";
@@ -9,15 +8,25 @@ import Slider from "react-slick";
 import TeamMember from "@/components/TeamMember";
 
 export default function Home() {
-  //for upcoming matches section matches
-
-  //to store the matched fetched from the api/matches/ endpoint
+  // State for upcoming matches
   const [upcomingMatches, setUpcomingMatches] = useState([]);
 
-  //for leatest match results section
-  const [leatestResults, setLeatestResults] = useState([]);
+  // State for latest match results
+  const [latestResults, setLatestResults] = useState([]);
 
-  //fetch matches from API when the component mounts
+  // State for the number of slides to show in the carousel
+  const [slidesRender, setSlidesRender] = useState(1);
+
+  // State for news items
+  const [newsItems, setNews] = useState([]);
+
+  // State for players data
+  const [players, setPlayers] = useState([]);
+
+  // State for points table data
+  const [pointsTable, setPointsTable] = useState([]);
+
+  // Fetch matches data when the component mounts
   useEffect(() => {
     const fetchMatches = async () => {
       try {
@@ -25,22 +34,18 @@ export default function Home() {
         const jsonRes = await res.json();
 
         if (jsonRes.success) {
-          //filter matches based on status
-          console.log(jsonRes.data);
           const upMatches = jsonRes.data.filter(
             (match) => match.status === "Pending"
           );
-
-          upcomingMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
-          const Results = jsonRes.data.filter(
+          const results = jsonRes.data.filter(
             (match) => match.status === "Completed"
           );
-          leatestResults.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-          //update the state with the filtered matches
+          upMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+          results.sort((a, b) => new Date(b.date) - new Date(a.date));
+
           setUpcomingMatches(upMatches);
-
-          setLeatestResults(Results);
+          setLatestResults(results);
         } else {
           console.error(jsonRes.message);
         }
@@ -52,18 +57,7 @@ export default function Home() {
     fetchMatches();
   }, []);
 
-  //format date as "May 15, 2024"
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  //for news section in home page
-  const [newsItems, setNews] = useState([]);
-
+  // Fetch news data when the component mounts
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -82,25 +76,7 @@ export default function Home() {
     fetchNews();
   }, []);
 
-  // Carousel settings
-
-  const carouselSettings = {
-    dots: false,
-    arrows: true,
-    infinite: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 4000,
-    cssEase: "cubic-bezier(0.2, 0, 0, 1)",
-  };
-
-  //state to store the players data
-  const [players, setPlayers] = useState([]);
-
-  //fetch players from API when the component mounts
-
+  // Fetch players data when the component mounts
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
@@ -108,7 +84,17 @@ export default function Home() {
         const jsonRes = await res.json();
 
         if (jsonRes.success) {
-          setPlayers(jsonRes.data);
+          const featuredPlayers = jsonRes.data.filter(
+            (player) => player.featured
+          );
+          setPlayers(featuredPlayers);
+
+          // Set slidesRender based on the number of players fetched
+          if (featuredPlayers.length >= 3) {
+            setSlidesRender(3);
+          } else {
+            setSlidesRender(featuredPlayers.length);
+          }
         } else {
           console.error(jsonRes.message);
         }
@@ -120,10 +106,7 @@ export default function Home() {
     fetchPlayers();
   }, []);
 
-  //state to store points table data
-  const [pointsTable, setPointsTable] = useState([]);
-
-  //fetch points table data from API when the component mounts
+  // Fetch points table data when the component mounts
   useEffect(() => {
     const fetchPointsTable = async () => {
       try {
@@ -143,35 +126,67 @@ export default function Home() {
     fetchPointsTable();
   }, []);
 
+  // Format date as "May 15, 2024"
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Carousel settings
+  const carouselSettings = {
+    dots: false,
+    arrows: true,
+    infinite: true,
+    slidesToShow: slidesRender,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 2000,
+    autoplaySpeed: 4000,
+    cssEase: "cubic-bezier(0.2, 0, 0, 1)",
+  };
+
   return (
     <>
-      <section className="relative  mb-12 text-queens-white py-24 md:py-32">
+      <section className="relative mb-12 text-queens-white py-24 md:py-32">
         <div className="absolute inset-0">
           <Image
             src="/images/hero-bg.jpg"
             alt="Volleyball court"
             layout="fill"
             objectFit="cover"
-            className="opacity-50"
+            className="opacity-90"
           />
         </div>
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl   text-queens-midnight font-bold mb-4">
+          <h1 className="text-4xl md:text-6xl text-queens-midnight font-bold mb-4">
             Lalitpur Queens
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-queens-green  ">
-            Empowering women through volleyball
-          </p>
-          <Link
-            href="/about"
-            className="bg-queens-blue text-queens-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-queens-emerald transition duration-300"
-          >
-            Learn More
-          </Link>
+          <div className="relative flex items-center justify-center container mx-auto px-4 text-center">
+            <div className="slider-content animate-fadeInRight">
+              <h3 className="text-4xl font-bold leading-tight text-queens-emerald">
+                Unleashing the Power of <br />
+                Queens,{" "}
+                <span className="text-queens-green">Reigning Supreme</span>
+                <br />
+                in Court!
+              </h3>
+
+              <br />
+              <Link
+                href="/about"
+                className="bg-queens-blue text-queens-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-queens-emerald transition duration-300"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
       {/* Matches Section */}
-      <section className="py-16  bg-queens-emerald bg-opacity-10">
+      <section className="py-16 bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Upcoming Matches Section */}
@@ -179,15 +194,15 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
                 Upcoming Matches
               </h2>
-              <div className="grid grid-cols-1 gap-8 ">
+              <div className="grid grid-cols-1 gap-8">
                 {upcomingMatches.length > 0 && (
                   <MatchCard
                     key={upcomingMatches[0]._id}
-                    date={formatDate(upcomingMatches[0].date)} // Format date as "May 15, 2024"
+                    date={formatDate(upcomingMatches[0].date)}
                     opponent={upcomingMatches[0].opponent.name}
                     location={upcomingMatches[0].location}
                     time={upcomingMatches[0].time}
-                    opponentLogo={upcomingMatches[0].opponent.logo} // Assuming you have opponent's logo
+                    opponentLogo={upcomingMatches[0].opponent.logo}
                     result={upcomingMatches[0].result}
                   />
                 )}
@@ -199,15 +214,15 @@ export default function Home() {
                 Latest Results
               </h2>
               <div className="grid grid-cols-1 gap-8">
-                {leatestResults.length > 0 && (
+                {latestResults.length > 0 && (
                   <MatchCard
-                    key={leatestResults[0]._id}
-                    date={formatDate(leatestResults[0].date)} // Format date as "May 15, 2024"
-                    opponent={leatestResults[0].opponent.name}
-                    location={leatestResults[0].location}
-                    time={leatestResults[0].time}
-                    opponentLogo={leatestResults[0].opponent.logo} // Assuming you have opponent's logo
-                    result={leatestResults[0].result}
+                    key={latestResults[0]._id}
+                    date={formatDate(latestResults[0].date)}
+                    opponent={latestResults[0].opponent.name}
+                    location={latestResults[0].location}
+                    time={latestResults[0].time}
+                    opponentLogo={latestResults[0].opponent.logo}
+                    result={latestResults[0].result}
                   />
                 )}
               </div>
@@ -216,14 +231,13 @@ export default function Home() {
         </div>
       </section>
       {/* Our Queens Section */}
-      <section className="py-12 ">
+      <section className="py-12">
         <div className="container mx-auto px-3">
           <h2 className="text-3xl font-bold mb-6 text-center text-queens-midnight">
             Our Queens
           </h2>
 
           <Slider {...carouselSettings}>
-            {/* Add squad member data here */}
             {players.map((player) => (
               <TeamMember
                 key={player._id}
@@ -234,7 +248,6 @@ export default function Home() {
                 image={player.image}
               />
             ))}
-            {/* Add more squad members as needed */}
           </Slider>
           <div className="text-center mt-8">
             <Link
@@ -246,57 +259,80 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Latest News Section */}
       <section className="py-16 bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
             Latest News
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {newsItems.map((newsItem) => (
+            {newsItems.map((news) => (
               <NewsCard
-                key={newsItem._id}
-                title={newsItem.title}
-                excerpt={newsItem.content.substring(0, 100) + "..."}
-                image={newsItem.image}
-                date={new Date(newsItem.createdAt).toLocaleDateString()}
+                key={news._id}
+                title={news.title}
+                summary={news.summary}
+                image={news.image}
+                link={`/news/${news._id}`}
               />
             ))}
           </div>
         </div>
       </section>
-      <div className="flex flex-col md:flex-row">
-        {/* Points Table Section */}
-        <div className="md:w-1/2 p-4 bg-white shadow-lg mt-12 mb-16 rounded-lg hover:bg-queens-emerald transition-colors duration-300">
-          <h2 className="text-2xl font-semibold mb-4 text-queens-midnight">
-            Points Table
-          </h2>
-          <table className="min-w-full bg-white">
-            <thead className="bg-queens-emerald text-queens-white">
-              <tr>
-                <th className="py-2 px-4">Team</th>
-                <th className="py-2 px-4">Played</th>
-                <th className="py-2 px-4">Won</th>
-                <th className="py-2 px-4">Lost</th>
-                <th className="py-2 px-4">Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pointsTable.map((team, index) => (
-                <tr
-                  key={index}
-                  className="border-b hover:bg-queens-blue transition-colors duration-200"
-                >
-                  <td className="py-2 px-4">{team.name}</td>
-                  <td className="py-2 px-4 text-center">{team.played}</td>
-                  <td className="py-2 px-4 text-center">{team.won}</td>
-                  <td className="py-2 px-4 text-center">{team.lost}</td>
-                  <td className="py-2 px-4 text-center">{team.points}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Points Table Section */}
+      <section className="py-16 bg-queens-emerald bg-opacity-10">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-8">
+            {/* Points Table */}
+            <div className="w-full md:w-2/3">
+              <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
+                Points Table
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="table-auto w-full text-left">
+                  <thead>
+                    <tr className="bg-queens-blue text-queens-white">
+                      <th className="px-4 py-2">Team</th>
+                      <th className="px-4 py-2">P</th>
+                      <th className="px-4 py-2">W</th>
+                      <th className="px-4 py-2">L</th>
+                      <th className="px-4 py-2">D</th>
+                      <th className="px-4 py-2">Points</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pointsTable.map((team) => (
+                      <tr key={team._id} className="border-t">
+                        <td className="px-4 py-2">{team.team.name}</td>
+                        <td className="px-4 py-2">{team.played}</td>
+                        <td className="px-4 py-2">{team.won}</td>
+                        <td className="px-4 py-2">{team.lost}</td>
+                        <td className="px-4 py-2">{team.drawn}</td>
+                        <td className="px-4 py-2">{team.points}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {/* Featured Player */}
+            {players.length > 0 && (
+              <div className="w-full md:w-1/3">
+                <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
+                  Featured Player
+                </h2>
+                <TeamMember
+                  key={players[0]._id}
+                  firstName={players[0].firstName}
+                  lastName={players[0].lastName}
+                  jerseyNumber={players[0].jerseyNumber}
+                  position={players[0].position}
+                  image={players[0].image}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }
