@@ -23,6 +23,7 @@ export default function PlayerForm() {
     image: null,
     bio: "",
     featured: false,
+    //marquee: false,
   });
 
   const [currentImagePath, setCurrentImagePath] = useState(null); // To store the image path
@@ -96,6 +97,7 @@ export default function PlayerForm() {
           image: null,
           bio: "",
           featured: false,
+          //marquee: false,
         });
         fileInputRef.current.value = "";
         route.back();
@@ -294,6 +296,25 @@ export default function PlayerForm() {
           }
         />
       </div>
+
+      {/* <div className="mb-4">
+        <label
+          htmlFor="marquee"
+          className="block text-queens-black font-semibold mb-2"
+        >
+          Marquee
+        </label>
+        <input
+          type="checkbox"
+          checked={player.marquee}
+          onChange={(e) =>
+            setPlayer((prevPlayer) => ({
+              ...prevPlayer,
+              marquee: e.target.checked,
+            }))
+          }
+        />
+      </div> */}
 
       <button
         type="submit"

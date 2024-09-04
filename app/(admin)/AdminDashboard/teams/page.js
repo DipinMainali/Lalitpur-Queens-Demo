@@ -6,50 +6,40 @@ import { faPlus, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Players() {
-  const [players, setPlayers] = useState([]);
+export default function Teams() {
+  const [teams, setTeams] = useState([]);
 
   const router = useRouter();
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fetchTeams = async () => {
       try {
-        const res = await fetch("/api/players");
-
-        const jsonres = await res.json();
-        console.log(jsonres);
-        if (jsonres.success) {
-          setPlayers(jsonres.data);
+        const res = await fetch("/api/teams");
+        const jsonRes = await res.json();
+        if (jsonRes.success) {
+          setTeams(jsonRes.data);
         } else {
-          console.error(jsonres.message);
+          console.error(jsonRes.message);
         }
       } catch (err) {
         console.error(err);
       }
     };
 
-    fetchPlayers();
+    fetchTeams();
   }, []);
 
-  const handleEdit = (id) => {
-    try {
-      router.push(`/AdminDashboard/players/edit/${id}`);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleDelete = async (id) => {
-    console.log(`Delete player with id: ${id}`);
+    console.log(`Delete team with id: ${id}`);
     try {
-      const res = await fetch(`/api/players/${id}`, {
+      const res = await fetch(`/api/teams/${id}`, {
         method: "DELETE",
       });
       const jsonRes = await res.json();
       if (jsonRes.success) {
-        alert("Player deleted successfully");
-        setPlayers(players.filter((player) => player._id !== id));
+        alert("Team deleted successfully");
+        setTeams(teams.filter((team) => team._id !== id));
       } else {
-        alert("Failed to delete player");
+        alert("Failed to delete team");
       }
     } catch (err) {
       console.error(err);
@@ -59,11 +49,11 @@ export default function Players() {
   return (
     <div className="space-y-8">
       <h1 className="text-4xl font-bold text-queens-white text-center">
-        Players
+        Teams
       </h1>
       <div className="flex justify-end mb-4">
         <button className="bg-queens-green text-queens-white py-2 px-4 rounded-lg hover:bg-queens-midnight transition duration-300 flex items-center">
-          <Link href="/AdminDashboard/players/add">
+          <Link href="/AdminDashboard/teams/add">
             <FontAwesomeIcon icon={faPlus} className="mr-2" />
             Add New
           </Link>
@@ -75,51 +65,33 @@ export default function Players() {
           <thead>
             <tr>
               <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
-                Jersey Number
-              </th>
-              <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
                 Name
               </th>
-
               <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
-                Featured
+                Logo
               </th>
-
-              <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
-                Marquee
-              </th>
-
               <th className="px-6 py-3 border-b-2 border-queens-black text-left text-sm font-semibold text-queens-black">
                 Action
               </th>
             </tr>
           </thead>
           <tbody>
-            {players &&
-              players.map((player) => (
-                <tr key={player.jerseyNumber}>
+            {teams &&
+              teams.map((team) => (
+                <tr key={team._id}>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
-                    {player.jerseyNumber}
+                    {team.name}
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
-                    {player.firstName} {player.lastName}
-                  </td>
-                  <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
-                    {player.featured ? "Yes" : "No"}
-                  </td>
-
-                  <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
-                    {player.marquee ? "Yes" : "No"}
+                    <img
+                      src={team.logo}
+                      alt={`${team.name} logo`}
+                      className="h-10 w-10 object-contain"
+                    />
                   </td>
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     <button
-                      onClick={() => handleEdit(player._id)}
-                      className="text-queens-green hover:text-queens-midnight transition duration-300 mr-4"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(player._id)}
+                      onClick={() => handleDelete(team._id)}
                       className="text-queens-green hover:text-queens-midnight transition duration-300"
                     >
                       <FontAwesomeIcon icon={faTrash} />

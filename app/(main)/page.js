@@ -8,6 +8,13 @@ import Slider from "react-slick";
 import TeamMember from "@/components/TeamMember";
 
 export default function Home() {
+  //multiple images in the hero section
+  const images = [
+    "/images/hero-bg.jpg",
+    "/images/hero-bg2.jpg",
+    "/images/hero-bg3.jpg",
+  ];
+
   // State for upcoming matches
   const [upcomingMatches, setUpcomingMatches] = useState([]);
 
@@ -87,6 +94,7 @@ export default function Home() {
           const featuredPlayers = jsonRes.data.filter(
             (player) => player.featured
           );
+
           setPlayers(featuredPlayers);
 
           // Set slidesRender based on the number of players fetched
@@ -134,6 +142,14 @@ export default function Home() {
       year: "numeric",
     });
   };
+  // Marquee player
+  const marqueePlayer = {
+    firstName: "Samantha",
+    lastName: "Bricio",
+    jerseyNumber: 8,
+    position: "Outside Hitter",
+    image: "/images/marquee-player.jpg",
+  };
 
   // Carousel settings
   const carouselSettings = {
@@ -165,26 +181,30 @@ export default function Home() {
             Lalitpur Queens
           </h1>
           <div className="relative flex items-center justify-center container mx-auto px-4 text-center">
-            <div className="slider-content animate-fadeInRight">
-              <h3 className="text-4xl font-bold leading-tight text-queens-emerald">
+            <div className="slider-content animate-fadeInRight space-y-6">
+              <h3 className="text-4xl md:text-4xl font-extrabold leading-tight text-queens-emerald tracking-wide drop-shadow-lg">
                 Unleashing the Power of <br />
                 Queens,{" "}
-                <span className="text-queens-green">Reigning Supreme</span>
+                <span className="text-queens-green animate-pulse">
+                  Reigning Supreme
+                </span>
                 <br />
                 in Court!
               </h3>
 
-              <br />
-              <Link
-                href="/about"
-                className="bg-queens-blue text-queens-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-queens-emerald transition duration-300"
-              >
-                Learn More
-              </Link>
+              <div className="animate-bounce delay-1000">
+                <Link
+                  href="/about"
+                  className="bg-queens-blue text-queens-white py-4 px-8 rounded-full text-lg font-semibold hover:bg-queens-emerald hover:scale-105 transform transition-transform duration-300 shadow-md"
+                >
+                  Learn More
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
       {/* Matches Section */}
       <section className="py-16 bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
@@ -260,7 +280,7 @@ export default function Home() {
         </div>
       </section>
       {/* Latest News Section */}
-      <section className="py-16 bg-queens-emerald bg-opacity-10">
+      <section className="py-16 mb-8 bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
             Latest News
@@ -272,14 +292,14 @@ export default function Home() {
                 title={news.title}
                 summary={news.summary}
                 image={news.image}
-                link={`/news/${news._id}`}
+                date={news.date}
               />
             ))}
           </div>
         </div>
       </section>
       {/* Points Table Section */}
-      <section className="py-16 bg-queens-emerald bg-opacity-10">
+      <section className="py-12 mb-8 bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Points Table */}
@@ -314,19 +334,20 @@ export default function Home() {
                 </table>
               </div>
             </div>
-            {/* Featured Player */}
-            {players.length > 0 && (
+            {/* Marquee Player */}
+            {marqueePlayer > 0 && (
               <div className="w-full md:w-1/3">
                 <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
-                  Featured Player
+                  Marquee Player
                 </h2>
+                {/* Marquee Player */}
                 <TeamMember
-                  key={players[0]._id}
-                  firstName={players[0].firstName}
-                  lastName={players[0].lastName}
-                  jerseyNumber={players[0].jerseyNumber}
-                  position={players[0].position}
-                  image={players[0].image}
+                  key={marqueePlayer._id}
+                  firstName={marqueePlayer.firstName}
+                  lastName={marqueePlayer.lastName}
+                  jerseyNumber={marqueePlayer.jerseyNumber}
+                  position={marqueePlayer.position}
+                  image={marqueePlayer.image}
                 />
               </div>
             )}

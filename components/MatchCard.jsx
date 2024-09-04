@@ -1,4 +1,3 @@
-// components/MatchCard.js
 import Image from "next/image";
 
 export default function MatchCard({
@@ -9,59 +8,84 @@ export default function MatchCard({
   result,
   opponentLogo,
 }) {
-  const lalitpurQueensLogo = "/images/lalitpur-queens-logo.png"; // Path to Lalitpur Queens logo
+  const lalitpurQueensLogo = "/images/teams/common-logo-team.png";
   const lalitpurQueensName = "Lalitpur Queens";
+
+  const getResultColor = (result) => {
+    switch (result) {
+      case "Win":
+        return "bg-green-500";
+      case "Draw":
+        return "bg-yellow-500";
+      case "Loss":
+        return "bg-red-500";
+      default:
+        return "bg-queens-midnight";
+    }
+  };
+
   return (
     <div
-      className="bg-cover bg-center bg-no-repeat shadow-md rounded-lg mt-4 relative overflow-hidden"
+      className="bg-cover bg-center bg-no-repeat shadow-lg rounded-xl mt-6 relative overflow-hidden"
       style={{
         backgroundImage: `url('/images/match-card-bg.png')`,
       }}
     >
-      <div className="bg-white bg-opacity-70 p-4 rounded-lg">
-        {result ? (
-          result === "Win" ? (
-            <div className="mt-4 text-lg font-bold text-green-500 text-center">
-              {result}
-            </div>
-          ) : result === "Draw" ? (
-            <div className="mt-4 text-lg font-bold text-yellow-500 text-center">
-              {result}
-            </div>
-          ) : result === "Loss" ? (
-            <div className="mt-4 text-lg font-bold text-red-500 text-center">
-              {result}
-            </div>
-          ) : null
-        ) : (
-          <div className="mt-4 text-lg font-bold text-queens-midnight text-center">
-            Pending
+      <div className="bg-white bg-opacity-80 p-6 rounded-xl">
+        {result && (
+          <div
+            className={`absolute top-0 right-0 ${getResultColor(
+              result
+            )} text-white py-1 px-3 rounded-bl-lg font-bold`}
+          >
+            {result || "Pending"}
           </div>
         )}
 
-        <div className="text-lg font-semibold mb-2">{date}</div>
-        <div className="flex justify-between items-center">
+        <div className="text-2xl font-bold mb-4 text-queens-midnight">
+          {date}
+        </div>
+
+        <div className="flex justify-between items-center mb-6">
           {/* Lalitpur Queens */}
-          <div className="relative">
-            <img
+          <div className="text-center">
+            <Image
               src={lalitpurQueensLogo}
               alt={lalitpurQueensName}
-              className="w-12 h-12 transform transition-transform duration-300 hover:scale-110"
+              height={50}
+              width={50}
+              className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
-            <div className="text-xl font-bold mt-2">{lalitpurQueensName}</div>
+            <div className="text-xl font-bold mt-2 text-queens-midnight">
+              {lalitpurQueensName}
+            </div>
           </div>
-          <div className="text-sm font-medium">vs</div>
+
+          <div className="text-3xl font-bold text-queens-midnight">VS</div>
+
           {/* Opponent Team */}
-          <div className="relative">
-            <img
-              src={opponentLogo} // Assuming opponent team logo is provided
+          <div className="text-center">
+            <Image
+              src={opponentLogo}
               alt={opponent}
-              className="w-12 h-12 transform transition-transform duration-300 hover:scale-110"
+              height={50}
+              width={50}
+              className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
-            <div className="text-xl font-bold mt-2">{opponent}</div>
+            <div className="text-xl font-bold mt-2 text-queens-midnight">
+              {opponent}
+            </div>
           </div>
         </div>
-        <div className="text-center mt-2 text-gray-600">Time: {time}</div>
+
+        <div className="flex justify-between items-center text-sm text-gray-600">
+          <div>
+            <span className="font-semibold">Location:</span> {location}
+          </div>
+          <div>
+            <span className="font-semibold">Time:</span> {time}
+          </div>
+        </div>
       </div>
     </div>
   );

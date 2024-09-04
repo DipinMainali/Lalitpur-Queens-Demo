@@ -28,9 +28,6 @@ export default function Team() {
     fetchTeamMembers();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
   return (
     <div>
       <Head>
@@ -45,21 +42,21 @@ export default function Team() {
         <h1 className="text-4xl font-bold mb-8 text-center">Our Team</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {teamMembers.map((member) => (
-            <div
-              onClick={() => {
-                router.push(`/Team/${member._id}`);
-              }}
-              className="cursor-pointer"
-            >
-              <TeamMember
-                key={member._id} // Assuming each player object has a unique _id
-                firstName={member.firstName}
-                lastName={member.lastName}
-                jerseyNumber={member.jerseyNumber}
-                position={member.position}
-                image={member.image}
-              />
-            </div>
+            // <div
+            //   onClick={() => {
+            //     router.push(`/Team/${member._id}`);
+            //   }}
+            //   className="cursor-pointer"
+            // >
+            <TeamMember
+              key={member._id} // Assuming each player object has a unique _id
+              firstName={member.firstName}
+              lastName={member.lastName}
+              jerseyNumber={member.jerseyNumber}
+              position={member.position}
+              image={member.image}
+            />
+            // </div>
           ))}
         </div>
       </div>

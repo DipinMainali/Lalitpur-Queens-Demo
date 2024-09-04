@@ -8,71 +8,43 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-queens-midnight text-queens-white shadow-md">
+    <header className="bg-queens-white text-queens-midnight shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/images/logo.png"
-            alt="Lalitpur Queens Logo"
-            width={50}
-            height={50}
-          />
-          <span className="ml-2 text-2xl font-bold">Lalitpur Queens</span>
+        <Link href="/" className="flex items-center group">
+          <div className="relative">
+            <Image
+              src="/images/Lalitpur-queens-logo.png"
+              alt="Lalitpur Queens Logo"
+              width={70}
+              height={70}
+              className="transform transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-lg rounded-full"
+            />
+          </div>
+          <span className="ml-3 text-3xl font-extrabold tracking-wide transform transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:text-queens-emerald">
+            Lalitpur Queens
+          </span>
         </Link>
+
         <nav className="hidden md:block">
-          <ul className="flex space-x-6">
-            <li>
-              <Link
-                href="/"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/About"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Team"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                Team
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Matches"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                Matches
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/News"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                News
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Contact"
-                className="hover:text-queens-emerald transition duration-300"
-              >
-                Contact
-              </Link>
-            </li>
+          <ul className="flex space-x-8">
+            {["Home", "About", "Team", "Matches", "News", "Contact"].map(
+              (item) => (
+                <li key={item}>
+                  <Link
+                    href={item === "Home" ? "/" : `/${item}`}
+                    className="relative text-lg font-semibold uppercase transition duration-300"
+                  >
+                    <span className="px-4 py-2 rounded-full hover:bg-queens-blue hover:text-queens-white transition-all duration-300">
+                      {item}
+                    </span>
+                  </Link>
+                </li>
+              )
+            )}
           </ul>
         </nav>
         <button
-          className="md:hidden text-queens-white"
+          className="md:hidden text-queens-midnight"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg
@@ -80,7 +52,7 @@ export default function Header() {
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            className="w-6 h-6"
+            className="w-8 h-8"
           >
             <path
               strokeLinecap="round"
@@ -93,55 +65,19 @@ export default function Header() {
       </div>
       {isMenuOpen && (
         <div className="md:hidden bg-queens-midnight">
-          <ul className="px-4 py-2">
-            <li>
-              <Link
-                href="/"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/about"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/team"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                Team
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/schedule"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                Schedule
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/news"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                News
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/contact"
-                className="block py-2 hover:text-queens-emerald transition duration-300"
-              >
-                Contact
-              </Link>
-            </li>
+          <ul className="px-4 py-4">
+            {["Home", "About", "Team", "Schedule", "News", "Contact"].map(
+              (item) => (
+                <li key={item}>
+                  <Link
+                    href={`/${item}`}
+                    className="block py-2 text-lg font-semibold hover:bg-queens-emerald hover:text-queens-white rounded-full transition-all duration-300"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              )
+            )}
           </ul>
         </div>
       )}

@@ -16,6 +16,7 @@ export default function PlayerForm() {
     image: null, // For the image file
     bio: "", // Assuming you want a bio field with rich text
     featured: false, // Assuming you have a featured field
+    // marquee: false, // Assuming you have a marquee field
   });
 
   const fileInputRef = useRef(null); // Ref for file input
@@ -48,6 +49,7 @@ export default function PlayerForm() {
     formData.append("image", player.image);
     formData.append("bio", player.bio);
     formData.append("featured", player.featured); // Assuming you have a featured field
+    //formData.append("marquee", player.marquee); // Assuming you have a marquee field
 
     const res = await fetch("/api/players", {
       method: "POST",
@@ -69,6 +71,7 @@ export default function PlayerForm() {
         image: null,
         bio: "",
         featured: false,
+        // marquee: false,
       });
       fileInputRef.current.value = ""; // Clear the file input field
       route.back();
@@ -254,6 +257,25 @@ export default function PlayerForm() {
           }
         />
       </div>
+
+      {/* <div className="mb-4">
+        <label
+          htmlFor="marquee"
+          className="block text-queens-black font-semibold mb-2"
+        >
+          Marquee
+        </label>
+        <input
+          type="checkbox"
+          checked={player.marquee}
+          onChange={(e) =>
+            setPlayer((prevPlayer) => ({
+              ...prevPlayer,
+              marquee: e.target.checked,
+            }))
+          }
+        />
+      </div> */}
 
       <button
         type="submit"
