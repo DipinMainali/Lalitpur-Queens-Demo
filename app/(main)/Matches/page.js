@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import ScheduleCard from "@/components/ScheduleCard";
+import MatchCard from "@/components/MatchCard";
 import PointsTable from "@/components/PointsTable";
 
 export default function MatchPage() {
@@ -28,34 +28,45 @@ export default function MatchPage() {
 
       {/* Tab Buttons */}
       <div className="flex justify-center mb-8">
-        <button
-          onClick={() => setActiveTab("schedule")}
-          className={`px-8 py-3 font-semibold rounded-l-lg shadow-lg transform transition-transform duration-300 ${
-            activeTab === "schedule"
-              ? "bg-queens-emerald text-queens-white scale-105"
-              : "bg-queens-blue text-queens-white hover:bg-queens-midnight hover:scale-105"
-          }`}
-        >
-          Schedule
-        </button>
-        <div className="w-2"></div> {/* Gap between buttons */}
-        <button
-          onClick={() => setActiveTab("standings")}
-          className={`px-8 py-3 font-semibold rounded-r-lg shadow-lg transform transition-transform duration-300 ${
-            activeTab === "standings"
-              ? "bg-queens-emerald text-queens-white scale-105"
-              : "bg-queens-blue text-queens-white hover:bg-queens-midnight hover:scale-105"
-          }`}
-        >
-          Standings
-        </button>
+        <div className="w-1/2 flex">
+          <button
+            onClick={() => setActiveTab("schedule")}
+            className={`w-full px-8 py-3 font-semibold shadow-lg transform transition-all duration-300 ${
+              activeTab === "schedule"
+                ? " text-queens-black border-b-2 border-queens-emerald  "
+                : "bg-queens-emerald bg-opacity-5 text-queens-black hover:bg-queens-midnight hover:bg-opacity-20   "
+            }`}
+          >
+            Schedule
+          </button>
+        </div>
+        <div className="w-1/2 flex">
+          <button
+            onClick={() => setActiveTab("standings")}
+            className={`w-full px-8 py-3 font-semibold shadow-lg transform transition-all duration-300 ${
+              activeTab === "standings"
+                ? " text-queens-black border-b-2 border-queens-emerald  "
+                : "bg-queens-emerald bg-opacity-5 text-queens-black hover:bg-queens-midnight hover:bg-opacity-20 "
+            }`}
+          >
+            Standings
+          </button>
+        </div>
       </div>
 
       {/* Content Rendering Based on Active Tab */}
       {activeTab === "schedule" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {scheduleData.map((match, index) => (
-            <ScheduleCard key={index} match={match} />
+            <MatchCard
+              key={index}
+              date={match.date}
+              opponent={match.opponent.name}
+              location={match.venue}
+              time={match.time}
+              result={match.result}
+              opponentLogo={match.opponent.logo}
+            />
           ))}
         </div>
       ) : (

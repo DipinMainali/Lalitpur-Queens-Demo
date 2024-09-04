@@ -15,12 +15,12 @@ export default function Header() {
             <Image
               src="/images/Lalitpur-queens-logo.png"
               alt="Lalitpur Queens Logo"
-              width={70}
-              height={70}
+              width={60}
+              height={60}
               className="transform transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-lg rounded-full"
             />
           </div>
-          <span className="ml-3 text-3xl font-extrabold tracking-wide transform transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:text-queens-emerald">
+          <span className="ml-3 text-xl font-extrabold tracking-wide transform transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:text-queens-emerald">
             Lalitpur Queens
           </span>
         </Link>

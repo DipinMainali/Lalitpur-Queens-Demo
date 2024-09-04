@@ -6,11 +6,16 @@ export async function DELETE(_req, { params }) {
   await dbConnection();
 
   try {
-    const contact = await Match.findOneAndDelete({ _id: params.id }, body, {
-      new: true,
-    });
+    const match = await Match.findOneAndDelete({ _id: params.id });
 
-    return NextResponse.json({ success: true, data: contact });
+    if (!match) {
+      return NextResponse.json(
+        { success: false, message: "Match not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true, data: match });
   } catch (error) {
     return NextResponse.json(
       {

@@ -1,7 +1,7 @@
 import React from "react";
 
 const ScheduleCard = ({ match }) => {
-  const lalitpurQueensLogo = "/images/"; // Path to Lalitpur Queens logo
+  const lalitpurQueensLogo = "/images/Lalitpur-queens-logo"; // Path to Lalitpur Queens logo
   const lalitpurQueensName = "Lalitpur Queens";
 
   return (

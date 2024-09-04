@@ -8,6 +8,7 @@ export default function MatchCard({
   result,
   opponentLogo,
 }) {
+  console.log(date, opponent, location, time, result, opponentLogo);
   const lalitpurQueensLogo = "/images/teams/common-logo-team.png";
   const lalitpurQueensName = "Lalitpur Queens";
 
@@ -22,6 +23,14 @@ export default function MatchCard({
       default:
         return "bg-queens-midnight";
     }
+  };
+  // Format date as "May 15, 2024"
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   return (
@@ -43,7 +52,7 @@ export default function MatchCard({
         )}
 
         <div className="text-2xl font-bold mb-4 text-queens-midnight">
-          {date}
+          {formatDate(date)}
         </div>
 
         <div className="flex justify-between items-center mb-6">
