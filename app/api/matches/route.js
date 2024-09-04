@@ -2,11 +2,12 @@ import Match from "@/models/match.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
+
 export async function POST(req) {
   await dbConnection();
 

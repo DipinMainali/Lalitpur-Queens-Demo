@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 const saveNewsImage = async (file, newsTitle) => {
   // Convert the file to a buffer
