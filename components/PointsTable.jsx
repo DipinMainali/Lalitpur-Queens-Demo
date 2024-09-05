@@ -27,7 +27,7 @@ const PointsTable = ({ data }) => {
             >
               <td className="flex flex-row gap-2 py-3 px-6 text-left whitespace-nowrap">
                 <Image
-                  src="/images/logo.png"
+                  src={team.team.logo}
                   alt={team.team.name}
                   width={30}
                   height={30}

@@ -10,7 +10,7 @@ export default function NewsCard({ id, title, excerpt, image, date }) {
   };
 
   return (
-    <div className="bg-queens-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl hover:bg-queens-emerald hover:text-queens-white">
+    <div className="bg-queens-white rounded-xl shadow-lg overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl  hover:text-queens-white">
       {/* Image Section */}
       <div className="relative">
         <Image
@@ -28,7 +28,7 @@ export default function NewsCard({ id, title, excerpt, image, date }) {
       </div>
 
       {/* Content Section */}
-      <div className="p-6 transition-colors duration-300 ease-in-out bg-queens-white hover:bg-queens-emerald rounded-b-xl">
+      <div className="p-6 transition-colors duration-300 ease-in-out bg-queens-white hover:bg-blue-300 bg-opacity-5  rounded-b-xl">
         <div className="text-queens-black hover:text-queens-white mb-4 leading-relaxed tracking-wide">
           {/* Excerpt */}
           <span className="block text-md font-medium">{excerpt}</span>
@@ -41,7 +41,7 @@ export default function NewsCard({ id, title, excerpt, image, date }) {
           {/* Read More Button */}
           <button
             onClick={handleReadMoreClick}
-            className="bg-queens-emerald text-queens-white text-xs font-semibold py-2 px-4 rounded-full transition-transform duration-300 hover:bg-queens-green hover:scale-105 focus:outline-none focus:ring-2 focus:ring-queens-green focus:ring-opacity-50 cursor-pointer"
+            className="bg-queens-emerald text-queens-white text-xs font-semibold py-2 px-4 rounded-full transition-transform duration-300 hover:bg-queens-green  hover:scale-105 focus:outline-none focus:ring-2 focus:ring-queens-green focus:ring-opacity-50 cursor-pointer"
           >
             Read More
           </button>

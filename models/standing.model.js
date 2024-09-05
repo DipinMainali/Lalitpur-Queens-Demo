@@ -9,30 +9,37 @@ const standingSchema = new mongoose.Schema({
     //positive type number
     type: Number,
     required: true,
+    default: 0,
   },
   won: {
     type: Number,
     required: true,
+    default: 0,
   },
   drawn: {
     type: Number,
     required: true,
+    default: 0,
   },
   lost: {
     type: Number,
     required: true,
+    default: 0,
   },
   points: {
     type: Number,
     required: true,
+    default: 0,
   },
   setWon: {
     type: Number,
     required: true,
+    default: 0,
   },
   setLost: {
     type: Number,
     required: true,
+    default: 0,
   },
 });
 const Standing =

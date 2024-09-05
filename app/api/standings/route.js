@@ -1,4 +1,5 @@
 import Standing from "@/models/standing.model";
+import Team from "@/models/team.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 
@@ -38,8 +39,30 @@ export async function GET() {
   await dbConnection();
 
   try {
+    // Fetch all teams
+    const teams = await Team.find();
+    // Fetch all standings
     const standings = await Standing.find();
-    return NextResponse.json({ success: true, data: standings });
+    // Create a map of standings by team id
+    const standingsMap = new Map(
+      standings.map((standing) => [standing.team._id.toString(), standing])
+    );
+    // Merge teams with standings, defaulting standings if a team has no entry
+    const mergedStandings = teams.map((team) => {
+      return (
+        standingsMap.get(team._id.toString()) || {
+          team: team,
+          played: 0,
+          won: 0,
+          drawn: 0,
+          lost: 0,
+          points: 0,
+          setWon: 0,
+          setLost: 0,
+        }
+      );
+    });
+    return NextResponse.json({ success: true, data: mergedStandings });
   } catch (error) {
     return NextResponse.json(
       {

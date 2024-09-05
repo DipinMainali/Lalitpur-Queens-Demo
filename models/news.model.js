@@ -28,6 +28,8 @@ newsSchema.pre("save", async function (next) {
   await generateUniqueSlug(news, next);
 });
 
+// Pre-remove hook to delete the image file before the news document is deleted
+
 const News = mongoose.models.News || mongoose.model("News", newsSchema);
 
 export default News;

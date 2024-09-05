@@ -10,9 +10,9 @@ import TeamMember from "@/components/TeamMember";
 export default function Home() {
   //multiple images in the hero section
   const images = [
-    "/images/hero-bg.jpg",
-    "/images/hero-bg2.jpg",
-    "/images/hero-bg3.jpg",
+    "/images/hero-bg.png",
+    "/images/hero-bg2.png",
+    "/images/hero-bg3.png",
   ];
 
   // State for upcoming matches
@@ -190,8 +190,8 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative shadow-xl  shadow-gray-400 text-queens-white py-24 md:py-32">
-        <div className="absolute inset-0">
+      <section className="relative shadow-xl   shadow-gray-400 text-queens-white py-24 md:py-32">
+        <div className="inset-0 bg-queens-white opacity-90 z-0">
           <Image
             src="/images/hero-bg.jpg"
             alt="Volleyball court"
