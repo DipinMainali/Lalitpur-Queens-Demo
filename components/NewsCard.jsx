@@ -3,6 +3,7 @@ import Image from "next/image";
 
 export default function NewsCard({ id, title, excerpt, image, date }) {
   const router = useRouter();
+  console.log("id", id);
 
   const handleReadMoreClick = () => {
     router.push(`/News/${id}`);

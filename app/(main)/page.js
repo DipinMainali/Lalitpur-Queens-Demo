@@ -72,6 +72,7 @@ export default function Home() {
         const jsonRes = await res.json();
         if (jsonRes.success) {
           setNews(jsonRes.data);
+          console.log("news", newsItems);
         } else {
           console.error(jsonRes.message);
         }
@@ -81,6 +82,7 @@ export default function Home() {
     };
 
     fetchNews();
+    console.log();
   }, []);
 
   // Fetch players data when the component mounts
@@ -151,29 +153,51 @@ export default function Home() {
     position: "Libero",
   };
 
-  // Carousel settings
+  // Updated Carousel Settings for Responsiveness
   const carouselSettings = {
     dots: false,
     arrows: true,
     infinite: true,
-    slidesToShow: slidesRender,
+    slidesToShow: slidesRender, // This can be dynamically set based on screen size
     slidesToScroll: 1,
     autoplay: true,
     speed: 2000,
     autoplaySpeed: 4000,
     cssEase: "cubic-bezier(0.2, 0, 0, 1)",
+
+    // Responsive breakpoints for different screen sizes
+    responsive: [
+      {
+        breakpoint: 1024, // Tablet and smaller devices
+        settings: {
+          slidesToShow: 3, // Show 3 slides on devices smaller than 1024px
+        },
+      },
+      {
+        breakpoint: 768, // Smaller tablets and large mobile devices
+        settings: {
+          slidesToShow: 2, // Show 2 slides on devices smaller than 768px
+        },
+      },
+      {
+        breakpoint: 640, // Mobile devices
+        settings: {
+          slidesToShow: 1, // Show 1 slide on devices smaller than 640px
+        },
+      },
+    ],
   };
 
   return (
     <>
-      <section className="relative shadow-xl shadow-gray-400 text-queens-white py-24 md:py-32">
+      <section className="relative shadow-xl  shadow-gray-400 text-queens-white py-24 md:py-32">
         <div className="absolute inset-0">
           <Image
             src="/images/hero-bg.jpg"
             alt="Volleyball court"
             layout="fill"
             objectFit="cover"
-            className="opacity-90"
+            className="opacity-50"
           />
         </div>
         <div className="relative container mx-auto px-4 text-center">
@@ -182,14 +206,13 @@ export default function Home() {
           </h1>
           <div className="relative flex items-center justify-center container mx-auto px-4 text-center">
             <div className="slider-content animate-fadeInRight space-y-6">
-              <h3 className="text-4xl md:text-4xl font-extrabold leading-tight text-queens-emerald tracking-wide drop-shadow-lg">
-                Unleashing the Power of <br />
-                Queens,{" "}
-                <span className="text-queens-green animate-pulse">
-                  Reigning Supreme
+              <h3 className="text-4xl md:text-4xl font-extrabold leading-tigh text-queens-black tracking-wide drop-shadow-lg">
+                Rulers of the Court <br />{" "}
+                <span className="text-queens-blue animate-pulse">
+                  Champions
                 </span>
                 <br />
-                in Court!
+                in the Game!
               </h3>
 
               <div className="animate-bounce delay-1000">
@@ -253,10 +276,12 @@ export default function Home() {
       {/* Our Queens Section */}
       <section className="py-12">
         <div className="container mx-auto px-3">
-          <h2 className="text-3xl font-bold mb-6 text-center text-queens-midnight">
+          {/* Section Heading */}
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-queens-midnight">
             Our Queens
           </h2>
 
+          {/* Responsive Carousel */}
           <Slider {...carouselSettings}>
             {players.map((player) => (
               <TeamMember
@@ -269,18 +294,21 @@ export default function Home() {
               />
             ))}
           </Slider>
+
+          {/* Button for Full Squad */}
           <div className="text-center mt-8">
             <Link
               href="/Team"
-              className="bg-queens-blue text-queens-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-queens-emerald transition duration-300"
+              className="bg-queens-blue text-queens-white py-2 px-4 sm:py-3 sm:px-6 rounded-full text-base sm:text-lg font-semibold hover:bg-queens-emerald transition duration-300"
             >
               View Full Squad
             </Link>
           </div>
         </div>
       </section>
+
       {/* Latest News Section */}
-      <section className="py-16 mb-8 bg-queens-emerald bg-opacity-10">
+      <section className="py-16  bg-queens-emerald bg-opacity-10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
             Latest News
@@ -288,12 +316,13 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {newsItems.slice(0, 3).map((news) => (
               <NewsCard
+                key={news._id}
+                id={news._id}
+                title={news.title}
                 excerpt={news.content
                   .replace(/<p>|<\/p>|&nbsp;/g, "")
                   .slice(0, 100)
                   .concat("...")}
-                key={news._id}
-                title={news.title}
                 image={news.image}
                 date={news.date}
               />
@@ -311,7 +340,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="py-12 mb-8 bg-queens-emerald bg-opacity-10">
+      <section className="py-12  bg-queens-white bg-opacity-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8">
             {/* Points Table */}

@@ -37,7 +37,13 @@ const NewsDetails = () => {
     }
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        {/* Loading Spinner */}
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-queens-blue border-opacity-75"></div>
+      </div>
+    );
   if (!news) return <p>News not found</p>;
 
   return (
