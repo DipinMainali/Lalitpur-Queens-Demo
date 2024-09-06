@@ -394,22 +394,22 @@ export default function Home() {
               </div>
             </div>
             {/* Marquee Player */}
-            <div className="w-full md:w-1/3 mt-0">
-              <h2 className="text-4xl font-extrabold mb-10 text-center text-queens-midnight tracking-wider">
+            <div className="w-full md:w-1/3 mt-0 px-4 md:px-0">
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-6 md:mb-10 text-center text-queens-midnight tracking-wider">
                 Marquee Player
               </h2>
-              <div className="flex flex-col items-center bg-gradient-to-r from-queens-blue to-queens-midnight text-queens-white rounded-xl p-8 shadow-2xl transition-transform transform hover:scale-105">
+              <div className="flex flex-col items-center bg-gradient-to-r from-queens-blue to-queens-midnight text-queens-white rounded-xl p-6 md:p-8 shadow-2xl transition-transform transform hover:scale-105">
                 <Image
                   src={marqueePlayer.image}
                   alt={`${marqueePlayer.firstName} ${marqueePlayer.lastName}`}
-                  width={200}
-                  height={200}
-                  className="rounded-full border-8 border-queens-emerald shadow-lg"
+                  width={150}
+                  height={150}
+                  className="rounded-full border-4 md:border-8 border-queens-emerald shadow-lg"
                 />
-                <h3 className="text-3xl font-extrabold mt-6 tracking-tight drop-shadow-lg">
+                <h3 className="text-2xl md:text-3xl font-extrabold mt-4 md:mt-6 tracking-tight drop-shadow-lg">
                   {marqueePlayer.firstName} {marqueePlayer.lastName}
                 </h3>
-                <p className="text-xl font-semibold mt-2 italic opacity-90">
+                <p className="text-lg md:text-xl font-semibold mt-2 italic opacity-90">
                   #{marqueePlayer.jerseyNumber} - {marqueePlayer.position}
                 </p>
                 <div className="mt-4 text-sm text-center">

@@ -9,7 +9,7 @@ export default function Footer() {
         {" "}
         {/* Adjust the height as needed */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-queens-midnight opacity-70"></div>
-        <div className="flex justify-center h-full">
+        <div className="flex justify-center h-full w-full sm:h-[250px]">
           <Image
             src="/images/footer-top-landscape-bg.png" // Replace with the actual image path
             alt="Lalitpur Queens"
@@ -18,7 +18,7 @@ export default function Footer() {
             className="w-full h-full object-cover opacity-30"
           />
         </div>
-        <div className="absolute inset-0 flex justify-center items-center">
+        <div className="absolute inset-0 flex justify-center items-center ">
           <Image
             src="/images/Lalitpur-queens-logo.png" // Replace with the actual logo path
             alt="Lalitpur Queens Logo"

@@ -31,7 +31,7 @@ export default function TeamMember({
             alt="Lalitpur Queens Logo"
             width={100}
             height={100}
-            className="object-contain"
+            className="object-contain bg-transparent"
           />
         </div>
       </div>
