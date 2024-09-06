@@ -400,11 +400,11 @@ export default function Home() {
               </h2>
               <div className="flex flex-col items-center bg-gradient-to-r from-queens-blue to-queens-midnight text-queens-white rounded-xl p-6 md:p-8 shadow-2xl transition-transform transform hover:scale-105">
                 <Image
-                  src={marqueePlayer.image}
+                  src="/images/Salina-Shrestha-Marquee.png"
                   alt={`${marqueePlayer.firstName} ${marqueePlayer.lastName}`}
                   width={150}
                   height={150}
-                  className="rounded-full border-4 md:border-8 border-queens-emerald shadow-lg"
+                  className="w-full max-w-[150px] md:max-w-[200px] rounded-full border-4 md:border-8 border-queens-emerald shadow-lg"
                 />
                 <h3 className="text-2xl md:text-3xl font-extrabold mt-4 md:mt-6 tracking-tight drop-shadow-lg">
                   {marqueePlayer.firstName} {marqueePlayer.lastName}
