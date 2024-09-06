@@ -9,7 +9,7 @@ export default function MatchCard({
   opponentLogo,
 }) {
   console.log(date, opponent, location, time, result, opponentLogo);
-  const lalitpurQueensLogo = "/images/teams/common-logo-team.png";
+  const lalitpurQueensLogo = "/images/Lalitpur-queens-logo.png";
   const lalitpurQueensName = "Lalitpur Queens";
 
   const getResultColor = (result) => {
@@ -61,8 +61,8 @@ export default function MatchCard({
             <Image
               src={lalitpurQueensLogo}
               alt={lalitpurQueensName}
-              height={50}
-              width={50}
+              height={100}
+              width={100}
               className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
             <div className="text-xl font-bold mt-2 text-queens-midnight">
@@ -77,8 +77,8 @@ export default function MatchCard({
             <Image
               src={opponentLogo}
               alt={opponent}
-              height={50}
-              width={50}
+              height={100}
+              width={100}
               className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
             <div className="text-xl font-bold mt-2 text-queens-midnight">
