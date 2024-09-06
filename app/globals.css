@@ -23,4 +23,6 @@
   width: 100%;
   z-index: 1000;
   /* Optional: Adjust z-index to control the stacking order */
+
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }

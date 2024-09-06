@@ -12,7 +12,7 @@ export default function About() {
           <div>
             <p className="mb-4 text-queens-black">
               Lalitpur Queens is a premier women&apos;s volleyball team based in
-              Lalitpur, Nepal. Founded in 2020, our team has quickly risen to
+              Lalitpur, Nepal. Founded in 2024, our team has quickly risen to
               become one of the most competitive and respected volleyball
               franchises in the country.
             </p>

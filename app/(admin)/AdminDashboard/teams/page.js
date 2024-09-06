@@ -26,7 +26,7 @@ export default function Teams() {
     };
 
     fetchTeams();
-  }, []);
+  }, [teams]);
 
   const handleDelete = async (id) => {
     console.log(`Delete team with id: ${id}`);

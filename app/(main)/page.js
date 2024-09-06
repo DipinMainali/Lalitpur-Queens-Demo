@@ -190,17 +190,16 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative shadow-xl   shadow-gray-400 text-queens-white py-24 md:py-32">
-        <div className="inset-0 bg-queens-white opacity-90 z-0">
+      <section className="relative shadow-xl   shadow-gray-400 text-queens-white py-24 md:py-32 ">
+        <div className="inset-0 bg-queens-white opacity-50 z-0">
           <Image
             src="/images/hero-bg.jpg"
             alt="Volleyball court"
             layout="fill"
             objectFit="cover"
-            className="opacity-50"
           />
         </div>
-        <div className="relative container mx-auto px-4 text-center">
+        <div className="relative container mx-auto px-4 text-center ">
           <h1 className="text-4xl md:text-6xl text-queens-midnight font-bold mb-4">
             Lalitpur Queens
           </h1>
