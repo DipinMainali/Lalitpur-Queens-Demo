@@ -273,7 +273,7 @@ const HeroSection = () => {
               }}
             >
               <Link
-                href="/schedule"
+                href="/Matches"
                 className="group relative px-8 py-3 bg-brand-secondary text-white rounded-md overflow-hidden"
               >
                 <span className="absolute inset-0 w-0 bg-accent group-hover:w-full transition-all duration-500 ease-out"></span>
