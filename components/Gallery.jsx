@@ -111,8 +111,8 @@ const Gallery = () => {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            Witness our team's passion, determination and skill through these
-            captured moments
+            Witness our team&apos;s passion, determination and skill through
+            these captured moments
           </p>
         </div>
       </div>
