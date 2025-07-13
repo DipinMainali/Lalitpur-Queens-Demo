@@ -92,7 +92,7 @@ export default function Teams() {
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-queens-black">
                     <button
                       onClick={() => handleDelete(team._id)}
-                      className="text-queens-green hover:text-queens-midnight transition duration-300"
+                      className="text-brand-secondary hover:text-text-primary transition duration-300"
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>

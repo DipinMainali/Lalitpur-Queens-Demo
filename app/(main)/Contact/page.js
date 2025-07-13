@@ -90,7 +90,7 @@ export default function Contact() {
           type="text"
           id="subject"
           name="subject"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
+          className="w-2/3 px-3 py-2 border border-brand-secondary rounded-lg focus:outline-none focus:border-brand-primary"
           required
         />
       </div>
@@ -105,7 +105,7 @@ export default function Contact() {
           id="message"
           name="message"
           rows="4"
-          className="w-2/3 px-3 py-2 border border-queens-emerald rounded-lg focus:outline-none focus:border-queens-blue"
+          className="w-2/3 px-3 py-2 border border-brand-secondary rounded-lg focus:outline-none focus:border-brand-primary"
           required
         ></textarea>
       </div>

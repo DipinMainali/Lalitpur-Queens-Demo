@@ -12,7 +12,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-queens-white text-queens-midnight shadow-lg sticky top-0 z-50">
+    <header className="bg-white text-text-primary shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo Section */}
         <Link href="/" className="flex items-center group">
@@ -25,13 +25,13 @@ export default function Header() {
               className="transform transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-lg rounded-full"
             />
           </div>
-          <span className="ml-3 text-xl font-extrabold tracking-wide transform transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:text-queens-emerald">
+          <span className="ml-3 text-xl font-extrabold tracking-wide transform transition-transform duration-300 ease-in-out group-hover:scale-105 group-hover:text-brand-secondary">
             Lalitpur Queens
           </span>
         </Link>
 
         {/* Hamburger Button for Mobile */}
-        <button className="md:hidden text-queens-midnight" onClick={toggleMenu}>
+        <button className="md:hidden text-text-primary" onClick={toggleMenu}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -58,7 +58,7 @@ export default function Header() {
                     href={item === "Home" ? "/" : `/${item}`}
                     className="relative text-lg font-semibold uppercase transition duration-300"
                   >
-                    <span className="px-4 py-2 rounded-full hover:bg-queens-blue hover:text-queens-white transition-all duration-300">
+                    <span className="px-4 py-2 rounded-full hover:bg-brand-primary hover:text-white transition-all duration-300">
                       {item}
                     </span>
                   </Link>
@@ -71,14 +71,14 @@ export default function Header() {
 
       {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-queens-midnight">
+        <div className="md:hidden bg-brand-primary">
           <ul className="px-4 py-4 space-y-4">
             {["Home", "About", "Team", "Matches", "News", "Contact"].map(
               (item) => (
                 <li key={item}>
                   <Link
                     href={item === "Home" ? "/" : `/${item}`}
-                    className="block py-2 text-lg font-semibold text-queens-white hover:bg-queens-emerald hover:text-queens-white rounded-full transition-all duration-300"
+                    className="block py-2 text-lg font-semibold text-white hover:bg-brand-secondary hover:text-white rounded-full transition-all duration-300"
                     onClick={() => setIsMenuOpen(false)} // Close the menu on item click
                   >
                     {item}

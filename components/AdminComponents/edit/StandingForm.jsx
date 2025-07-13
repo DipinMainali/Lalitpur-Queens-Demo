@@ -162,16 +162,14 @@ export default function StandingForm({ standing }) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-queens-white">
-          Points
-        </label>
+        <label className="block text-sm font-semibold text-white">Points</label>
         <input
           type="number"
           name="points"
           value={formData.points}
           onChange={handleChange}
           min="0"
-          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-queens-blue hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
+          className="mt-1 p-3 w-full max-w-lg min-w-[300px] border border-gray-300 rounded-md hover:border-brand-primary hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-in-out"
         />
       </div>
 

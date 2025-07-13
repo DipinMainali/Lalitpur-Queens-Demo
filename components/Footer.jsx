@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="relative h-[400px]">
         {" "}
         {/* Adjust the height as needed */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-queens-midnight opacity-70"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-brand-primary opacity-70"></div>
         <div className="flex justify-center h-full w-full sm:h-[250px]">
           <Image
             src="/images/footer-top-landscape-bg.png" // Replace with the actual image path
@@ -30,7 +30,7 @@ export default function Footer() {
       </div>
 
       {/* Footer Section */}
-      <footer className="bg-queens-midnight text-queens-white py-8">
+      <footer className="bg-brand-primary text-white py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Lalitpur Queens Description */}
@@ -46,7 +46,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     Home
                   </Link>
@@ -54,7 +54,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/about"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     About
                   </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/Team"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     Team
                   </Link>
@@ -70,7 +70,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/Matches"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     Matches
                   </Link>
@@ -78,7 +78,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/News"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     News
                   </Link>
@@ -86,7 +86,7 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/Contact"
-                    className="hover:text-queens-emerald transition duration-300"
+                    className="hover:text-brand-secondary transition duration-300"
                   >
                     Contact
                   </Link>
@@ -100,7 +100,7 @@ export default function Footer() {
               <div className="flex space-x-4">
                 <a
                   href="https://www.facebook.com/lalitpurqueens?mibextid=LQQJ4d"
-                  className="hover:text-queens-emerald transition duration-300"
+                  className="hover:text-brand-secondary transition duration-300"
                   aria-label="Facebook"
                 >
                   <svg
@@ -114,7 +114,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="hover:text-queens-emerald transition duration-300"
+                  className="hover:text-brand-secondary transition duration-300"
                   aria-label="Twitter"
                 >
                   <svg
@@ -128,7 +128,7 @@ export default function Footer() {
                 </a>
                 <a
                   href="#"
-                  className="hover:text-queens-emerald transition duration-300"
+                  className="hover:text-brand-secondary transition duration-300"
                   aria-label="Instagram"
                 >
                   <svg
@@ -137,7 +137,7 @@ export default function Footer() {
                     viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.259.057 2.13.254 2.615.54a5.46 5.46 0 011.902 1.902c.286.486.483 1.357.54 2.615.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.057 1.259-.254 2.13-.54 2.615a5.46 5.46 0 01-1.902 1.902c-.486.286-1.357.483-2.615.54-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.259-.057-2.13-.254-2.615-.54a5.46 5.46 0 01-1.902-1.902c-.286-.486-.483-1.357-.54-2.615-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.057-1.259.254-2.13.54-2.615a5.46 5.46 0 011.902-1.902c.486-.286 1.357-.483 2.615-.54 1.266-.058 1.646-.07 4.85-.07M12 0C8.741 0 8.333.014 7.052.072 5.77.131 4.718.341 3.875.77a7.378 7.378 0 00-2.685 1.672A7.378 7.378 0 00.77 5.875c-.429.843-.639 1.895-.698 3.177C.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.948.059 1.282.269 2.334.698 3.177a7.378 7.378 0 001.672 2.685 7.378 7.378 0 002.685 1.672c.843.429 1.895.639 3.177.698 1.281.058 1.689.072 4.948.072 3.259 0 3.667-.014 4.948-.072 1.282-.059 2.334-.269 3.177-.698a7.378 7.378 0 002.685-1.672 7.378 7.378 0 001.672-2.685c.429-.843.639-1.895.698-3.177.058-1.281.072-1.689.072-4.948 0-3.259-.014-3.667-.072-4.948-.059-1.282-.269-2.334-.698-3.177a7.378 7.378 0 00-1.672-2.685 7.378 7.378 0 00-2.685-1.672c-.843-.429-1.895-.639-3.177-.698C15.667.014 15.259 0 12 0zm0 5.838A6.162 6.162 0 105.838 12 6.17 6.17 0 0012 5.838zm0 10.162A4 4 0 1116 12a4.006 4.006 0 01-4 4zm6.406-10.845a1.44 1.44 0 11-2.88 0 1.44 1.44 0 012.88 0z" />
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.259.057 2.13.254 2.615.54a5.46 5.46 0 011.902 1.902c.286.486.483 1.357.54 2.615.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.057 1.259-.254 2.13-.54 2.615a5.46 5.46 0 01-1.902 1.902c-.486.286-1.357.483-2.615.54-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.259-.057-2.13-.254-2.615-.54a5.46 5.46 0 01-1.902-1.902c-.286-.486-.483-1.357-.54-2.615-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.057-1.259.254-2.13.54-2.615a5.46 5.46 0 011.902-1.902c.485-.286 1.356-.483 2.615-.54z" />
                   </svg>
                 </a>
               </div>

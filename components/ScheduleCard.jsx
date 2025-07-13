@@ -11,7 +11,9 @@ const ScheduleCard = ({ match }) => {
     >
       {/* Content Overlay */}
       <div className="bg-white bg-opacity-70 p-4 rounded-lg">
-        <div className="text-lg font-semibold mb-2">{match.date}</div>
+        <div className="text-lg font-semibold mb-2 text-brand-primary">
+          {match.date}
+        </div>
         <div className="flex justify-between items-center">
           {/* Lalitpur Queens */}
           <div className="relative">
@@ -22,18 +24,20 @@ const ScheduleCard = ({ match }) => {
             />
             <div className="text-xl font-bold mt-2">{lalitpurQueensName}</div>
           </div>
-          <div className="text-sm font-medium">vs</div>
+          <div className="text-sm font-medium text-text-secondary">vs</div>
           {/* Opponent Team */}
           <div className="relative">
             <img
-              src={match.opponentLogo} // Assuming opponent team logo is provided
+              src={match.opponentLogo}
               alt={match.opponentTeam}
               className="w-12 h-12 transform transition-transform duration-300 hover:scale-110"
             />
             <div className="text-xl font-bold mt-2">{match.opponentTeam}</div>
           </div>
         </div>
-        <div className="text-center mt-2 text-gray-600">Time: {match.time}</div>
+        <div className="text-center mt-2 text-text-secondary">
+          Time: {match.time}
+        </div>
       </div>
     </div>
   );

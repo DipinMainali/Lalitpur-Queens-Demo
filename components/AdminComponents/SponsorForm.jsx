@@ -125,7 +125,7 @@ export default function SponsorForm() {
           required
         >
           <option value="">Select Tier</option>
-          <option value="Major Sponsor">Major Sponsor</option>
+          <option value="Title Sponsor">Title Sponsor</option>
           <option value="Co-Sponsor">Co-sponsor</option>
           <option value="Partner">Partner</option>
           <option value="Co-partner">Co-partner</option>

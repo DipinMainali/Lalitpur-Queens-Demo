@@ -15,13 +15,13 @@ export default function MatchCard({
   const getResultColor = (result) => {
     switch (result) {
       case "Win":
-        return "bg-green-500";
+        return "bg-brand-secondary";
       case "Draw":
-        return "bg-yellow-500";
+        return "bg-accent";
       case "Loss":
-        return "bg-red-500";
+        return "bg-error";
       default:
-        return "bg-queens-midnight";
+        return "bg-text-primary";
     }
   };
   // Format date as "May 15, 2024"
@@ -51,7 +51,7 @@ export default function MatchCard({
           </div>
         )}
 
-        <div className="text-2xl font-bold mb-4 text-queens-midnight">
+        <div className="text-2xl font-bold mb-4 text-text-primary">
           {formatDate(date)}
         </div>
 
@@ -65,12 +65,12 @@ export default function MatchCard({
               width={100}
               className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
-            <div className="text-xl font-bold mt-2 text-queens-midnight">
+            <div className="text-xl font-bold mt-2 text-text-primary">
               {lalitpurQueensName}
             </div>
           </div>
 
-          <div className="text-3xl font-bold text-queens-midnight">VS</div>
+          <div className="text-3xl font-bold text-text-primary">VS</div>
 
           {/* Opponent Team */}
           <div className="text-center">
@@ -81,13 +81,13 @@ export default function MatchCard({
               width={100}
               className="mx-auto transform transition-transform duration-300 hover:scale-110"
             />
-            <div className="text-xl font-bold mt-2 text-queens-midnight">
+            <div className="text-xl font-bold mt-2 text-text-primary">
               {opponent}
             </div>
           </div>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-gray-600">
+        <div className="flex justify-between items-center text-sm text-text-secondary">
           <div>
             <span className="font-semibold">Location:</span> {location}
           </div>

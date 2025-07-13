@@ -121,7 +121,7 @@ export default function Standings() {
                   <td className="px-6 py-4 border-b border-queens-black text-sm text-center text-queens-black">
                     <button
                       onClick={() => handleEdit(standing._id)}
-                      className="text-queens-green hover:text-queens-midnight transition duration-300 mr-4"
+                      className="text-brand-secondary hover:text-text-primary transition duration-300 mr-4"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>

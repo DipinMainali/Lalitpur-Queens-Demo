@@ -84,9 +84,10 @@ const NewsDetails = () => {
 
         {/* Back to News List Button */}
         <div className="text-center">
+          {/* Update button */}
           <button
-            onClick={() => router.back()}
-            className="bg-queens-emerald text-queens-white text-lg font-semibold py-3 px-8 rounded-full transition duration-300 hover:bg-queens-green focus:outline-none focus:ring-2 focus:ring-queens-green focus:ring-opacity-50 cursor-pointer shadow-lg"
+            onClick={() => router.push("/News")}
+            className="bg-brand-secondary text-white text-lg font-semibold py-3 px-8 rounded-full transition duration-300 hover:bg-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:ring-opacity-50 cursor-pointer shadow-lg"
           >
             Back to News
           </button>
