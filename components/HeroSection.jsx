@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-const HeroSection = () => {
+const HeroSection = ({ images }) => {
   // Animation and interaction states
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -17,12 +17,58 @@ const HeroSection = () => {
     seconds: 0,
   });
 
-  // Next match details
-  const nextMatch = {
-    date: new Date("2025-08-15T19:00:00"),
-    opponent: "Kathmandu Strikers",
-    venue: "Nepal Volleyball Arena",
-  };
+  // Match details state
+  const [nextMatch, setNextMatch] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch the next upcoming match
+  useEffect(() => {
+    const fetchNextMatch = async () => {
+      try {
+        const res = await fetch("/api/matches?status=Scheduled");
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch upcoming matches");
+        }
+
+        const data = await res.json();
+
+        if (data.success && data.data.length > 0) {
+          // Sort matches by date to get the earliest one
+          const sortedMatches = data.data.sort(
+            (a, b) => new Date(a.matchDateTime) - new Date(b.matchDateTime)
+          );
+
+          // Get the next upcoming match
+          const match = sortedMatches[0];
+
+          setNextMatch({
+            date: new Date(match.matchDateTime),
+            opponent:
+              match.homeTeam.name === "Lalitpur Queens"
+                ? match.awayTeam.name
+                : match.homeTeam.name,
+            venue: match.location,
+            isHome: match.homeTeam.name === "Lalitpur Queens",
+            matchId: match._id,
+            tournament: match.tournament,
+            stage: match.stage,
+          });
+        } else {
+          // Fallback if no matches are found
+          setNextMatch(null);
+        }
+      } catch (error) {
+        console.error("Error fetching next match:", error);
+        setError("Unable to load upcoming matches");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNextMatch();
+  }, []);
 
   useEffect(() => {
     // Trigger entrance animations after a slight delay
@@ -51,7 +97,22 @@ const HeroSection = () => {
       });
     };
 
-    // Update countdown timer
+    // Add event listeners
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("mousemove", handleMouseMove);
+
+    // Clean up
+    return () => {
+      clearTimeout(loadTimer);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  // Update countdown timer based on next match
+  useEffect(() => {
+    if (!nextMatch) return;
+
     const countdownTimer = setInterval(() => {
       const now = new Date();
       const difference = nextMatch.date - now;
@@ -60,24 +121,32 @@ const HeroSection = () => {
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor(((difference / 1000) * 60) % 60),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
+      } else {
+        // Match time has passed
+        clearInterval(countdownTimer);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     }, 1000);
 
-    // Add event listeners
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("mousemove", handleMouseMove);
-
     // Clean up
-    return () => {
-      clearTimeout(loadTimer);
-      clearInterval(countdownTimer);
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
+    return () => clearInterval(countdownTimer);
+  }, [nextMatch]);
+
+  // Format date for display
+  const formatMatchDate = (date) => {
+    if (!date) return "";
+
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return (
     <section
@@ -236,36 +305,76 @@ const HeroSection = () => {
                     />
                   </svg>
                 </div>
-                <div>
-                  <h3 className="text-sm text-accent">NEXT MATCH</h3>
-                  <p className="text-white font-medium">{`vs ${nextMatch.opponent}`}</p>
-                  <p className="text-white/70 text-sm">{`${nextMatch.venue}`}</p>
-                </div>
+
+                {isLoading ? (
+                  <div className="animate-pulse w-full">
+                    <div className="h-3 bg-white/20 rounded mb-2 w-20"></div>
+                    <div className="h-5 bg-white/30 rounded mb-2 w-32"></div>
+                    <div className="h-4 bg-white/20 rounded w-24"></div>
+                  </div>
+                ) : error ? (
+                  <div>
+                    <h3 className="text-sm text-accent">MATCH SCHEDULE</h3>
+                    <p className="text-white/70">
+                      Check back soon for upcoming matches
+                    </p>
+                  </div>
+                ) : nextMatch ? (
+                  <div>
+                    <h3 className="text-sm text-accent">NEXT MATCH</h3>
+                    <div className="flex items-center">
+                      <p className="text-white font-medium">
+                        {nextMatch.isHome
+                          ? `vs ${nextMatch.opponent}`
+                          : `at ${nextMatch.opponent}`}
+                      </p>
+                      {nextMatch.tournament && (
+                        <span className="ml-2 px-2 py-0.5 bg-brand-primary/20 text-white border-white text-xs rounded-full">
+                          {nextMatch.tournament}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-white/70 text-sm">{nextMatch.venue}</p>
+                    <p className="text-white/70 text-xs mt-1">
+                      {formatMatchDate(nextMatch.date)}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <h3 className="text-sm text-accent">MATCH SCHEDULE</h3>
+                    <p className="text-white font-medium">
+                      No upcoming matches
+                    </p>
+                    <p className="text-white/70 text-sm">Check back later</p>
+                  </div>
+                )}
               </div>
 
-              <div className="flex justify-between mt-4 text-center">
-                <div className="flex-1">
-                  <div className="text-2xl font-bold">{timeLeft.days}</div>
-                  <div className="text-xs text-white/70">DAYS</div>
+              {nextMatch && (
+                <div className="flex justify-between mt-4 text-center">
+                  <div className="flex-1">
+                    <div className="text-2xl font-bold">{timeLeft.days}</div>
+                    <div className="text-xs text-white/70">DAYS</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-2xl font-bold">{timeLeft.hours}</div>
+                    <div className="text-xs text-white/70">HOURS</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-2xl font-bold">{timeLeft.minutes}</div>
+                    <div className="text-xs text-white/70">MINS</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-2xl font-bold">{timeLeft.seconds}</div>
+                    <div className="text-xs text-white/70">SECS</div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <div className="text-2xl font-bold">{timeLeft.hours}</div>
-                  <div className="text-xs text-white/70">HOURS</div>
-                </div>
-                <div className="flex-1">
-                  <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-                  <div className="text-xs text-white/70">MINS</div>
-                </div>
-                <div className="flex-1">
-                  <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-                  <div className="text-xs text-white/70">SECS</div>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* CTA buttons with hover effects - with improved visibility */}
+            {/* CTA buttons with hover effects */}
             <div
-              className="flex flex-wrap gap-4 relative z-50" // Increased z-index from z-30 to z-50
+              className="flex flex-wrap gap-4 relative z-50"
               style={{
                 opacity: isLoaded ? 1 : 0,
                 transform: isLoaded ? "translateY(0)" : "translateY(30px)",
@@ -296,28 +405,30 @@ const HeroSection = () => {
                 </span>
               </Link>
 
-              <Link
-                href="/tickets"
-                className="group relative px-8 py-3 bg-brand-secondary/80 hover:bg-brand-secondary text-white rounded-md border border-white/50 transition-all duration-300 shadow-lg shadow-brand-primary/20" // Changed background and added shadow
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Buy Tickets
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
-                    />
-                  </svg>
-                </span>
-              </Link>
+              {nextMatch && (
+                <Link
+                  href={`/tickets?match=${nextMatch.matchId}`}
+                  className="group relative px-8 py-3 bg-brand-secondary/80 hover:bg-brand-secondary text-white rounded-md border border-white/50 transition-all duration-300 shadow-lg shadow-brand-primary/20"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Buy Tickets
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z"
+                      />
+                    </svg>
+                  </span>
+                </Link>
+              )}
             </div>
           </div>
 

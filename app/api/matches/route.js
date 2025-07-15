@@ -1,6 +1,7 @@
 import Match from "@/models/match.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
+import { recalculateStandings } from "@/utils/standingsCalculator";
 
 export async function POST(req) {
   await dbConnection();
@@ -39,6 +40,11 @@ export async function POST(req) {
 
     // Create new match
     const match = await Match.create(body);
+
+    // If match status is "Completed", recalculate standings
+    if (body.matchStatus === "Completed") {
+      await recalculateStandings();
+    }
 
     return NextResponse.json({
       success: true,

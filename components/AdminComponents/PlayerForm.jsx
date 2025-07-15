@@ -1,8 +1,10 @@
 // app/admin/players/form.js
 "use client";
 import { useState, useRef } from "react";
-import RichTextEditor from "./RichTextEditor"; // Import your RichTextEditor component
+import RichTextEditor from "./RichTextEditor";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload, faSave, faUser } from "@fortawesome/free-solid-svg-icons";
 
 export default function PlayerForm() {
   const [player, setPlayer] = useState({
@@ -13,13 +15,12 @@ export default function PlayerForm() {
     position: "",
     jerseyNumber: "",
     nationality: "",
-    image: null, // For the image file
-    bio: "", // Assuming you want a bio field with rich text
-    featured: false, // Assuming you have a featured field
-    // marquee: false, // Assuming you have a marquee field
+    image: null,
+    bio: "",
+    featured: false,
   });
 
-  const fileInputRef = useRef(null); // Ref for file input
+  const fileInputRef = useRef(null);
   const route = useRouter();
 
   const handleChange = (e) => {
@@ -48,8 +49,7 @@ export default function PlayerForm() {
     formData.append("nationality", player.nationality);
     formData.append("image", player.image);
     formData.append("bio", player.bio);
-    formData.append("featured", player.featured); // Assuming you have a featured field
-    //formData.append("marquee", player.marquee); // Assuming you have a marquee field
+    formData.append("featured", player.featured);
 
     const res = await fetch("/api/players", {
       method: "POST",
@@ -71,9 +71,8 @@ export default function PlayerForm() {
         image: null,
         bio: "",
         featured: false,
-        // marquee: false,
       });
-      fileInputRef.current.value = ""; // Clear the file input field
+      fileInputRef.current.value = "";
       route.back();
     } else {
       alert(jsonRes.message || "Failed to save player");
@@ -83,206 +82,249 @@ export default function PlayerForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-lg mx-auto p-6 bg-queens-white rounded-lg shadow-md"
+      className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg border border-background"
     >
-      <div className="mb-4">
-        <label
-          htmlFor="firstName"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          First Name
-        </label>
-        <input
-          type="text"
-          id="firstName"
-          name="firstName"
-          value={player.firstName}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
+      <h2 className="text-2xl font-bold text-text-primary mb-6 pb-2 border-b border-background">
+        <FontAwesomeIcon icon={faUser} className="mr-2" />
+        Add New Player
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label
+            htmlFor="firstName"
+            className="block text-text-primary font-medium mb-2"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={player.firstName}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="First name"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="lastName"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            value={player.lastName}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="Last name"
+          />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="lastName"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Last Name
-        </label>
-        <input
-          type="text"
-          id="lastName"
-          name="lastName"
-          value={player.lastName}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label
+            htmlFor="DOB"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Date of Birth
+          </label>
+          <input
+            type="date"
+            id="DOB"
+            name="DOB"
+            value={player.DOB}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="nationality"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Nationality
+          </label>
+          <input
+            type="text"
+            id="nationality"
+            name="nationality"
+            value={player.nationality}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="Nationality"
+          />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="DOB"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Date of Birth
-        </label>
-        <input
-          type="date"
-          id="DOB"
-          name="DOB"
-          value={player.DOB}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label
+            htmlFor="jerseyNumber"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Jersey Number
+          </label>
+          <input
+            type="number"
+            id="jerseyNumber"
+            name="jerseyNumber"
+            value={player.jerseyNumber}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="#"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="position"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Position
+          </label>
+          <input
+            type="text"
+            id="position"
+            name="position"
+            value={player.position}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="Position"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="height"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Height (cm)
+          </label>
+          <input
+            type="number"
+            id="height"
+            name="height"
+            value={player.height}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+            required
+            placeholder="Height in cm"
+          />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="height"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Height (cm)
-        </label>
-        <input
-          type="number"
-          id="height"
-          name="height"
-          value={player.height}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="position"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Position
-        </label>
-        <input
-          type="text"
-          id="position"
-          name="position"
-          value={player.position}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="jerseyNumber"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Jersey Number
-        </label>
-        <input
-          type="number"
-          id="jerseyNumber"
-          name="jerseyNumber"
-          value={player.jerseyNumber}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
-        <label
-          htmlFor="nationality"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Nationality
-        </label>
-        <input
-          type="text"
-          id="nationality"
-          name="nationality"
-          value={player.nationality}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
-      </div>
-
-      <div className="mb-4">
+      <div className="mb-6">
         <label
           htmlFor="image"
-          className="block text-queens-black font-semibold mb-2"
+          className="block text-text-primary font-medium mb-2"
         >
-          Image
+          Player Photo
         </label>
-        <input
-          type="file"
-          id="image"
-          name="image"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          ref={fileInputRef} // Set ref here
-        />
+        <div className="flex items-center justify-center w-full">
+          <label
+            htmlFor="image"
+            className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-background rounded-lg cursor-pointer bg-background/5 hover:bg-background/10 transition-all duration-300"
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <FontAwesomeIcon
+                icon={faUpload}
+                className="text-brand-secondary mb-2 text-xl"
+              />
+              <p className="mb-2 text-sm text-text-primary">
+                <span className="font-semibold">Click to upload</span> player
+                photo
+              </p>
+              <p className="text-xs text-text-secondary">
+                PNG or JPG (recommended size 800x1200px)
+              </p>
+            </div>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              ref={fileInputRef}
+              required
+            />
+          </label>
+        </div>
+        {player.image && (
+          <div className="mt-3 text-sm text-text-secondary">
+            Selected file: {player.image.name}
+          </div>
+        )}
       </div>
 
-      <div className="mb-4">
+      <div className="mb-6">
         <label
           htmlFor="bio"
-          className="block text-queens-black font-semibold mb-2"
+          className="block text-text-primary font-medium mb-2"
         >
-          Bio
+          Player Bio
         </label>
-        <RichTextEditor value={player.bio} onChange={handleBioChange} />
+        <div className="border border-background rounded-lg overflow-hidden">
+          <RichTextEditor value={player.bio} onChange={handleBioChange} />
+        </div>
       </div>
 
-      <div className="mb-4">
-        <label
-          htmlFor="featured"
-          className="block text-queens-black font-semibold mb-2"
-        >
-          Featured
-        </label>
-        <input
-          type="checkbox"
-          checked={player.featured}
-          onChange={(e) =>
-            setPlayer((prevPlayer) => ({
-              ...prevPlayer,
-              featured: e.target.checked,
-            }))
-          }
-        />
+      <div className="mb-6">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={player.featured}
+            onChange={(e) =>
+              setPlayer((prevPlayer) => ({
+                ...prevPlayer,
+                featured: e.target.checked,
+              }))
+            }
+            className="w-5 h-5 text-brand-secondary bg-gray-100 rounded border-background focus:ring-brand-primary"
+          />
+          <label
+            htmlFor="featured"
+            className="ml-2 text-text-primary font-medium"
+          >
+            Featured Player
+          </label>
+        </div>
+        <p className="text-xs text-text-secondary mt-1">
+          Featured players will be highlighted on the team page
+        </p>
       </div>
 
-      {/* <div className="mb-4">
-        <label
-          htmlFor="marquee"
-          className="block text-queens-black font-semibold mb-2"
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={() => route.back()}
+          className="bg-background text-text-primary py-3 px-6 rounded-lg hover:bg-gray-200 transition duration-300"
         >
-          Marquee
-        </label>
-        <input
-          type="checkbox"
-          checked={player.marquee}
-          onChange={(e) =>
-            setPlayer((prevPlayer) => ({
-              ...prevPlayer,
-              marquee: e.target.checked,
-            }))
-          }
-        />
-      </div> */}
-
-      <button
-        type="submit"
-        className="bg-queens-green text-queens-white py-2 px-4 rounded-lg hover:bg-queens-midnight transition duration-300"
-      >
-        Submit
-      </button>
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="bg-brand-secondary text-white py-3 px-6 rounded-lg hover:bg-brand-primary transition duration-300 flex items-center gap-2"
+        >
+          <FontAwesomeIcon icon={faSave} />
+          Save Player
+        </button>
+      </div>
     </form>
   );
 }

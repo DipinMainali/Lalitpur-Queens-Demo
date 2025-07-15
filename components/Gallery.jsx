@@ -295,7 +295,7 @@ const Gallery = () => {
       </div>
 
       {/* View More Button */}
-      <div
+      {/* <div
         className={`text-center mt-12 md:mt-16 transition-all duration-700 delay-800 ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
         }`}
@@ -306,7 +306,7 @@ const Gallery = () => {
         >
           View Full Gallery
         </a>
-      </div>
+      </div> */}
 
       {/* Bottom decorative wave */}
       <div className="absolute bottom-0 left-0 right-0 h-16 overflow-hidden">

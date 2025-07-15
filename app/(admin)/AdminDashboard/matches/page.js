@@ -101,9 +101,7 @@ export default function MatchesAdmin() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">
-          Matches Management
-        </h1>
+        <h1 className="text-2xl font-bold text-white">Matches Management</h1>
         <Link
           href="/AdminDashboard/matches/add"
           className="bg-brand-secondary hover:bg-brand-primary text-white py-2 px-4 rounded-md transition duration-300"

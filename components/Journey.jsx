@@ -17,8 +17,7 @@ function JourneySection() {
       title: "First Tournament",
       description:
         "Our debut in the Vatsalya Women's Volleyball League marked the beginning of our competitive journey, showcasing our talent and determination as a new team.",
-      image:
-        "https://scontent.fktm3-1.fna.fbcdn.net/v/t39.30808-6/472119381_122128302188511632_8963721117077195667_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=f727a1&_nc_ohc=ZbncwQKrHC8Q7kNvwESQoEB&_nc_oc=AdmW4a_XLh-JkLDii16w7z1IYOZKa0TZiNhdzJkRWqXKAsUDCj8oPUsdmpFXoS_dMsI5g_-Rn57wDCjoLZk0C9EA&_nc_zt=23&_nc_ht=scontent.fktm3-1.fna&_nc_gid=Y9TOJQUbEhUcQoXWLZaIbg&oh=00_AfQyMF87qNzNx6UpviZNPz5K8D_jnJ6at04wNgDhtMjk6A&oe=6872C6C7", // Placeholder image
+      image: "images/journey/first-tournament.jpg", // Placeholder image
       imageAlt: "Lalitpur Queens first tournament",
       isLeft: false,
     },
@@ -27,8 +26,7 @@ function JourneySection() {
       title: "Runner Up Title",
       description:
         "A historic moment as we claimed our first major runner-up title, proving that dedication and teamwork can overcome any challenge.",
-      image:
-        "https://scontent.fktm3-1.fna.fbcdn.net/v/t39.30808-6/471325564_122128528370511632_2464875196885137189_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=100&ccb=1-7&_nc_sid=127cfc&_nc_ohc=vIw2o7W4Es4Q7kNvwGMXsVY&_nc_oc=Adlfo9Kf8YHqVenbXgSFMcjnm8Z9H_Kip75fw0EG0IzigSyHJmGiXs3wYenQul1wjldoVZS_06ekK0LMrdF6cXzS&_nc_zt=23&_nc_ht=scontent.fktm3-1.fna&_nc_gid=ay8nsu23ZjZr43KsomVpLg&oh=00_AfRj50npiS_MBcKs1Tc9UmLTYGQivGpNORFaxcqooMfFdA&oe=6872D28D", // Placeholder image
+      image: "/images/journey/runner-up-title.jpg", // Placeholder image
       imageAlt: "Lalitpur Queens Runner-Up Title",
       isLeft: true,
     },
@@ -37,8 +35,7 @@ function JourneySection() {
       title: "Training Facility",
       description:
         "Investment in world-class training facilities and coaching staff elevated our team's performance to international standards.",
-      image:
-        "https://scontent.fktm3-1.fna.fbcdn.net/v/t39.30808-6/471987544_122128290554511632_4777309750770517659_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=rYXRsVsLmZcQ7kNvwHsWQoc&_nc_oc=AdnVhXdPhxvZ07gK_Fntz21PDzfQKtImjlsZ7q_ux2PptqtZA5wvz7i3PB9_MZ9iBjLFGa7OlINhaK9VlP4GPUfk&_nc_zt=23&_nc_ht=scontent.fktm3-1.fna&_nc_gid=xSy4wfX9xhwrOv5--R_cQg&oh=00_AfSyWzk607AfG9i8wWjk5nZsWt7pQBYeM7g_cS5Gyiw6xQ&oe=6872F86D", // Placeholder image
+      image: "/images/journey/training-facility.JPG", // Placeholder image
       imageAlt: "Lalitpur Queens training facility",
       isLeft: false,
     },
@@ -47,8 +44,7 @@ function JourneySection() {
       title: "Legacy Continues",
       description:
         "Today, we continue to inspire the next generation of female athletes while maintaining our position as champions and role models.",
-      image:
-        "https://scontent.fktm3-1.fna.fbcdn.net/v/t39.30808-6/472247732_122128533212511632_8059340336317398811_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=f727a1&_nc_ohc=HUmNzGGFLAwQ7kNvwFoHh1K&_nc_oc=AdmKNjzSUmkTBPG5Zu_S7qkFlQe1SJi_kCSYaaOZea-QWX5xicv3rpH0upUMZOswC_vtXRO-uDc9gVuLt8XvWZix&_nc_zt=23&_nc_ht=scontent.fktm3-1.fna&_nc_gid=ZZ9e29DsA0eAC7oQbv4VRg&oh=00_AfQuFOLJvDZcUttF3em5CbHKJ8T8Tq9bCDbSQLI9rUhVEQ&oe=6872EB3F", // Placeholder image
+      image: "/images/journey/legacy-continue.jpg", // Placeholder image
       imageAlt: "Lalitpur Queens legacy continues",
       isLeft: true,
     },

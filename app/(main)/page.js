@@ -9,10 +9,14 @@ import TeamMember from "@/components/TeamMember";
 import HeroSection from "@/components/HeroSection";
 import JourneySection from "@/components/Journey";
 import { MatchesSection } from "@/components/Matches";
+import { motion } from "framer-motion";
 import TeamBehindTeam from "@/components/TeamBehindTeam";
 import ImageReact from "@/components/Gallery";
-
+import { useRouter } from "next/navigation";
+import MarqueePlayer from "@/components/Marquee";
 export default function Home() {
+  const router = useRouter();
+
   //multiple images in the hero section
   const images = [
     "/images/hero-bg.png",
@@ -37,6 +41,9 @@ export default function Home() {
 
   // State for points table data
   const [pointsTable, setPointsTable] = useState([]);
+
+  // State for current player in marquee
+  const [currentPlayer, setCurrentPlayer] = useState(0);
 
   // Fetch matches data when the component mounts
   useEffect(() => {
@@ -216,6 +223,8 @@ export default function Home() {
         latestResults={latestResults}
       />
 
+      {/* Marquee Player Section */}
+      <MarqueePlayer />
       {/* Our Queens Section */}
       <section className="py-28 bg-white relative overflow-hidden">
         {/* Background Pattern */}
@@ -242,68 +251,144 @@ export default function Home() {
             {/* Player Details Section - Left Side */}
             <div className="w-full lg:w-1/3 space-y-6 order-2 lg:order-1">
               {players.length > 0 && (
-                <div className="bg-brand-primary bg-opacity-5 p-8 rounded-2xl shadow-lg transform transition-all duration-500 border border-background relative">
-                  {/* Crown Icon */}
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                    <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center shadow-lg">
+                <div
+                  className="bg-gradient-to-br from-white to-brand-primary/5 p-8 rounded-2xl shadow-lg border border-background backdrop-blur-sm relative overflow-hidden group"
+                  style={{ minHeight: "450px" }}
+                >
+                  {/* Background Pattern */}
+                  <div className="absolute inset-0 overflow-hidden opacity-10 z-0">
+                    <div className="absolute top-0 right-0 w-40 h-40 bg-brand-primary rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform duration-700"></div>
+                    <div className="absolute bottom-0 left-0 w-56 h-56 bg-brand-secondary rounded-full translate-y-1/2 -translate-x-1/2 group-hover:scale-110 transition-transform duration-700"></div>
+                  </div>
+
+                  {/* Crown Icon with Animation */}
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center shadow-lg animate-pulse">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="w-6 h-6 text-text-primary"
+                        className="w-6 h-6 text-text-primary group-hover:scale-110 transition-transform duration-300"
                       >
                         <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
                       </svg>
                     </div>
                   </div>
 
-                  <div className="animate-fade-in pt-2">
-                    <h3 className="text-2xl font-bold mb-3">
-                      <span className="text-brand-primary">
-                        {players[0]?.firstName}
-                      </span>{" "}
-                      <span className="text-brand-secondary">
-                        {players[0]?.lastName}
+                  {/* Player Content with Animation */}
+                  <div className="animate-fade-in pt-2 z-10 relative">
+                    {/* Player Name with Animation */}
+                    <div
+                      key={`player-name-${currentPlayer}`}
+                      className="animate-fade-in-up overflow-hidden"
+                    >
+                      <h3 className="text-2xl sm:text-3xl font-bold mb-3">
+                        <span className="text-brand-primary">
+                          {players[currentPlayer]?.firstName}
+                        </span>{" "}
+                        <span className="text-brand-secondary">
+                          {players[currentPlayer]?.lastName}
+                        </span>
+                      </h3>
+                    </div>
+
+                    {/* Player Stats Badges */}
+                    <div
+                      key={`player-tags-${currentPlayer}`}
+                      className="flex flex-wrap items-center gap-2 mb-5 animate-fade-in-up"
+                      style={{ animationDelay: "100ms" }}
+                    >
+                      <span className="inline-block bg-accent text-text-primary text-sm font-bold px-3 py-1 rounded-full shadow-sm transform transition hover:scale-105 hover:shadow">
+                        #{players[currentPlayer]?.jerseyNumber}
                       </span>
-                    </h3>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="inline-block bg-accent text-text-primary text-sm font-bold px-3 py-1 rounded-full">
-                        #{players[0]?.jerseyNumber}
+                      <span className="inline-block bg-gradient-to-r from-brand-primary/20 to-brand-primary/10 text-brand-primary text-sm font-medium py-1 px-4 rounded-full shadow-sm transform transition hover:scale-105 hover:shadow">
+                        {players[currentPlayer]?.position}
                       </span>
-                      <span className="inline-block bg-brand-primary bg-opacity-10 text-brand-primary text-sm font-medium py-1 px-4 rounded-full">
-                        {players[0]?.position}
+                      <span className="inline-block bg-background text-text-secondary text-sm py-1 px-4 rounded-full shadow-sm transform transition hover:scale-105 hover:shadow">
+                        {Math.floor(Math.random() * 10) + 20} yrs
                       </span>
                     </div>
-                    <p className="text-text-secondary text-base mb-6 leading-relaxed">
-                      Our {players[0]?.position} brings exceptional skills and
-                      leadership to the court, inspiring teammates with
-                      dedication and athleticism.
-                    </p>
-                    <div className="flex justify-between gap-4 bg-white p-4 rounded-xl shadow-inner">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-brand-primary">
-                          195
+
+                    {/* Player Bio with Animation */}
+                    <div
+                      key={`player-bio-${currentPlayer}`}
+                      className="relative animate-fade-in-up"
+                      style={{ animationDelay: "200ms" }}
+                    >
+                      <p className="text-text-secondary text-base mb-6 leading-relaxed">
+                        {players[currentPlayer]?.bio
+                          ? players[currentPlayer].bio
+                              .replace(/<[^>]*>/g, "")
+                              .slice(0, 150) + "..."
+                          : `Our ${players[currentPlayer]?.position} brings exceptional skills and
+            leadership to the court, inspiring teammates with
+            dedication and athleticism.`}
+                      </p>
+
+                      {/* Decorative element */}
+                      <div className="absolute -left-2 top-0 w-1 h-full bg-gradient-to-b from-brand-primary to-brand-secondary rounded-full opacity-50"></div>
+                    </div>
+
+                    {/* Player Stats with Animation */}
+                    <div
+                      key={`player-stats-${currentPlayer}`}
+                      className="animate-fade-in-up"
+                      style={{ animationDelay: "300ms" }}
+                    >
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="bg-white rounded-xl shadow-lg p-4 transform transition-all duration-300 hover:shadow-xl hover:scale-105 hover:bg-brand-primary/5">
+                          <div className="text-3xl font-bold text-brand-primary">
+                            {Math.floor(Math.random() * 100) + 100}
+                          </div>
+                          <div className="text-xs font-medium text-text-secondary">
+                            POINTS
+                          </div>
                         </div>
-                        <div className="text-xs font-medium text-text-secondary">
-                          POINTS
+                        <div className="bg-white rounded-xl shadow-lg p-4 transform transition-all duration-300 hover:shadow-xl hover:scale-105 hover:bg-brand-primary/5">
+                          <div className="text-3xl font-bold text-brand-primary">
+                            {Math.floor(Math.random() * 15) + 75}%
+                          </div>
+                          <div className="text-xs font-medium text-text-secondary">
+                            ACCURACY
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-xl shadow-lg p-4 transform transition-all duration-300 hover:shadow-xl hover:scale-105 hover:bg-brand-primary/5">
+                          <div className="text-3xl font-bold text-brand-primary">
+                            {Math.floor(Math.random() * 20) + 5}
+                          </div>
+                          <div className="text-xs font-medium text-text-secondary">
+                            MATCHES
+                          </div>
                         </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-brand-primary">
-                          87%
-                        </div>
-                        <div className="text-xs font-medium text-text-secondary">
-                          ACCURACY
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-brand-primary">
-                          24
-                        </div>
-                        <div className="text-xs font-medium text-text-secondary">
-                          MATCHES
-                        </div>
-                      </div>
+                    </div>
+
+                    {/* View Profile Button */}
+                    <div
+                      key={`player-action-${currentPlayer}`}
+                      className="mt-6 text-center animate-fade-in-up"
+                      style={{ animationDelay: "400ms" }}
+                    >
+                      <Link
+                        href={`/Team/${players[currentPlayer]?._id}`}
+                        className="inline-flex items-center gap-2 bg-brand-primary/10 hover:bg-brand-primary text-brand-primary hover:text-white py-2 px-4 rounded-lg transition-all duration-300 text-sm font-medium"
+                      >
+                        <span>View Full Profile</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -311,27 +396,33 @@ export default function Home() {
             </div>
 
             {/* Players Carousel - Right Side */}
-            <div className="w-full lg:w-2/3 order-1 lg:order-2 relative h-[450px]">
+            <div className="w-full lg:w-2/3 order-1 lg:order-2 relative h-[550px]">
               {/* Crown Base Shape */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[500px] h-[250px] border-t-8 border-accent opacity-20 rounded-t-full"></div>
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[600px] h-[300px] border-t-8 border-accent opacity-20 rounded-t-full"></div>
 
               {/* Carousel Wrapper */}
               <div className="relative z-10 py-10 px-4">
-                <Slider {...carouselSettings} className="queens-carousel">
+                <Slider
+                  {...carouselSettings}
+                  className="queens-carousel"
+                  beforeChange={(oldIndex, newIndex) =>
+                    setCurrentPlayer(newIndex)
+                  }
+                >
                   {players.map((player, index) => (
                     <div key={player._id} className="px-4">
                       <div className="flex flex-col items-center transform transition-all duration-500 hover:scale-105">
-                        <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-xl mb-4">
+                        <div className="relative w-60 h-60 rounded-full overflow-hidden border-4 border-white shadow-xl mb-6">
                           <Image
                             src={player.image}
                             alt={`${player.firstName} ${player.lastName}`}
                             fill
-                            sizes="(max-width: 768px) 120px, 192px"
+                            sizes="(max-width: 768px) 180px, 240px"
                             className="object-cover"
                           />
                         </div>
-                        <div className="bg-white px-4 py-2 rounded-full shadow text-center min-w-[180px]">
-                          <h4 className="font-bold">
+                        <div className="bg-white px-5 py-3 rounded-full shadow text-center min-w-[200px]">
+                          <h4 className="font-bold text-lg">
                             <span className="text-brand-primary">
                               {player.firstName}
                             </span>{" "}
@@ -354,8 +445,8 @@ export default function Home() {
                 </Slider>
               </div>
 
-              {/* Team Logo */}
-              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-36 h-36 rounded-full bg-white shadow-xl flex items-center justify-center p-2 border-4 border-background z-20">
+              {/* Team Logo - Repositioned lower */}
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-36 h-36 rounded-full bg-white shadow-xl flex items-center justify-center p-2 border-4 border-background z-20">
                 <Image
                   src="/images/Lalitpur-queens-logo.png"
                   alt="Lalitpur Queens"
@@ -385,120 +476,304 @@ export default function Home() {
       {/* Team Behind Team Section */}
       <TeamBehindTeam />
 
-      {/* Latest News Section */}
-      <section className="py-16 bg-brand-secondary bg-opacity-10">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center text-text-primary">
-            Latest News
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {newsItems.slice(0, 3).map((news) => (
-              <NewsCard
-                key={news._id}
-                id={news._id}
-                title={news.title}
-                excerpt={news.content
-                  .replace(/<p>|<\/p>|&nbsp;/g, "")
-                  .slice(0, 100)
-                  .concat("...")}
-                image={news.image}
-                date={news.date}
-              />
-            ))}
+      {/* Latest News Section - Hierarchical Grid with Animations */}
+      <section className="py-20 bg-background relative overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand-primary rounded-full opacity-10"></div>
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-brand-secondary rounded-full opacity-10"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          {/* Section Header with Animated Bar */}
+          <div className="relative mb-14 text-center">
+            <h2 className="text-4xl font-bold text-text-primary inline-block relative">
+              Latest News
+              <span className="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary"></span>
+            </h2>
+            <p className="text-text-secondary mt-4 max-w-2xl mx-auto">
+              Stay updated with the latest stories, announcements, and
+              achievements from the Lalitpur Queens
+            </p>
           </div>
 
-          {/*load more button */}
-          <div className="text-center mt-8">
-            <Link
-              href="/News"
-              className="bg-brand-primary text-white py-3 px-6 rounded-full text-lg font-semibold hover:bg-brand-secondary transition duration-300"
-            >
-              View More News
-            </Link>
-          </div>
-        </div>
-      </section>
-      <section className="py-12  bg-queens-white bg-opacity-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Points Table */}
-            <div className="w-full md:w-2/3">
-              <h2 className="text-3xl font-bold mb-8 text-center text-queens-midnight">
-                Points Table
-              </h2>
-              <div className="overflow-x-auto shadow-lg rounded-lg">
-                <table className="table-auto w-full text-left bg-white border-separate border-spacing-0">
-                  <thead>
-                    <tr className="bg-brand-primary text-white">
-                      <th className="px-4 py-3 font-semibold">Team</th>
-                      <th className="px-4 py-3 font-semibold">P</th>
-                      <th className="px-4 py-3 font-semibold">W</th>
-                      <th className="px-4 py-3 font-semibold">L</th>
-                      <th className="px-4 py-3 font-semibold">D</th>
-                      <th className="px-4 py-3 font-semibold">Points</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pointsTable.map((team, index) => (
-                      <tr
-                        key={team._id}
-                        className={`border-t ${
-                          index % 2 === 0
-                            ? "bg-brand-secondary bg-opacity-10"
-                            : "bg-white"
-                        } hover:bg-brand-secondary hover:bg-opacity-20 transition-colors duration-200`}
-                      >
-                        <td className="px-4 py-3 font-medium text-queens-midnight">
-                          {team.team.name}
-                        </td>
-                        <td className="px-4 py-3 text-center text-queens-midnight">
-                          {team.played}
-                        </td>
-                        <td className="px-4 py-3 text-center text-queens-midnight">
-                          {team.won}
-                        </td>
-                        <td className="px-4 py-3 text-center text-queens-midnight">
-                          {team.lost}
-                        </td>
-                        <td className="px-4 py-3 text-center text-queens-midnight">
-                          {team.drawn}
-                        </td>
-                        <td className="px-4 py-3 text-center text-queens-midnight">
-                          {team.points}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          {newsItems.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Featured News (Takes up more space) */}
+              {newsItems.length > 0 && (
+                <motion.div
+                  className="lg:col-span-8 lg:row-span-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div
+                    className="h-full group cursor-pointer bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
+                    onClick={() => router.push(`/News/${newsItems[0]._id}`)}
+                  >
+                    <div className="relative h-72 overflow-hidden">
+                      <Image
+                        src={
+                          newsItems[0].image || "/images/news-placeholder.jpg"
+                        }
+                        alt={newsItems[0].title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                        priority
+                        className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-primary to-transparent opacity-70"></div>
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <div className="flex items-center mb-3">
+                          <span className="bg-accent text-text-primary text-xs font-bold px-3 py-1 rounded-full">
+                            Featured
+                          </span>
+                          <span className="ml-3 text-xs opacity-90">
+                            {new Date(
+                              newsItems[0].createdAt
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2 group-hover:text-accent transition-colors duration-300">
+                          {newsItems[0].title}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-text-secondary line-clamp-3">
+                        {newsItems[0].content
+                          .replace(/<p>|<\/p>|&nbsp;/g, "")
+                          .slice(0, 180)}
+                        ...
+                      </p>
+                      <div className="mt-6 flex justify-between items-center">
+                        <div className="flex items-center">
+                          <div className="bg-brand-primary h-8 w-8 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">
+                              LQ
+                            </span>
+                          </div>
+                          <span className="ml-2 text-sm text-text-secondary">
+                            {newsItems[0].author || "Admin"}
+                          </span>
+                        </div>
+                        <button className="flex items-center gap-2 text-brand-secondary font-medium text-sm group-hover:text-brand-primary transition-colors duration-300">
+                          Read More
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M14 5l7 7m0 0l-7 7m7-7H3"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Secondary News Articles - First Row */}
+              {newsItems.slice(1, 3).map((news, index) => (
+                <motion.div
+                  key={news._id}
+                  className="lg:col-span-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 * (index + 1) }}
+                >
+                  <div
+                    className="h-full group cursor-pointer bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1"
+                    onClick={() => router.push(`/News/${news._id}`)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={news.image || "/images/news-placeholder.jpg"}
+                        alt={news.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                        className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/80 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-300"></div>
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-white/90 text-text-primary text-xs font-semibold px-3 py-1 rounded-full">
+                          {news.tags && news.tags.length > 0
+                            ? news.tags[0]
+                            : "News"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-5 flex flex-col h-[calc(100%-12rem)]">
+                      <div className="mb-3 text-xs text-text-secondary">
+                        {new Date(news.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </div>
+                      <h3 className="font-bold text-lg mb-2 line-clamp-2 text-text-primary group-hover:text-brand-primary transition-colors duration-300">
+                        {news.title}
+                      </h3>
+                      <p className="text-text-secondary text-sm line-clamp-2 mb-4 flex-grow">
+                        {news.content
+                          .replace(/<p>|<\/p>|&nbsp;/g, "")
+                          .slice(0, 100)}
+                        ...
+                      </p>
+                      <button className="flex items-center gap-1 text-brand-secondary text-sm font-medium group-hover:text-brand-primary transition-colors duration-300 mt-auto">
+                        Read Article
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3 transform group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Secondary News Articles - Second Row */}
+              {newsItems.slice(3, 6).map((news, index) => (
+                <motion.div
+                  key={news._id}
+                  className="lg:col-span-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 + 0.1 * index }}
+                >
+                  <div
+                    className="h-full group cursor-pointer bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-500 transform hover:-translate-y-1"
+                    onClick={() => router.push(`/News/${news._id}`)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={news.image || "/images/news-placeholder.jpg"}
+                        alt={news.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
+                        className="object-cover transform group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/80 to-transparent opacity-60 group-hover:opacity-70 transition-opacity duration-300"></div>
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-white/90 text-text-primary text-xs font-semibold px-3 py-1 rounded-full">
+                          {news.tags && news.tags.length > 0
+                            ? news.tags[0]
+                            : "News"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-5 flex flex-col h-[calc(100%-12rem)]">
+                      <div className="mb-3 text-xs text-text-secondary">
+                        {new Date(news.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </div>
+                      <h3 className="font-bold text-lg mb-2 line-clamp-2 text-text-primary group-hover:text-brand-primary transition-colors duration-300">
+                        {news.title}
+                      </h3>
+                      <p className="text-text-secondary text-sm line-clamp-2 mb-4 flex-grow">
+                        {news.content
+                          .replace(/<p>|<\/p>|&nbsp;/g, "")
+                          .slice(0, 100)}
+                        ...
+                      </p>
+                      <button className="flex items-center gap-1 text-brand-secondary text-sm font-medium group-hover:text-brand-primary transition-colors duration-300 mt-auto">
+                        Read Article
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3 w-3 transform group-hover:translate-x-1 transition-transform duration-300"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-            {/* Marquee Player */}
-            <div className="w-full md:w-1/3 mt-0 px-4 md:px-0">
-              <h2 className="text-3xl md:text-4xl font-extrabold mb-6 md:mb-10 text-center text-queens-midnight tracking-wider">
-                Marquee Player
-              </h2>
-              <div className="flex flex-col items-center bg-gradient-to-r from-brand-primary to-text-primary text-white rounded-xl p-6 md:p-8 shadow-2xl transition-transform transform hover:scale-105">
-                <Image
-                  src="/images/Salina-Shrestha-Marquee.png"
-                  alt={`${marqueePlayer.firstName} ${marqueePlayer.lastName}`}
-                  width={150}
-                  height={150}
-                  className="w-full max-w-[150px] md:max-w-[200px] rounded-full border-4 md:border-8 border-brand-secondary shadow-lg"
-                />
-                <h3 className="text-2xl md:text-3xl font-extrabold mt-4 md:mt-6 tracking-tight drop-shadow-lg">
-                  {marqueePlayer.firstName} {marqueePlayer.lastName}
-                </h3>
-                <p className="text-lg md:text-xl font-semibold mt-2 italic opacity-90">
-                  #{marqueePlayer.jerseyNumber} - {marqueePlayer.position}
-                </p>
-                <div className="mt-4 text-sm text-center">
-                  <p className="font-light italic opacity-75">
-                    I rise above with every dig and dive.
-                  </p>
-                </div>
+          ) : (
+            <div className="bg-white rounded-xl p-12 text-center shadow">
+              <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-text-secondary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                  />
+                </svg>
               </div>
+              <h3 className="text-xl font-semibold text-text-primary mb-2">
+                No News Articles Yet
+              </h3>
+              <p className="text-text-secondary mb-6">
+                Stay tuned for exciting updates and announcements!
+              </p>
             </div>
-          </div>
+          )}
+
+          {/* View More News Button */}
+          {newsItems.length > 0 && (
+            <div className="text-center mt-12">
+              <Link
+                href="/News"
+                className="inline-flex items-center gap-2 bg-brand-primary hover:bg-brand-secondary text-white py-3 px-8 rounded-full transition-all duration-300 shadow hover:shadow-lg transform hover:-translate-y-1"
+              >
+                <span className="font-semibold">View All News</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

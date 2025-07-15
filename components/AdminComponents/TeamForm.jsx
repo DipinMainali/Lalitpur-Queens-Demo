@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUpload, faSave } from "@fortawesome/free-solid-svg-icons";
 
 export default function TeamForm() {
   const [team, setTeam] = useState({
@@ -61,50 +63,90 @@ export default function TeamForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-lg mx-auto p-6 bg-queens-white rounded-lg shadow-md"
+      className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg border border-background"
     >
+      <h2 className="text-2xl font-bold text-text-primary mb-6 pb-2 border-b border-background">
+        Add New Team
+      </h2>
+
       <div className="mb-4">
         <label
           htmlFor="name"
-          className="block text-queens-black font-semibold mb-2"
+          className="block text-text-primary font-medium mb-2"
         >
-          Name
+          Team Name
         </label>
         <input
           type="text"
           id="name"
-          name="name" // Ensure the input name matches the state key
+          name="name"
           value={team.name}
           onChange={handleChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
+          className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
           required
+          placeholder="Enter team name"
         />
       </div>
 
-      <div className="mb-4">
+      <div className="mb-6">
         <label
           htmlFor="logo"
-          className="block text-queens-black font-semibold mb-2"
+          className="block text-text-primary font-medium mb-2"
         >
-          Logo
+          Team Logo
         </label>
-        <input
-          type="file"
-          id="logo"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className="w-full px-3 py-2 border border-queens-black rounded-lg"
-          required
-        />
+        <div className="flex items-center justify-center w-full">
+          <label
+            htmlFor="logo"
+            className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-background rounded-lg cursor-pointer bg-background/5 hover:bg-background/10 transition-all duration-300"
+          >
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <FontAwesomeIcon
+                icon={faUpload}
+                className="text-brand-secondary mb-2 text-xl"
+              />
+              <p className="mb-2 text-sm text-text-primary">
+                <span className="font-semibold">Click to upload</span> or drag
+                and drop
+              </p>
+              <p className="text-xs text-text-secondary">
+                SVG, PNG, JPG or GIF (MAX. 800x400px)
+              </p>
+            </div>
+            <input
+              type="file"
+              id="logo"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              required
+            />
+          </label>
+        </div>
+        {team.logo && (
+          <div className="mt-3 text-sm text-text-secondary">
+            Selected file: {team.logo.name}
+          </div>
+        )}
       </div>
 
-      <button
-        type="submit"
-        className="bg-queens-emerald text-queens-white py-2 px-4 rounded-lg hover:bg-queens-green transition duration-300"
-      >
-        Submit
-      </button>
+      <div className="flex justify-end gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="bg-background text-text-primary py-3 px-6 rounded-lg hover:bg-gray-200 transition duration-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="bg-brand-secondary text-white py-3 px-6 rounded-lg hover:bg-brand-primary transition duration-300 flex items-center gap-2"
+        >
+          <FontAwesomeIcon icon={faSave} />
+          Save Team
+        </button>
+      </div>
     </form>
   );
 }
