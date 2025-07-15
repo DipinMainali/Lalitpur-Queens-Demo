@@ -120,7 +120,7 @@ export default function SponsorsAdmin() {
             </div>
             <p className="text-lg text-text-secondary">No sponsors found</p>
             <p className="text-sm text-text-secondary/70 mt-1">
-              Create your first sponsor by clicking "Add New Sponsor"
+              Create your first sponsor by clicking &quot;Add New Sponsor&quot;
             </p>
           </div>
         ) : (

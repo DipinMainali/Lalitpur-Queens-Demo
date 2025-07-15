@@ -135,7 +135,8 @@ export default function NewsAdmin() {
               No news articles found
             </p>
             <p className="text-sm text-text-secondary/70 mt-1">
-              Create your first news article by clicking "Add News Article"
+              Create your first news article by clicking &quot;Add News
+              Article&quot;
             </p>
           </div>
         ) : (

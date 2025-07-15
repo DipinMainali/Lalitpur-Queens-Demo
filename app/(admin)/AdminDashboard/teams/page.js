@@ -84,7 +84,11 @@ export default function TeamsAdmin() {
   };
 
   // Function to handle the actual deletion
-  const handleDelete = async () => {
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this team?")) {
+      return;
+    }
+
     if (!teamToDelete) return;
 
     setIsDeleting(true);
@@ -146,7 +150,7 @@ export default function TeamsAdmin() {
             </div>
             <p className="text-lg text-text-secondary">No teams found</p>
             <p className="text-sm text-text-secondary/70 mt-1">
-              Create your first team by clicking "Add New Team"
+              Create your first team by clicking &quot;Add New Team&quot;
             </p>
           </div>
         ) : (

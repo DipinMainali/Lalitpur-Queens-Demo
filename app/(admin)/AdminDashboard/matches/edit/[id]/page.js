@@ -140,7 +140,8 @@ export default function EditMatch() {
                   </h3>
                   <p className="text-sm">
                     Change match status as needed. Remember to input scores for
-                    matches marked "In Progress" or "Completed".
+                    matches marked &quot;In Progress&quot; or
+                    &quot;Completed&quot;.
                   </p>
                 </div>
 

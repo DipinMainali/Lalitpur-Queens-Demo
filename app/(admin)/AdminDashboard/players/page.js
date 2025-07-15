@@ -120,7 +120,7 @@ export default function PlayersAdmin() {
             </div>
             <p className="text-lg text-text-secondary">No players found</p>
             <p className="text-sm text-text-secondary/70 mt-1">
-              Create your first player by clicking "Add New Player"
+              Create your first player by clicking &quot;Add New Player&quot;
             </p>
           </div>
         ) : (
