@@ -251,7 +251,7 @@ export default function News() {
               No News Articles Found
             </h3>
             <p className="text-text-secondary mb-6">
-              We couldn't find any articles matching your filter criteria.
+              We couldn&apos;t find any articles matching your filter criteria.
             </p>
             <button
               onClick={() => setActiveFilter("all")}
