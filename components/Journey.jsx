@@ -217,7 +217,7 @@ function TimelineItem({ year, title, description, image, imageAlt, isLeft }) {
       </div>
 
       {/* Circle dot */}
-      <div className="z-20 flex items-center order-1 bg-purple-600 shadow-xl w-8 h-8 rounded-full hidden md:flex justify-center items-center">
+      <div className="z-20 order-1 bg-brand-secondary shadow-xl w-8 h-8 rounded-full hidden md:flex md:justify-center md:items-center">
         <span className="text-white font-bold text-xs">{year.slice(2)}</span>{" "}
         {/* Display last two digits of year */}
       </div>

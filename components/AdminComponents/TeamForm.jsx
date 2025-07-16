@@ -27,36 +27,52 @@ export default function TeamForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("name", team.name);
-    formData.append("logo", team.logo);
-
-    console.log("Form Data:", { name: team.name, logo: team.logo });
-    const res = await fetch("/api/teams", {
-      method: "POST",
-      body: formData,
-    });
-    // Check if the response is ok (status in the range 200-299)
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
+    // Validation
+    if (!team.name || !team.name.trim()) {
+      alert("Please enter a team name");
+      return;
     }
 
-    // Parse JSON safely
-    const jsonRes = await res.json();
-    if (jsonRes.success) {
-      alert(jsonRes.message);
+    if (!team.logo) {
+      alert("Please select a logo image");
+      return;
+    }
 
-      // Clear the form
-      setTeam({
-        name: "",
-        logo: null,
+    try {
+      const formData = new FormData();
+      formData.append("name", team.name.trim());
+      formData.append("logo", team.logo);
+
+      console.log("Form Data:", { name: team.name, logo: team.logo?.name });
+
+      const res = await fetch("/api/teams", {
+        method: "POST",
+        body: formData,
       });
-      fileInputRef.current.value = ""; // Clear the file input field
 
-      // Redirect to the teams page
-      router.back();
-    } else {
-      alert("Failed to save team: ", jsonRes.message);
+      // Parse JSON response
+      const jsonRes = await res.json();
+
+      // Check API response status
+      if (jsonRes.success) {
+        alert(jsonRes.message || "Team created successfully");
+
+        // Clear the form
+        setTeam({
+          name: "",
+          logo: null,
+        });
+        fileInputRef.current.value = ""; // Clear the file input field
+
+        // Redirect to the teams page
+        router.back();
+      } else {
+        // Handle API error response
+        alert(jsonRes.message || "Failed to save team");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(`Error: ${error.message || "Failed to save team"}`);
     }
   };
 
