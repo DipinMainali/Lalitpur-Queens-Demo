@@ -1,63 +1,81 @@
-import Team from "@/models/team.model";
-import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import connectDB from "@/lib/mongodb";
+import Team from "@/models/Team";
+import { v2 as cloudinary } from "cloudinary";
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-const saveTeamLogo = async (file, teamName) => {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-  // Create a sanitized version of the team name to avoid issues with special characters
-  const sanitizedTeamName = teamName.replace(/[^a-zA-Z0-9]/g, "-");
-  const fileName = `${sanitizedTeamName}-logo.${file.type.split("/")[1]}`;
-  const relativePath = `/images/teams/${fileName}`;
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-  await fs.writeFile(absolutePath, buffer);
-
-  return relativePath;
-};
-
-export async function POST(req) {
-  await dbConnection();
-
+export async function POST(request) {
   try {
-    const formData = await req.formData();
+    // Connect to the database
+    await connectDB();
 
-    let imagePath = "/images/teams/team-default.jpg";
-    const imageFile = formData.get("logo");
-    if (imageFile && imageFile instanceof File) {
-      imagePath = await saveTeamLogo(imageFile, formData.get("name"));
+    // Parse the form data
+    const data = await request.formData();
+    const name = data.get("name");
+    const logoFile = data.get("logo");
+
+    // Validation
+    if (!name) {
+      return NextResponse.json(
+        { success: false, message: "Team name is required" },
+        { status: 400 }
+      );
     }
 
-    const teamData = {
-      logo: imagePath,
-      name: formData.get("name"),
-    };
+    if (!logoFile) {
+      return NextResponse.json(
+        { success: false, message: "Team logo is required" },
+        { status: 400 }
+      );
+    }
 
-    const newTeam = new Team(teamData);
-    const savedTeam = await newTeam.save();
-    return NextResponse.json(
-      {
-        success: true,
-        data: savedTeam,
-        message: "Team saved successfully",
-      },
-      { status: 200 }
-    ); // Set the status code here
+    // Upload logo to Cloudinary
+    const bytes = await logoFile.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Generate a unique filename based on team name
+    const filename = `${name.replace(/\s+/g, "-").toLowerCase()}-logo`;
+
+    // Upload to Cloudinary
+    const uploadResult = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "teams",
+          public_id: filename,
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+
+      uploadStream.end(buffer);
+    });
+
+    // Create team with Cloudinary URL
+    const team = new Team({
+      name: name,
+      logo: uploadResult.secure_url,
+    });
+
+    await team.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Team created successfully",
+      data: team,
+    });
   } catch (error) {
+    console.error("Error creating team:", error);
     return NextResponse.json(
-      {
-        success: false,
-        message: error.message || "Internal Server Error",
-      },
-      { status: error.status || 500 }
+      { success: false, message: error.message || "Failed to create team" },
+      { status: 500 }
     );
   }
 }

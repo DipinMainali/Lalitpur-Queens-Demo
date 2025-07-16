@@ -9,6 +9,7 @@ export default function TeamForm() {
     name: "",
     logo: null,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -38,6 +39,11 @@ export default function TeamForm() {
       return;
     }
 
+    // Prevent multiple form submissions
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
     try {
       const formData = new FormData();
       formData.append("name", team.name.trim());
@@ -49,6 +55,14 @@ export default function TeamForm() {
         method: "POST",
         body: formData,
       });
+
+      // Check for network errors
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          `Server responded with status ${res.status}: ${errorText}`
+        );
+      }
 
       // Parse JSON response
       const jsonRes = await res.json();
@@ -68,11 +82,13 @@ export default function TeamForm() {
         router.back();
       } else {
         // Handle API error response
-        alert(jsonRes.message || "Failed to save team");
+        throw new Error(jsonRes.message || "Failed to save team");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert(`Error: ${error.message || "Failed to save team"}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -152,15 +168,17 @@ export default function TeamForm() {
           type="button"
           onClick={() => router.back()}
           className="bg-background text-text-primary py-3 px-6 rounded-lg hover:bg-gray-200 transition duration-300"
+          disabled={isSubmitting}
         >
           Cancel
         </button>
         <button
           type="submit"
           className="bg-brand-secondary text-white py-3 px-6 rounded-lg hover:bg-brand-primary transition duration-300 flex items-center gap-2"
+          disabled={isSubmitting}
         >
           <FontAwesomeIcon icon={faSave} />
-          Save Team
+          {isSubmitting ? "Saving..." : "Save Team"}
         </button>
       </div>
     </form>
