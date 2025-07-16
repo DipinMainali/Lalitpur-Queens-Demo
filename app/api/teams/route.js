@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb";
-import Team from "@/models/Team";
+import dbConnection from "@/utils/dbconnection"; // Changed from @/lib/mongodb
+import Team from "@/models/team.model"; // Changed from @/models/Team
 import { v2 as cloudinary } from "cloudinary";
 
 // Configure Cloudinary
@@ -13,7 +13,7 @@ cloudinary.config({
 export async function POST(request) {
   try {
     // Connect to the database
-    await connectDB();
+    await dbConnection(); // Changed from connectDB()
 
     // Parse the form data
     const data = await request.formData();
@@ -81,7 +81,7 @@ export async function POST(request) {
 }
 
 export async function GET() {
-  await dbConnection();
+  await dbConnection(); // Changed from dbConnection()
 
   try {
     const teams = await Team.find();
