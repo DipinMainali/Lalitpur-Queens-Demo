@@ -1,7 +1,6 @@
 // app/admin/players/form.js
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import RichTextEditor from "./RichTextEditor";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,26 +46,26 @@ export default function PlayerForm() {
 
   // Generate preview URL when image changes
   useEffect(() => {
-    if (player.image && player.image instanceof File) {
+    // If we have an image file, create preview URL
+    if (player.image instanceof File) {
       const objectUrl = URL.createObjectURL(player.image);
       setPreviewUrl(objectUrl);
 
-      // Clean up the URL when component unmounts or image changes
+      // Clean up function to revoke the URL when component unmounts
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [player.image]);
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFileError("");
-    setPreviewUrl(null);
 
     if (!file) return;
 
     // Check file type
     if (!file.type.startsWith("image/")) {
       setFileError("Please select an image file (JPEG, PNG, etc.)");
-      fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
@@ -74,86 +73,12 @@ export default function PlayerForm() {
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
       setFileError("Image size must be less than 1MB");
-      fileInputRef.current.value = "";
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    try {
-      // Compress the image before setting it
-      const compressedFile = await compressImage(file, {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1024,
-      });
-
-      // Verify compressed file is still under limit
-      if (compressedFile.size > MAX_FILE_SIZE) {
-        setFileError(
-          "Image is still too large after compression. Please use a smaller image."
-        );
-        fileInputRef.current.value = "";
-        return;
-      }
-
-      setPlayer((prev) => ({ ...prev, image: compressedFile }));
-    } catch (error) {
-      console.error("Error compressing image:", error);
-      setFileError("Error processing image. Please try a different file.");
-      fileInputRef.current.value = "";
-    }
-  };
-
-  // Image compression function
-  const compressImage = (file, options) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const img = new Image();
-        img.onload = () => {
-          // Create canvas
-          const canvas = document.createElement("canvas");
-          let width = img.width;
-          let height = img.height;
-
-          // Scale down if needed
-          if (
-            width > options.maxWidthOrHeight ||
-            height > options.maxWidthOrHeight
-          ) {
-            if (width > height) {
-              height = Math.round((height * options.maxWidthOrHeight) / width);
-              width = options.maxWidthOrHeight;
-            } else {
-              width = Math.round((width * options.maxWidthOrHeight) / height);
-              height = options.maxWidthOrHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          // Draw image to canvas
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to blob/file
-          canvas.toBlob(
-            (blob) => {
-              const compressedFile = new File([blob], file.name, {
-                type: file.type,
-                lastModified: Date.now(),
-              });
-              resolve(compressedFile);
-            },
-            file.type,
-            0.7 // Quality (0.7 = 70%)
-          );
-        };
-        img.onerror = reject;
-        img.src = event.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+    // Set the image file directly
+    setPlayer((prev) => ({ ...prev, image: file }));
   };
 
   const handleBioChange = (content) => {
@@ -170,7 +95,7 @@ export default function PlayerForm() {
     setSuccess("");
 
     try {
-      // Create a FormData object for the API request
+      // Create FormData object
       const formData = new FormData();
 
       // Add all player fields to FormData
@@ -185,11 +110,11 @@ export default function PlayerForm() {
       formData.append("featured", player.featured);
 
       // Add image if present
-      if (player.image) {
+      if (player.image instanceof File) {
         formData.append("image", player.image);
       }
 
-      // Send to your API with FormData
+      // Send to API
       const response = await fetch("/api/players", {
         method: "POST",
         body: formData,
@@ -201,12 +126,10 @@ export default function PlayerForm() {
         throw new Error(result.message || "Failed to save player");
       }
 
-      // Success!
       setSuccess("Player saved successfully");
 
       // Reset form after short delay
       setTimeout(() => {
-        // Clear the form and file input
         setPlayer({
           firstName: "",
           lastName: "",
@@ -453,7 +376,6 @@ export default function PlayerForm() {
                 onChange={handleFileChange}
                 className="hidden"
                 ref={fileInputRef}
-                required
               />
             </label>
           </div>
@@ -462,12 +384,10 @@ export default function PlayerForm() {
           <div className="flex items-center justify-center w-full">
             {previewUrl ? (
               <div className="relative w-full h-40 border border-background rounded-lg overflow-hidden">
-                <Image
+                <img
                   src={previewUrl}
                   alt="Player preview"
-                  fill
-                  style={{ objectFit: "cover" }}
-                  sizes="(max-width: 768px) 100vw, 300px"
+                  className="w-full h-full object-cover"
                 />
               </div>
             ) : (
