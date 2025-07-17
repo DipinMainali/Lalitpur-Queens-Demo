@@ -1,6 +1,7 @@
 // app/admin/news/form.js
 "use client";
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import RichTextEditor from "./RichTextEditor";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,9 +11,13 @@ import {
   faSave,
   faEdit,
   faImage,
+  faExclamationTriangle,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function NewsForm({ initialData = null }) {
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
   const isEditing = !!initialData;
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
@@ -23,27 +28,56 @@ export default function NewsForm({ initialData = null }) {
   const [publishStatus, setPublishStatus] = useState(
     initialData?.status || "published"
   );
+  const [fileError, setFileError] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const router = useRouter();
   const fileInputRef = useRef(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
+    setFileError("");
+
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setFileError("Please select an image file (JPEG, PNG, etc.)");
+      fileInputRef.current.value = "";
+      return;
+    }
+
+    // Check file size (10MB limit)
+    if (file.size > MAX_FILE_SIZE) {
+      setFileError("Image size must be less than 10MB");
+      fileInputRef.current.value = "";
+      return;
+    }
+
     setImage(file);
 
     // Create preview for the selected file
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Format file size in a readable way (KB, MB)
+  const formatFileSize = (sizeInBytes) => {
+    if (sizeInBytes < 1024 * 1024) {
+      return `${(sizeInBytes / 1024).toFixed(2)} KB`;
     }
+    return `${(sizeInBytes / 1024 / 1024).toFixed(2)} MB`;
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
+    setError("");
+    setSuccess("");
 
     const formData = new FormData();
     formData.append("title", title);
@@ -61,7 +95,7 @@ export default function NewsForm({ initialData = null }) {
 
       if (isEditing) {
         url = `/api/news/${initialData._id}`;
-        method = "PUT";
+        method = "PUT"; // Will be handled by the PUT handler which calls PATCH
       }
 
       const res = await fetch(url, {
@@ -72,26 +106,37 @@ export default function NewsForm({ initialData = null }) {
       const jsonRes = await res.json();
 
       if (jsonRes.success) {
-        alert(jsonRes.message);
+        setSuccess(jsonRes.message || "Article saved successfully");
+
+        // Reset form after short delay if adding new article
         if (!isEditing) {
-          // Clear the form if adding new article
-          setTitle("");
-          setContent("");
-          setImage(null);
-          setImagePreview(null);
-          setTags("");
-          setPublishStatus("published");
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
+          setTimeout(() => {
+            setTitle("");
+            setContent("");
+            setImage(null);
+            setImagePreview(null);
+            setTags("");
+            setPublishStatus("published");
+
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+
+            // Navigate back
+            router.back();
+          }, 1500);
+        } else {
+          // Just navigate back for edits after a short delay
+          setTimeout(() => {
+            router.back();
+          }, 1500);
         }
-        router.back();
       } else {
-        alert("Failed to save article: " + jsonRes.message);
+        setError(jsonRes.message || "Failed to save article");
       }
     } catch (err) {
       console.error("Error saving article:", err);
-      alert("An error occurred while saving the article");
+      setError("An error occurred while saving the article");
     } finally {
       setIsSubmitting(false);
     }
@@ -106,6 +151,32 @@ export default function NewsForm({ initialData = null }) {
         />
         {isEditing ? "Edit Article" : "Create New Article"}
       </h2>
+
+      {/* Error message display */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-300 rounded-md">
+          <div className="flex items-center">
+            <FontAwesomeIcon
+              icon={faExclamationTriangle}
+              className="text-red-500 mr-2"
+            />
+            <p className="text-red-700 font-medium">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Success message display */}
+      {success && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-300 rounded-md">
+          <div className="flex items-center">
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-green-500 mr-2"
+            />
+            <p className="text-green-700 font-medium">{success}</p>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Title Field */}
@@ -177,11 +248,17 @@ export default function NewsForm({ initialData = null }) {
 
           {imagePreview && (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
-              <img
-                src={imagePreview}
-                alt="Article preview image"
-                className="h-48 mx-auto object-cover rounded-md"
-              />
+              {/* Using Next.js Image component for better optimization */}
+              <div className="relative h-48 w-full max-w-md mx-auto">
+                <Image
+                  src={imagePreview}
+                  alt="Article preview image"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  style={{ objectFit: "cover" }}
+                  className="rounded-md"
+                />
+              </div>
               <p className="mt-2 text-xs text-gray-500">
                 {isEditing && !image
                   ? "Current featured image"
@@ -193,19 +270,25 @@ export default function NewsForm({ initialData = null }) {
           <div className="flex items-center justify-center w-full">
             <label
               htmlFor="image"
-              className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-all duration-300"
+              className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${
+                fileError
+                  ? "border-red-400 bg-red-50 hover:bg-red-100"
+                  : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+              }`}
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <FontAwesomeIcon
                   icon={faImage}
-                  className="text-brand-secondary mb-2 text-xl"
+                  className={`mb-2 text-xl ${
+                    fileError ? "text-red-500" : "text-brand-secondary"
+                  }`}
                 />
                 <p className="mb-2 text-sm text-gray-700">
                   <span className="font-semibold">Click to upload</span>{" "}
                   featured image
                 </p>
                 <p className="text-xs text-gray-500">
-                  JPG or PNG (1200×630px recommended)
+                  JPG or PNG (max 10MB, 1200×630px recommended)
                 </p>
               </div>
               <input
@@ -218,9 +301,27 @@ export default function NewsForm({ initialData = null }) {
               />
             </label>
           </div>
-          {image && (
-            <div className="mt-3 text-sm text-gray-600">
-              Selected file: {image.name}
+
+          {fileError && (
+            <div className="mt-2 text-sm text-red-600">
+              <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />
+              {fileError}
+            </div>
+          )}
+
+          {image && !fileError && (
+            <div className="mt-2 text-sm text-green-600">
+              <FontAwesomeIcon icon={faCheckCircle} className="mr-1" />
+              File selected: {image.name} ({formatFileSize(image.size)})
+              {image.size > 2 * 1024 * 1024 && (
+                <span className="ml-2 text-amber-500">
+                  <FontAwesomeIcon
+                    icon={faExclamationTriangle}
+                    className="mr-1"
+                  />
+                  Large file - upload may take longer
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -257,7 +358,11 @@ export default function NewsForm({ initialData = null }) {
           </button>
           <button
             type="submit"
-            className="bg-brand-secondary text-white py-3 px-6 rounded-lg hover:bg-brand-primary transition duration-300 flex items-center gap-2"
+            className={`text-white py-3 px-6 rounded-lg transition duration-300 flex items-center gap-2 ${
+              isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-brand-secondary hover:bg-brand-primary"
+            }`}
             disabled={isSubmitting}
           >
             <FontAwesomeIcon icon={faSave} />

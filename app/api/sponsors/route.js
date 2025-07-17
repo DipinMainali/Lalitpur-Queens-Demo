@@ -3,7 +3,7 @@ import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB in bytes
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes (increased from 1MB)
 
 export async function POST(req) {
   await dbConnection();
@@ -27,7 +27,7 @@ export async function POST(req) {
     if (logoFile && logoFile instanceof File && logoFile.size > 0) {
       if (logoFile.size > MAX_FILE_SIZE) {
         return NextResponse.json(
-          { success: false, message: "Logo size must be less than 1MB" },
+          { success: false, message: "Logo size must be less than 10MB" },
           { status: 400 }
         );
       }

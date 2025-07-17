@@ -18,16 +18,28 @@ export default function SponsorForm({ initialData = null }) {
   const [website, setWebsite] = useState(initialData?.website || "");
   const [tier, setTier] = useState(initialData?.tier || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fileError, setFileError] = useState("");
   const router = useRouter();
 
   const fileInputRef = useRef(null);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes (increased from 1MB)
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setLogo(file);
+    setFileError("");
 
-    // Create preview for the selected file
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setFileError("File size must be less than 10MB");
+        setLogo(null);
+        fileInputRef.current.value = "";
+        return;
+      }
+
+      setLogo(file);
+
+      // Create preview for the selected file
       const reader = new FileReader();
       reader.onload = (e) => {
         setLogoPreview(e.target.result);
@@ -54,7 +66,7 @@ export default function SponsorForm({ initialData = null }) {
 
       if (isEditing) {
         url = `/api/sponsors/${initialData._id}`;
-        method = "PUT";
+        method = "PATCH";
       }
 
       const res = await fetch(url, {
@@ -196,7 +208,7 @@ export default function SponsorForm({ initialData = null }) {
                 logo
               </p>
               <p className="text-xs text-text-secondary">
-                SVG, PNG or JPG (transparent background recommended)
+                SVG, PNG or JPG (transparent background recommended, max 10MB)
               </p>
               {isEditing && (
                 <p className="text-xs text-brand-primary mt-2">
@@ -220,6 +232,7 @@ export default function SponsorForm({ initialData = null }) {
             Selected file: {logo.name}
           </div>
         )}
+        {fileError && <p className="mt-2 text-sm text-red-600">{fileError}</p>}
       </div>
 
       <div className="flex justify-end gap-3">

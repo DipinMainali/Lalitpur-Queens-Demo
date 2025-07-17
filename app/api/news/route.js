@@ -1,53 +1,117 @@
 import News from "@/models/news.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-
-const saveNewsImage = async (file, newsTitle) => {
-  // Convert the file to a buffer
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  // Create a sanitized filename using the news title
-  const sanitizedTitle = newsTitle.replace(/\s+/g, "-").toLowerCase();
-  const fileName = `${sanitizedTitle}.${file.type.split("/")[1]}`;
-
-  // Define the relative and absolute paths
-  const relativePath = `/images/news/${fileName}`;
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-  // Write the file to the specified path
-  await fs.writeFile(absolutePath, buffer);
-
-  // Return the relative path for storage in the database
-  return relativePath;
-};
-
-export { saveNewsImage };
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
 export async function POST(req) {
   await dbConnection();
 
   try {
-    const formData = await req.formData(); // Parse the request body from form data
+    const formData = await req.formData();
 
-    let imagePath = "/images/news/news-default.jpg";
+    // Extract data from form
+    const title = formData.get("title");
+    const content = formData.get("content");
+    const tags = formData.get("tags") || "";
+    const status = formData.get("status") || "published";
     const imageFile = formData.get("image");
-    if (imageFile && imageFile instanceof File) {
-      imagePath = await saveNewsImage(imageFile, formData.get("title"));
+
+    // Validation
+    if (!title) {
+      return NextResponse.json(
+        { success: false, message: "Article title is required" },
+        { status: 400 }
+      );
     }
 
+    // Check file size if image is provided
+    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+      if (imageFile.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { success: false, message: "Image size must be less than 10MB" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Default image path if no image provided
+    let imagePath = "/images/news/news-default.jpg";
+
+    // Handle image upload to Cloudinary if provided
+    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+      // Configure Cloudinary
+      try {
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+      } catch (cloudinaryConfigError) {
+        console.error("Cloudinary config error:", cloudinaryConfigError);
+        return NextResponse.json(
+          { success: false, message: "Error configuring image upload service" },
+          { status: 500 }
+        );
+      }
+
+      try {
+        // Prepare file for upload
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Generate unique filename based on article title and timestamp
+        const sanitizedTitle = title.replace(/\s+/g, "-").toLowerCase();
+        const timestamp = new Date().getTime();
+        const filename = `${sanitizedTitle}-${timestamp}`;
+
+        // Upload to Cloudinary
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              upload_preset: "lalitpurqueens",
+              folder: "news",
+              public_id: filename,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+
+          uploadStream.end(buffer);
+        });
+
+        imagePath = uploadResult.secure_url;
+      } catch (uploadError) {
+        console.error("Upload error details:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Image upload failed: ${uploadError.message}`,
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Process tags
+    let tagArray = [];
+    if (tags && typeof tags === "string") {
+      tagArray = tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+    }
+
+    // Create and save news article
     const newsData = {
-      title: formData.get("title"),
+      title,
       image: imagePath,
-      content: formData.get("content"),
+      content,
+      tags: tagArray,
+      status,
     };
 
     const newNews = new News(newsData);
@@ -57,11 +121,12 @@ export async function POST(req) {
       {
         success: true,
         data: savedNews,
-        message: "News saved successfully",
+        message: "Article saved successfully",
       },
-      { status: 200 }
-    ); // Set the status code here
+      { status: 201 }
+    );
   } catch (error) {
+    console.error("Error creating news:", error);
     return NextResponse.json(
       {
         success: false,
@@ -76,8 +141,8 @@ export async function GET() {
   await dbConnection();
 
   try {
-    const newss = await News.find();
-    return NextResponse.json({ success: true, data: newss });
+    const news = await News.find().sort({ createdAt: -1 });
+    return NextResponse.json({ success: true, data: news });
   } catch (error) {
     return NextResponse.json(
       {
