@@ -3,7 +3,7 @@ import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB in bytes
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes (increased to match sponsor file size)
 
 export async function POST(req) {
   await dbConnection();
@@ -33,15 +33,16 @@ export async function POST(req) {
       );
     }
 
-    // Handle image upload
+    // Default image path if no image provided
     let imagePath = "/images/players/player-default.jpg";
     const imageFile = formData.get("image");
 
+    // Handle image upload if file is provided
     if (imageFile && imageFile instanceof File && imageFile.size > 0) {
       // Check file size
       if (imageFile.size > MAX_FILE_SIZE) {
         return NextResponse.json(
-          { success: false, message: "Image size must be less than 1MB" },
+          { success: false, message: "Image size must be less than 10MB" },
           { status: 400 }
         );
       }
@@ -87,6 +88,7 @@ export async function POST(req) {
           uploadStream.end(buffer);
         });
 
+        // IMPORTANT: Only update the imagePath if upload succeeds
         imagePath = uploadResult.secure_url;
       } catch (uploadError) {
         console.error("Upload error details:", uploadError);
@@ -100,8 +102,10 @@ export async function POST(req) {
       }
     }
 
-    // Save player with image URL
+    // Add the image URL to player data
     playerData.image = imagePath;
+
+    // Create and save the new player
     const newPlayer = new Player(playerData);
     const savedPlayer = await newPlayer.save();
 
