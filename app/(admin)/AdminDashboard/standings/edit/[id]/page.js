@@ -159,7 +159,8 @@ export default function EditStandingPage({ params }) {
                   </h3>
                   <p className="text-sm">
                     Edit the total sets won and lost by the team. These stats
-                    contribute to the team's position in case of equal points.
+                    contribute to the team&apos;s position in case of equal
+                    points.
                   </p>
                 </div>
 
@@ -170,7 +171,7 @@ export default function EditStandingPage({ params }) {
                   <p className="text-sm">
                     Points are typically calculated as: 3 for a win, 1 for a
                     draw, and 0 for a loss. Ensure the total points reflect the
-                    team's performance.
+                    team&apos;s performance.
                   </p>
                 </div>
 

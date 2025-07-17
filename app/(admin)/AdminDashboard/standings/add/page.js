@@ -68,7 +68,7 @@ export default function AddStandingPage() {
                     Season Selection
                   </h3>
                   <p className="text-sm">
-                    Select the appropriate season for which you're adding
+                    Select the appropriate season for which you`&apos;re adding
                     standings. Each team can have one standing entry per season.
                   </p>
                 </div>

@@ -1,7 +1,6 @@
 import Match from "@/models/match.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
-import { recalculateStandings } from "@/utils/standingsCalculator";
 
 export async function DELETE(_req, { params }) {
   await dbConnection();
@@ -16,16 +15,8 @@ export async function DELETE(_req, { params }) {
       );
     }
 
-    // Check if this was a completed match
-    const wasCompleted = match.matchStatus === "Completed";
-
     // Delete the match
     await Match.findOneAndDelete({ _id: params.id });
-
-    // If this was a completed match, recalculate standings
-    if (wasCompleted) {
-      await recalculateStandings();
-    }
 
     return NextResponse.json({ success: true, data: match });
   } catch (error) {
@@ -59,17 +50,6 @@ export async function PATCH(req, { params }) {
     const match = await Match.findOneAndUpdate({ _id: params.id }, body, {
       new: true,
     });
-
-    // Check if match status has changed to/from "Completed"
-    const statusChanged = currentMatch.matchStatus !== match.matchStatus;
-    const isNowCompleted = match.matchStatus === "Completed";
-    const wasCompleted = currentMatch.matchStatus === "Completed";
-
-    // If match status has changed to or from "Completed", or scores were updated
-    // for a completed match, recalculate standings
-    if (statusChanged || (isNowCompleted && body.scores)) {
-      await recalculateStandings();
-    }
 
     return NextResponse.json({ success: true, data: match });
   } catch (error) {
