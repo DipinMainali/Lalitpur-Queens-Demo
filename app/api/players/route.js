@@ -1,29 +1,7 @@
 import Player from "@/models/player.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-
-const saveImage = async (file, firstName, lastName, jerseyNumber) => {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const fileName = `${firstName}-${lastName}-${jerseyNumber}.${
-    file.type.split("/")[1]
-  }`;
-  const relativePath = `/images/players/${fileName}`;
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-  await fs.writeFile(absolutePath, buffer);
-
-  return relativePath;
-};
+import { v2 as cloudinary } from "cloudinary";
 
 export async function POST(req) {
   await dbConnection();
@@ -31,15 +9,61 @@ export async function POST(req) {
   try {
     const formData = await req.formData();
 
-    let imagePath = "/images/players/player-default.jpg";
+    // Configure Cloudinary
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    // Default image path
+    let imagePath =
+      "https://res.cloudinary.com/your-cloud-name/image/upload/v1/players/player-default.jpg";
+
+    // Handle image upload to Cloudinary
     const imageFile = formData.get("image");
-    if (imageFile && imageFile instanceof File) {
-      imagePath = await saveImage(
-        imageFile,
-        formData.get("firstName"),
-        formData.get("lastName"),
-        formData.get("jerseyNumber")
-      );
+    if (imageFile && imageFile instanceof File && imageFile.size > 0) {
+      try {
+        // Prepare file for upload
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Generate unique filename
+        const firstName = formData.get("firstName") || "";
+        const lastName = formData.get("lastName") || "";
+        const jerseyNumber = formData.get("jerseyNumber") || "";
+        const timestamp = new Date().getTime();
+
+        const filename = `${firstName}-${lastName}-${jerseyNumber}-${timestamp}`;
+
+        // Upload to Cloudinary using upload preset
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              upload_preset: "lalitpurqueens",
+              folder: "players",
+              public_id: filename,
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+
+          uploadStream.end(buffer);
+        });
+
+        imagePath = uploadResult.secure_url;
+      } catch (uploadError) {
+        console.error("Upload error details:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Image upload failed: ${uploadError.message}`,
+          },
+          { status: 500 }
+        );
+      }
     }
 
     const playerData = {
@@ -52,8 +76,8 @@ export async function POST(req) {
       jerseyNumber: formData.get("jerseyNumber"),
       nationality: formData.get("nationality"),
       bio: formData.get("bio"),
-      featured: formData.get("featured"),
-      marquee: formData.get("marquee"),
+      featured: formData.get("featured") === "true",
+      marquee: formData.get("marquee") === "true",
     };
 
     const newPlayer = new Player(playerData);

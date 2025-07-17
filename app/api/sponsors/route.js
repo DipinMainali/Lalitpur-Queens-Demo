@@ -1,43 +1,93 @@
 import Sponser from "@/models/sponser.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
-
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
-
-const saveImage = async (file, sponsorName) => {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-
-  const fileName = `${sponsorName}.${file.type.split("/")[1]}`;
-  const relativePath = `/images/sponsors/${fileName}`;
-  const absolutePath = path.join(process.cwd(), "public", relativePath);
-
-  await fs.writeFile(absolutePath, buffer);
-
-  return relativePath;
-};
+import { v2 as cloudinary } from "cloudinary";
 
 export async function POST(req) {
   await dbConnection();
 
   try {
-    const formData = await req.formData(); // Parse the request body from form data
-    let imagePath = "/images/sponsors/sponsor-default.jpg";
-    const imageFile = formData.get("logo");
-    if (imageFile && imageFile instanceof File) {
-      imagePath = await saveImage(imageFile, formData.get("name"));
+    const formData = await req.formData();
+    const name = formData.get("name");
+    const logoFile = formData.get("logo");
+    const website = formData.get("website");
+    const tier = formData.get("tier");
+
+    // Validation
+    if (!name) {
+      return NextResponse.json(
+        { success: false, message: "Sponsor name is required" },
+        { status: 400 }
+      );
     }
+
+    // Configure Cloudinary
+    try {
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+      });
+    } catch (cloudinaryConfigError) {
+      console.error("Cloudinary config error:", cloudinaryConfigError);
+      return NextResponse.json(
+        { success: false, message: "Error configuring image upload service" },
+        { status: 500 }
+      );
+    }
+
+    // Default image path if no logo provided
+    let logoUrl = "https://via.placeholder.com/300x200?text=Sponsor";
+
+    // If logo file exists, upload to Cloudinary
+    if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+      try {
+        // Prepare file for upload
+        const bytes = await logoFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Generate unique filename
+        const timestamp = new Date().getTime();
+        const filename = `${name
+          .replace(/\s+/g, "-")
+          .toLowerCase()}-logo-${timestamp}`;
+
+        // Upload to Cloudinary using upload preset
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              upload_preset: "lalitpurqueens", // Use your existing preset
+              folder: "sponsors",
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+
+          uploadStream.end(buffer);
+        });
+
+        logoUrl = uploadResult.secure_url;
+      } catch (uploadError) {
+        console.error("Upload error details:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Image upload failed: ${uploadError.message}`,
+            error: uploadError,
+          },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Create sponsor with Cloudinary URL
     const sponsorData = {
-      name: formData.get("name"),
-      logo: imagePath,
-      website: formData.get("website"),
-      tier: formData.get("tier"),
+      name,
+      logo: logoUrl,
+      website,
+      tier,
     };
 
     const newSponser = new Sponser(sponsorData);
@@ -47,11 +97,12 @@ export async function POST(req) {
       {
         success: true,
         data: savedSponser,
-        message: "Sponser saved successfully",
+        message: "Sponsor saved successfully",
       },
       { status: 200 }
-    ); // Set the status code here
+    );
   } catch (error) {
+    console.error("Error creating sponsor:", error);
     return NextResponse.json(
       {
         success: false,
