@@ -3,6 +3,8 @@ import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB in bytes
+
 export async function GET(_req, { params }) {
   await dbConnection();
 
@@ -62,16 +64,32 @@ export async function PATCH(req, { params }) {
       tier: formData.get("tier"),
     };
 
-    // Configure Cloudinary
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-
     // Handle logo update if a new file is provided
     const logoFile = formData.get("logo");
     if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+      // Check file size
+      if (logoFile.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { success: false, message: "Logo size must be less than 1MB" },
+          { status: 400 }
+        );
+      }
+
+      // Configure Cloudinary
+      try {
+        cloudinary.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+      } catch (cloudinaryConfigError) {
+        console.error("Cloudinary config error:", cloudinaryConfigError);
+        return NextResponse.json(
+          { success: false, message: "Error configuring image upload service" },
+          { status: 500 }
+        );
+      }
+
       try {
         // Prepare file for upload
         const bytes = await logoFile.arrayBuffer();

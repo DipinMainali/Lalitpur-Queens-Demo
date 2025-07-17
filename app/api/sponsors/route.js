@@ -3,6 +3,8 @@ import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB in bytes
+
 export async function POST(req) {
   await dbConnection();
 
@@ -19,6 +21,16 @@ export async function POST(req) {
         { success: false, message: "Sponsor name is required" },
         { status: 400 }
       );
+    }
+
+    // Check file size if logo is provided
+    if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+      if (logoFile.size > MAX_FILE_SIZE) {
+        return NextResponse.json(
+          { success: false, message: "Logo size must be less than 1MB" },
+          { status: 400 }
+        );
+      }
     }
 
     // Configure Cloudinary
@@ -56,7 +68,7 @@ export async function POST(req) {
         const uploadResult = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             {
-              upload_preset: "lalitpurqueens", // Use your existing preset
+              upload_preset: "lalitpurqueens",
               folder: "sponsors",
             },
             (error, result) => {
