@@ -93,7 +93,8 @@ export default function Home() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await fetch("/api/news");
+        // Updated to only fetch published news
+        const res = await fetch("/api/news?status=published");
         const jsonRes = await res.json();
         if (jsonRes.success) {
           setNews(jsonRes.data);

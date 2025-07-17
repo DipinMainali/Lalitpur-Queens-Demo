@@ -137,11 +137,27 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   await dbConnection();
 
   try {
-    const news = await News.find().sort({ createdAt: -1 });
+    // Get the URL from the request
+    const { searchParams } = new URL(req.url);
+
+    // Get status filter from query params (default to published)
+    const status = searchParams.get("status") || "published";
+
+    // Build query based on status parameter
+    let query = {};
+
+    // If status is 'all', don't filter by status (admin view)
+    if (status !== "all") {
+      query.status = status;
+    }
+
+    // Get articles with the specified status, sorted by creation date (newest first)
+    const news = await News.find(query).sort({ createdAt: -1 });
+
     return NextResponse.json({ success: true, data: news });
   } catch (error) {
     return NextResponse.json(

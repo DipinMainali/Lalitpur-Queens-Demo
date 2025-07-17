@@ -13,6 +13,7 @@ import {
   faImage,
   faExclamationTriangle,
   faCheckCircle,
+  faArchive, // Add this line
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function NewsForm({ initialData = null }) {
@@ -334,16 +335,115 @@ export default function NewsForm({ initialData = null }) {
           >
             Publication Status
           </label>
-          <select
-            id="status"
-            value={publishStatus}
-            onChange={(e) => setPublishStatus(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-secondary focus:border-transparent transition-all duration-300"
-          >
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div
+              className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                publishStatus === "published"
+                  ? "bg-green-50 border-green-300 shadow-sm"
+                  : "border-gray-200 hover:bg-gray-50"
+              }`}
+              onClick={() => setPublishStatus("published")}
+            >
+              <div
+                className={`h-10 w-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                  publishStatus === "published" ? "bg-green-100" : "bg-gray-100"
+                }`}
+              >
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  className={`${
+                    publishStatus === "published"
+                      ? "text-green-500"
+                      : "text-gray-400"
+                  }`}
+                />
+              </div>
+              <h4
+                className={`font-medium ${
+                  publishStatus === "published"
+                    ? "text-green-700"
+                    : "text-gray-700"
+                }`}
+              >
+                Published
+              </h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Visible to all website visitors
+              </p>
+            </div>
+
+            <div
+              className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                publishStatus === "draft"
+                  ? "bg-blue-50 border-blue-300 shadow-sm"
+                  : "border-gray-200 hover:bg-gray-50"
+              }`}
+              onClick={() => setPublishStatus("draft")}
+            >
+              <div
+                className={`h-10 w-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                  publishStatus === "draft" ? "bg-blue-100" : "bg-gray-100"
+                }`}
+              >
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  className={`${
+                    publishStatus === "draft"
+                      ? "text-blue-500"
+                      : "text-gray-400"
+                  }`}
+                />
+              </div>
+              <h4
+                className={`font-medium ${
+                  publishStatus === "draft" ? "text-blue-700" : "text-gray-700"
+                }`}
+              >
+                Draft
+              </h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Save for later, not visible on the site
+              </p>
+            </div>
+
+            <div
+              className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                publishStatus === "archived"
+                  ? "bg-gray-100 border-gray-400 shadow-sm"
+                  : "border-gray-200 hover:bg-gray-50"
+              }`}
+              onClick={() => setPublishStatus("archived")}
+            >
+              <div
+                className={`h-10 w-10 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                  publishStatus === "archived" ? "bg-gray-200" : "bg-gray-100"
+                }`}
+              >
+                <FontAwesomeIcon
+                  icon={faArchive}
+                  className={`${
+                    publishStatus === "archived"
+                      ? "text-gray-600"
+                      : "text-gray-400"
+                  }`}
+                />
+              </div>
+              <h4
+                className={`font-medium ${
+                  publishStatus === "archived"
+                    ? "text-gray-700"
+                    : "text-gray-700"
+                }`}
+              >
+                Archived
+              </h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Inactive content, not visible on the site
+              </p>
+            </div>
+          </div>
+          {/* Hidden select field to maintain compatibility with form processing */}
+          <input type="hidden" name="status" value={publishStatus} />
         </div>
 
         {/* Form Buttons */}
