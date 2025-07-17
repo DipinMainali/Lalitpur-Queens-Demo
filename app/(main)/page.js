@@ -2,10 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import MatchCard from "@/components/MatchCard";
-import NewsCard from "@/components/NewsCard";
 import Slider from "react-slick";
-import TeamMember from "@/components/TeamMember";
 import HeroSection from "@/components/HeroSection";
 import JourneySection from "@/components/Journey";
 import { MatchesSection } from "@/components/Matches";
@@ -14,6 +11,7 @@ import TeamBehindTeam from "@/components/TeamBehindTeam";
 import ImageReact from "@/components/Gallery";
 import { useRouter } from "next/navigation";
 import MarqueePlayer from "@/components/Marquee";
+import PointsTable from "@/components/PointsTable"; // Import PointsTable component
 export default function Home() {
   const router = useRouter();
 
@@ -476,6 +474,23 @@ export default function Home() {
 
       {/* Team Behind Team Section */}
       <TeamBehindTeam />
+
+      {/* Points Table Section */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="relative mb-14 text-center">
+            <h2 className="text-4xl font-bold text-text-primary inline-block relative">
+              League Standings
+              <span className="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary"></span>
+            </h2>
+            <p className="text-text-secondary mt-4 max-w-2xl mx-auto">
+              Check out how Lalitpur Queens are performing in the league
+            </p>
+          </div>
+
+          <PointsTable data={pointsTable} showOnlyActive={true} />
+        </div>
+      </section>
 
       {/* Latest News Section - Hierarchical Grid with Animations */}
       <section className="py-20 bg-background relative overflow-hidden">

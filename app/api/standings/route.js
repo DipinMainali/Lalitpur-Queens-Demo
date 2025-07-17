@@ -1,29 +1,62 @@
 import Standing from "@/models/standing.model";
 import Team from "@/models/team.model";
+import Season from "@/models/season.model";
 import dbConnection from "@/utils/dbconnection";
 import { NextResponse } from "next/server";
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
 export async function POST(req) {
   await dbConnection();
 
   try {
-    const body = await req.json(); // Parse the request body
-    const newStanding = new Standing(body);
+    const body = await req.json();
+
+    // Validate required fields
+    if (!body.team || !body.season) {
+      return NextResponse.json(
+        { success: false, message: "Team and season are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if standing already exists for this team and season
+    const existingStanding = await Standing.findOne({
+      "team._id": body.team._id,
+      season: body.season,
+    });
+
+    if (existingStanding) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Standing for this team and season already exists",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Create a new standing with all manually entered values
+    const newStanding = new Standing({
+      team: body.team,
+      season: body.season,
+      played: body.played || 0,
+      won: body.won || 0,
+      drawn: body.drawn || 0,
+      lost: body.lost || 0,
+      points: body.points || 0,
+      setWon: body.setWon || 0,
+      setLost: body.setLost || 0,
+    });
+
     const savedStanding = await newStanding.save();
 
     return NextResponse.json(
       {
         success: true,
         data: savedStanding,
-        message: "Standing saved successfully",
+        message: "Standing created successfully",
       },
-      { status: 200 }
-    ); // Set the status code here
+      { status: 201 }
+    );
   } catch (error) {
     return NextResponse.json(
       {
@@ -35,34 +68,48 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   await dbConnection();
+  const url = new URL(req.url);
+  const seasonId = url.searchParams.get("seasonId");
 
   try {
-    // Fetch all teams
-    const teams = await Team.find();
-    // Fetch all standings
-    const standings = await Standing.find();
-    // Create a map of standings by team id
-    const standingsMap = new Map(
-      standings.map((standing) => [standing.team._id.toString(), standing])
+    // Get active season if no seasonId is provided
+    let selectedSeasonId = seasonId;
+    if (!selectedSeasonId) {
+      const activeSeason = await Season.findOne({ isActive: true });
+      selectedSeasonId = activeSeason?._id;
+
+      // If no active season, get the most recent one
+      if (!selectedSeasonId) {
+        const latestSeason = await Season.findOne().sort({ year: -1 });
+        selectedSeasonId = latestSeason?._id;
+      }
+    }
+
+    // Fetch standings for the selected season
+    const standings = selectedSeasonId
+      ? await Standing.find({ season: selectedSeasonId }).populate("season")
+      : [];
+
+    // Get all available seasons for the dropdown
+    const seasons = await Season.find().sort({ year: -1 });
+
+    // Get teams that don't have standings in this season yet
+    const teamsWithStandings = new Set(
+      standings.map((s) => s.team._id.toString())
     );
-    // Merge teams with standings, defaulting standings if a team has no entry
-    const mergedStandings = teams.map((team) => {
-      return (
-        standingsMap.get(team._id.toString()) || {
-          team: team,
-          played: 0,
-          won: 0,
-          drawn: 0,
-          lost: 0,
-          points: 0,
-          setWon: 0,
-          setLost: 0,
-        }
-      );
+    const teams = await Team.find({
+      _id: { $nin: Array.from(teamsWithStandings) },
     });
-    return NextResponse.json({ success: true, data: mergedStandings });
+
+    return NextResponse.json({
+      success: true,
+      data: standings,
+      availableTeams: teams,
+      seasons: seasons,
+      currentSeason: selectedSeasonId,
+    });
   } catch (error) {
     return NextResponse.json(
       {
