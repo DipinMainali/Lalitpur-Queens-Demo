@@ -12,7 +12,7 @@ const TeamBehindTeam = () => {
       name: "Utsav Khadka",
       role: "Head Coach",
       image: "/images/staff/head-coach.jpg",
-      bio: "Former national player with 10+ years of coaching experience",
+      bio: "Former national player with 10+ years of coaching experience.",
       achievement: "FIVB Coaches Course Level III",
     },
     {
@@ -20,16 +20,16 @@ const TeamBehindTeam = () => {
       name: "Yugesh Hamal",
       role: "Assistant Coach",
       image: "/images/staff/assistant-coach.jpg",
-      bio: "Specializes in defensive strategies and player development",
-      achievement: "Former university champion coach",
+      bio: "Specializes in defensive strategies and player development.",
+      achievement: "Former University Champion Coach",
     },
     {
       id: 3,
       name: "Purnima Ghising",
       role: "Team Physio",
       image: "/images/staff/physio.jpg",
-      bio: "Sports medicine specialist with expertise in volleyball-specific injuries",
-      achievement: "Certified sports rehabilitation expert",
+      bio: "Sports medicine specialist with expertise in volleyball-specific injuries.",
+      achievement: "Certified Sports Rehabilitation Expert",
     },
   ];
 
@@ -39,16 +39,17 @@ const TeamBehindTeam = () => {
       name: "Utsav Shakya",
       role: "General Manager",
       image: "/images/staff/general-manager.jpg",
-      bio: "Former sports executive with extensive experience in team management",
-      achievement: "Developed youth volleyball programs nationwide",
+      bio: "Former sports executive with extensive experience in team management.",
+      achievement:
+        "Developed Nationwide National and Local Youth Volleyball Programs.",
     },
     {
       id: 5,
       name: "Abiskar Bikram Rai",
       role: "Head of Media & Communications",
       image: "/images/staff/media-head.jpg",
-      bio: "Media professional with background in sports journalism and PR",
-      achievement: "Award-winning sports documentary producer",
+      bio: "Media professional with background in sports journalism and PR.",
+      achievement: "National Award Winning Sports Documentary Producer.",
     },
   ];
 

@@ -89,7 +89,7 @@ const MarqueePlayer = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             Meet our exceptional talent who represents Lalitpur Queens with
-            excellence
+            sporting excellence.
           </motion.p>
         </div>
 

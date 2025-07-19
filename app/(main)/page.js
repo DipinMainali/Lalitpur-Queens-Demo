@@ -241,7 +241,7 @@ export default function Home() {
             </h2>
             <p className="text-text-secondary mt-4 max-w-2xl mx-auto">
               Meet the talented athletes who represent Lalitpur Queens with
-              pride and passion
+              pride.
             </p>
           </div>
 
@@ -509,7 +509,7 @@ export default function Home() {
             </h2>
             <p className="text-text-secondary mt-4 max-w-2xl mx-auto">
               Stay updated with the latest stories, announcements, and
-              achievements from the Lalitpur Queens
+              achievements from the Lalitpur Queens.
             </p>
           </div>
 

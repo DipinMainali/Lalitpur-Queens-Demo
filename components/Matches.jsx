@@ -13,7 +13,7 @@ function MatchesSection({ upcomingMatches, latestResults }) {
             Matches
           </h2>
           <p className="text-text-primary text-lg">
-            Stay updated with Lalitpur Queens fixtures and results
+            Stay updated with Lalitpur Queens fixtures and results.
           </p>
         </div>
 

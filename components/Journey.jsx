@@ -6,7 +6,7 @@ function JourneySection() {
       year: "2024",
       title: "Foundation",
       description:
-        "Lalitpur Queens was founded with a vision to create the premier women's volleyball franchise in Nepal, setting the stage for a new era of professional sports representing beautiful cultural and historical city Lalitpur",
+        "Lalitpur Queens was founded with a vision to create the premier most women's volleyball franchise in Nepal, setting the stage for a new era of professional sports thereby representing the beauty, culture, and history of Lalitpur city.",
       image:
         "https://assets-cdn-api.ekantipur.com/thumb.php?src=https://assets-cdn.ekantipur.com/uploads/source/news/kantipur/2024/third-party/lalitpurqueens09262024d2a1862-copy-2892024023636-1000x0.jpg&w=1001&h=0", // Placeholder image
       imageAlt: "Lalitpur Queens team foundation",
@@ -16,7 +16,7 @@ function JourneySection() {
       year: "2024",
       title: "First Tournament",
       description:
-        "Our debut in the Vatsalya Women's Volleyball League marked the beginning of our competitive journey, showcasing our talent and determination as a new team.",
+        "Our debut in the Vatsalya Everest Women's Volleyball League marked the beginning of our competitive journey, showcasing our talent and determination as a new team.",
       image: "images/journey/first-tournament.jpg", // Placeholder image
       imageAlt: "Lalitpur Queens first tournament",
       isLeft: false,
@@ -165,7 +165,8 @@ function JourneySection() {
         </h2>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
           From humble beginnings to championship glory, discover the inspiring
-          story of Lalitpur Queens and our relentless pursuit of excellence.
+          story of Lalitpur Queens and our relentless pursuit of sporting
+          excellence
         </p>
       </div>
 
