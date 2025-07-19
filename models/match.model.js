@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Season from "./season.model";
 
 const teamSchema = new mongoose.Schema({
   name: {
@@ -27,6 +28,12 @@ const scoreSchema = new mongoose.Schema({
 
 const matchSchema = new mongoose.Schema(
   {
+    // Fixed season reference field
+    season: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Season", // This needs to match the model name exactly
+      required: true,
+    },
     tournament: {
       type: String,
       required: true,

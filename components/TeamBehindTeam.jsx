@@ -5,7 +5,7 @@ const TeamBehindTeam = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("coaching");
 
-  // Using local images from the public/images/staff folder
+  // Updated coaching staff array - removed physio
   const coachingStaff = [
     {
       id: 1,
@@ -22,14 +22,6 @@ const TeamBehindTeam = () => {
       image: "/images/staff/assistant-coach.jpg",
       bio: "Specializes in defensive strategies and player development.",
       achievement: "Former University Champion Coach",
-    },
-    {
-      id: 3,
-      name: "Purnima Ghising",
-      role: "Team Physio",
-      image: "/images/staff/physio.jpg",
-      bio: "Sports medicine specialist with expertise in volleyball-specific injuries.",
-      achievement: "Certified Sports Rehabilitation Expert",
     },
   ];
 
@@ -141,12 +133,12 @@ const TeamBehindTeam = () => {
           </div>
         </div>
 
-        {/* Staff Cards Section */}
+        {/* Staff Cards Section - Updated grid for coaching staff */}
         <div className="mb-16">
-          {/* Coaching Staff Cards */}
+          {/* Coaching Staff Cards - Changed grid to 2 columns */}
           {activeTab === "coaching" && (
             <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
               style={{
                 opacity: 0,
                 animation: isVisible ? "fadeIn 0.8s ease forwards" : "none",

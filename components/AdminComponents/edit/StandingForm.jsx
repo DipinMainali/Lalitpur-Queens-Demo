@@ -92,139 +92,156 @@ export default function StandingForm({ standing }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
-
-      <div className="flex items-center space-x-4 mb-6">
+    <form id="standing-form" onSubmit={handleSubmit} className="p-6">
+      {/* Team Info Header */}
+      <div className="flex items-center space-x-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
         {formData.logo && (
           <img
             src={formData.logo}
             alt={formData.team}
-            className="w-16 h-16 object-contain"
+            className="w-16 h-16 object-contain rounded-full bg-white border border-gray-200 p-1"
           />
         )}
         <div>
-          <h3 className="text-xl font-bold">{formData.team}</h3>
-          <p className="text-gray-600 text-sm">Editing standing data</p>
+          <h3 className="text-xl font-bold text-gray-800">{formData.team}</h3>
+          <p className="text-gray-500 text-sm">
+            Current standings for this team
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Form Fields - now with higher contrast styling */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {/* Match Statistics */}
+        <div className="col-span-2">
+          <h3 className="text-sm uppercase font-semibold text-gray-500 mb-4 border-b pb-2">
+            Match Statistics
+          </h3>
+        </div>
+
+        {/* Played */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Played</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Matches Played
+          </label>
           <input
             type="number"
             name="played"
             value={formData.played}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
         </div>
 
+        {/* Won */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Won</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Matches Won
+          </label>
           <input
             type="number"
             name="won"
             value={formData.won}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
         </div>
 
+        {/* Drawn */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Drawn</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Matches Drawn
+          </label>
           <input
             type="number"
             name="drawn"
             value={formData.drawn}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
         </div>
 
+        {/* Lost */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Lost</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Matches Lost
+          </label>
           <input
             type="number"
             name="lost"
             value={formData.lost}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-semibold mb-2">Points</label>
-          <input
-            type="number"
-            name="points"
-            value={formData.points}
-            onChange={handleChange}
-            min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
-          />
+        {/* Set Statistics */}
+        <div className="col-span-2 mt-6">
+          <h3 className="text-sm uppercase font-semibold text-gray-500 mb-4 border-b pb-2">
+            Set Statistics
+          </h3>
         </div>
 
+        {/* Sets Won */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Set Won</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sets Won
+          </label>
           <input
             type="number"
             name="setWon"
             value={formData.setWon}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
         </div>
 
+        {/* Sets Lost */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Set Lost</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Sets Lost
+          </label>
           <input
             type="number"
             name="setLost"
             value={formData.setLost}
             onChange={handleChange}
             min="0"
-            className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-queens-green focus:border-queens-green transition"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
           />
+        </div>
+
+        {/* Points */}
+        <div className="col-span-2 mt-6">
+          <h3 className="text-sm uppercase font-semibold text-gray-500 mb-4 border-b pb-2">
+            Points
+          </h3>
+        </div>
+
+        <div className="col-span-2 md:col-span-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Total Points
+          </label>
+          <input
+            type="number"
+            name="points"
+            value={formData.points}
+            onChange={handleChange}
+            min="0"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-queens-green focus:border-queens-green bg-white text-gray-900"
+          />
+          <p className="mt-1 text-sm text-gray-500">
+            Points earned in the competition
+          </p>
         </div>
       </div>
 
-      <div className="flex space-x-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className={`${
-            loading ? "bg-gray-400" : "bg-queens-green hover:bg-queens-midnight"
-          } text-white py-2 px-6 rounded-md transition duration-300 flex items-center space-x-2`}
-        >
-          {loading ? (
-            <>
-              <span className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
-              <span>Saving...</span>
-            </>
-          ) : (
-            <span>Save Changes</span>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => router.push("/AdminDashboard/standings")}
-          className="bg-gray-300 text-gray-800 py-2 px-6 rounded-md hover:bg-gray-400 transition duration-300"
-        >
-          Cancel
-        </button>
-      </div>
+      {/* Note: The buttons are now added directly in the EditStandingPage component */}
     </form>
   );
 }

@@ -1,8 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // MatchesSection component
-function MatchesSection({ upcomingMatches, latestResults }) {
+function MatchesSection({ upcomingMatches, latestResults, seasons }) {
   const [activeTab, setActiveTab] = useState("upcoming"); // 'upcoming' or 'latest'
+  const [selectedSeason, setSelectedSeason] = useState(""); // Track selected season ID
+  const [filteredUpcomingMatches, setFilteredUpcomingMatches] = useState([]);
+  const [filteredLatestResults, setFilteredLatestResults] = useState([]);
+
+  // Filter matches when season changes
+  useEffect(() => {
+    if (selectedSeason) {
+      // Filter upcoming matches by season
+      setFilteredUpcomingMatches(
+        upcomingMatches?.filter(
+          (match) => match.season?._id === selectedSeason
+        ) || []
+      );
+
+      // Filter latest results by season
+      setFilteredLatestResults(
+        latestResults?.filter(
+          (match) => match.season?._id === selectedSeason
+        ) || []
+      );
+    } else {
+      // If no season selected, show all
+      setFilteredUpcomingMatches(upcomingMatches || []);
+      setFilteredLatestResults(latestResults || []);
+    }
+  }, [selectedSeason, upcomingMatches, latestResults]);
 
   return (
     <section className="w-full bg-brand-secondary bg-opacity-10 py-16">
@@ -16,6 +42,38 @@ function MatchesSection({ upcomingMatches, latestResults }) {
             Stay updated with Lalitpur Queens fixtures and results.
           </p>
         </div>
+
+        {/* Season Selector */}
+        {seasons && seasons.length > 0 && (
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex bg-white rounded-full p-1 shadow-sm">
+              <button
+                className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+                  !selectedSeason
+                    ? "bg-brand-primary text-white"
+                    : "hover:bg-background"
+                }`}
+                onClick={() => setSelectedSeason("")}
+              >
+                All Seasons
+              </button>
+              {seasons.map((season) => (
+                <button
+                  key={season._id}
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
+                    selectedSeason === season._id
+                      ? "bg-brand-primary text-white"
+                      : "hover:bg-background"
+                  }`}
+                  onClick={() => setSelectedSeason(season._id)}
+                >
+                  {season.name} {season.year}
+                  {season.isActive && " (Active)"}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-8">
@@ -44,8 +102,8 @@ function MatchesSection({ upcomingMatches, latestResults }) {
         {/* Match List */}
         <div className="space-y-6">
           {activeTab === "upcoming" ? (
-            upcomingMatches && upcomingMatches.length > 0 ? (
-              upcomingMatches
+            filteredUpcomingMatches && filteredUpcomingMatches.length > 0 ? (
+              filteredUpcomingMatches
                 .slice(0, 3)
                 .map((match) => (
                   <UpcomingMatchCard key={match._id} match={match} />
@@ -55,8 +113,8 @@ function MatchesSection({ upcomingMatches, latestResults }) {
                 No upcoming matches scheduled at the moment.
               </p>
             )
-          ) : latestResults && latestResults.length > 0 ? (
-            latestResults
+          ) : filteredLatestResults && filteredLatestResults.length > 0 ? (
+            filteredLatestResults
               .slice(0, 3)
               .map((match) => (
                 <CompletedMatchCard key={match._id} match={match} />

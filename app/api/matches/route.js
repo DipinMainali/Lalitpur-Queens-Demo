@@ -37,6 +37,14 @@ export async function POST(req) {
       );
     }
 
+    // Validate season is provided
+    if (!body.season) {
+      return NextResponse.json(
+        { success: false, message: "Season is required" },
+        { status: 400 }
+      );
+    }
+
     // Create new match
     const match = await Match.create(body);
 
@@ -63,6 +71,7 @@ export async function GET(req) {
   try {
     const url = new URL(req.url);
     const status = url.searchParams.get("status") || null;
+    const seasonId = url.searchParams.get("season") || null;
 
     let query = {};
 
@@ -71,11 +80,24 @@ export async function GET(req) {
       query.matchStatus = status;
     }
 
+    // Filter by season if provided
+    if (seasonId) {
+      query.season = seasonId;
+    }
+
     // Get all matches, sort by date (most recent first)
-    const matches = await Match.find(query).sort({ matchDateTime: -1 });
+    const matches = await Match.find(query)
+      .sort({ matchDateTime: -1 })
+      .populate({
+        path: "season",
+        model: "Season",
+        select: "name year isActive",
+        strictPopulate: false, // Add this option
+      });
 
     return NextResponse.json({ success: true, data: matches });
   } catch (error) {
+    console.error("Error fetching matches:", error);
     return NextResponse.json(
       {
         success: false,

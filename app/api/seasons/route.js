@@ -1,23 +1,33 @@
-import { NextResponse } from "next/server";
-import dbConnection from "@/utils/dbconnection";
 import Season from "@/models/season.model";
-import mongoose from "mongoose";
+import dbConnection from "@/utils/dbconnection";
+import { NextResponse } from "next/server";
 
 // GET handler to fetch all seasons
-export async function GET() {
-  try {
-    await dbConnection();
-    const seasons = await Season.find().sort({ year: -1, name: 1 });
+export async function GET(req) {
+  await dbConnection();
 
-    return NextResponse.json({
-      success: true,
-      data: seasons,
-    });
+  try {
+    const url = new URL(req.url);
+    const isActive = url.searchParams.get("active") === "true";
+
+    let query = {};
+
+    // If active param is provided, filter for active seasons
+    if (isActive) {
+      query.isActive = true;
+    }
+
+    // Get all seasons, sorted by year (descending) and then by name
+    const seasons = await Season.find(query).sort({ year: -1, name: 1 });
+
+    return NextResponse.json({ success: true, data: seasons });
   } catch (error) {
-    console.error("Error fetching seasons:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch seasons" },
-      { status: 500 }
+      {
+        success: false,
+        message: error.message || "Failed to fetch seasons",
+      },
+      { status: error.status || 500 }
     );
   }
 }

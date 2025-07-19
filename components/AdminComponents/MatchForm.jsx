@@ -14,6 +14,10 @@ export default function MatchForm({ initialData = null }) {
   const [stage, setStage] = useState(initialData?.stage || "Group Stage");
   const [gameDay, setGameDay] = useState(initialData?.gameDay || 1);
 
+  // Season information - add this
+  const [seasonId, setSeasonId] = useState(initialData?.season || "");
+  const [seasons, setSeasons] = useState([]);
+
   // Match date and location
   const [matchDate, setMatchDate] = useState(
     initialData?.matchDateTime
@@ -53,6 +57,34 @@ export default function MatchForm({ initialData = null }) {
       totalSets: { home: 0, away: 0 },
     }
   );
+
+  // Fetch all seasons on component mount
+  useEffect(() => {
+    const fetchSeasons = async () => {
+      try {
+        const res = await fetch("/api/seasons");
+        const jsonRes = await res.json();
+
+        if (jsonRes.success) {
+          setSeasons(jsonRes.data);
+
+          // If not editing and there's at least one active season, select it by default
+          if (!isEditing && !seasonId) {
+            const activeSeason = jsonRes.data.find((season) => season.isActive);
+            if (activeSeason) {
+              setSeasonId(activeSeason._id);
+            }
+          }
+        } else {
+          console.error("Error fetching seasons:", jsonRes.message);
+        }
+      } catch (err) {
+        console.error("Error fetching seasons:", err);
+      }
+    };
+
+    fetchSeasons();
+  }, []);
 
   // Fetch all opponent teams on component mount
   useEffect(() => {
@@ -132,6 +164,12 @@ export default function MatchForm({ initialData = null }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Validate season selection
+    if (!seasonId) {
+      alert("Please select a season");
+      return;
+    }
+
     // Find selected away team
     const selectedAwayTeam = teams.find((team) => team._id === awayTeamId);
     if (!selectedAwayTeam) {
@@ -160,6 +198,7 @@ export default function MatchForm({ initialData = null }) {
 
     // Create match data object matching the exact schema field names
     const matchData = {
+      season: seasonId, // Add the season ID
       tournament: tournament,
       stage,
       gameDay: parseInt(gameDay),
@@ -218,6 +257,41 @@ export default function MatchForm({ initialData = null }) {
       <h2 className="text-2xl font-bold text-text-primary mb-6 pb-2 border-b border-background">
         {isEditing ? "Edit Match" : "Add New Match"}
       </h2>
+
+      {/* Season Selection - Add this section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-brand-primary mb-4">
+          Season
+        </h3>
+
+        <div>
+          <label
+            htmlFor="season"
+            className="block text-text-primary font-medium mb-2"
+          >
+            Select Season <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="season"
+            value={seasonId}
+            onChange={(e) => setSeasonId(e.target.value)}
+            className="w-full px-3 py-2 border border-text-secondary rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            required
+          >
+            <option value="">Select a Season</option>
+            {seasons.map((season) => (
+              <option key={season._id} value={season._id}>
+                {season.name} {season.year} {season.isActive ? "(Active)" : ""}
+              </option>
+            ))}
+          </select>
+          {seasons.length === 0 && (
+            <p className="mt-2 text-sm text-red-500">
+              No seasons found. Please create a season first.
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Tournament Section */}
       <div className="mb-8">

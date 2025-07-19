@@ -458,10 +458,14 @@ export default function Home() {
           </div>
 
           {/* Button for Full Squad */}
-          <div className="text-center mt-16">
+          <div className="text-center mt-16 relative z-30">
             <Link
               href="/Team"
-              className="bg-brand-primary text-white py-4 px-10 rounded-full text-lg font-semibold hover:bg-brand-secondary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="bg-brand-primary text-white py-4 px-10 rounded-full text-lg font-semibold hover:bg-brand-secondary transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-block"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push("/Team");
+              }}
             >
               View Full Squad
             </Link>
