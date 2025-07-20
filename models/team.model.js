@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 const teamSchema = new mongoose.Schema({
+  //Reference to the season model so that each team is associated with a specific season
+  season: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Season",
+    required: true,
+  },
   name: {
     type: String,
     required: true,

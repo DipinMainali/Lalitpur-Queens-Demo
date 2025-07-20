@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnection from "@/utils/dbconnection";
 import Team from "@/models/team.model";
+import Season from "@/models/season.model";
 import { v2 as cloudinary } from "cloudinary";
 
 export async function POST(request) {
@@ -12,6 +13,7 @@ export async function POST(request) {
     const data = await request.formData();
     const name = data.get("name");
     const logoFile = data.get("logo");
+    const seasonId = data.get("season");
 
     // Validation
     if (!name) {
@@ -24,6 +26,22 @@ export async function POST(request) {
     if (!logoFile) {
       return NextResponse.json(
         { success: false, message: "Team logo is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!seasonId) {
+      return NextResponse.json(
+        { success: false, message: "Season selection is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if season exists
+    const seasonExists = await Season.findById(seasonId);
+    if (!seasonExists) {
+      return NextResponse.json(
+        { success: false, message: "Selected season does not exist" },
         { status: 400 }
       );
     }
@@ -76,10 +94,11 @@ export async function POST(request) {
         uploadStream.end(buffer);
       });
 
-      // Create team with Cloudinary URL
+      // Create team with Cloudinary URL and season reference
       const team = new Team({
         name: name,
         logo: uploadResult.secure_url,
+        season: seasonId, // Include season reference
       });
 
       await team.save();
@@ -109,12 +128,59 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
-  await dbConnection(); // Changed from dbConnection()
+export async function GET(request) {
+  await dbConnection();
 
   try {
-    const teams = await Team.find();
-    return NextResponse.json({ success: true, data: teams });
+    // Get the seasonId query parameter if available
+    const { searchParams } = new URL(request.url);
+    const seasonId = searchParams.get("seasonId");
+
+    // Find all seasons for the dropdown (sorted by most recent first)
+    const seasons = await Season.find().sort({ year: -1, name: 1 });
+
+    // Get active season
+    const activeSeason = seasons.find((season) => season.isActive);
+    const currentSeasonId = activeSeason?._id.toString() || null;
+
+    let query = {};
+
+    // Apply season filter if seasonId is provided
+    if (seasonId) {
+      query.season = seasonId;
+    }
+
+    // Get teams with appropriate filters
+    let teams;
+    if (seasonId) {
+      // Simple query when filtering by season
+      teams = await Team.find(query);
+    } else {
+      // Populate season data when showing all teams
+      teams = await Team.find().populate("season");
+
+      // Transform populated data for easier frontend consumption
+      teams = teams.map((team) => {
+        const plainTeam = team.toObject();
+        if (plainTeam.season) {
+          // Move season data to a separate property
+          plainTeam.seasonData = {
+            _id: plainTeam.season._id,
+            name: plainTeam.season.name,
+            year: plainTeam.season.year,
+            isActive: plainTeam.season.isActive,
+          };
+        }
+        return plainTeam;
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: teams,
+      seasons,
+      currentSeason: seasonId || (teams.length === 0 ? currentSeasonId : null),
+    });
   } catch (error) {
     return NextResponse.json(
       {

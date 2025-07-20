@@ -9,7 +9,9 @@ export default function TeamEditForm({ teamId }) {
     name: "",
     logo: null,
     currentLogoUrl: "",
+    season: "",
   });
+  const [seasons, setSeasons] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
@@ -17,33 +19,46 @@ export default function TeamEditForm({ teamId }) {
   const router = useRouter();
   const fileInputRef = useRef(null);
 
-  // Fetch team data when component mounts
+  // Fetch team data and seasons when component mounts
   useEffect(() => {
-    const fetchTeam = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch(`/api/teams/${teamId}`);
-        const jsonRes = await res.json();
+        // Fetch seasons first
+        const seasonsRes = await fetch("/api/seasons");
+        const seasonsJsonRes = await seasonsRes.json();
 
-        if (jsonRes.success) {
+        if (!seasonsJsonRes.success) {
+          throw new Error("Failed to load seasons data");
+        }
+
+        setSeasons(seasonsJsonRes.data);
+
+        // Then fetch team data
+        const teamRes = await fetch(`/api/teams/${teamId}`);
+        const teamJsonRes = await teamRes.json();
+
+        if (teamJsonRes.success) {
           setTeam({
-            name: jsonRes.data.name,
+            name: teamJsonRes.data.name || "",
             logo: null,
-            currentLogoUrl: jsonRes.data.logo,
+            currentLogoUrl: teamJsonRes.data.logo || "",
+            season:
+              teamJsonRes.data.season?._id || teamJsonRes.data.season || "",
           });
         } else {
           setError("Failed to load team data");
-          console.error("Failed to load team data:", jsonRes.message);
+          console.error("Failed to load team data:", teamJsonRes.message);
         }
       } catch (err) {
-        setError("Error loading team data");
-        console.error("Error loading team data:", err);
+        setError("Error loading data: " + err.message);
+        console.error("Error loading data:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
     if (teamId) {
-      fetchTeam();
+      fetchData();
     }
   }, [teamId]);
 
@@ -54,17 +69,36 @@ export default function TeamEditForm({ teamId }) {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setTeam((prevTeam) => ({ ...prevTeam, logo: file }));
+    if (file) {
+      setTeam((prevTeam) => ({ ...prevTeam, logo: file }));
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSaving(true);
     setError("");
+
+    // Validation
+    if (!team.name || !team.name.trim()) {
+      setError("Please enter a team name");
+      return;
+    }
+
+    if (!team.season) {
+      setError("Please select a season");
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (isSaving) return;
+
+    setIsSaving(true);
 
     try {
       const formData = new FormData();
-      formData.append("name", team.name);
+      formData.append("name", team.name.trim());
+      formData.append("season", team.season);
+
       if (team.logo) {
         formData.append("logo", team.logo);
       }
@@ -73,6 +107,14 @@ export default function TeamEditForm({ teamId }) {
         method: "PATCH",
         body: formData,
       });
+
+      // Check for network errors
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          `Server responded with status ${res.status}: ${errorText}`
+        );
+      }
 
       const jsonRes = await res.json();
 
@@ -84,7 +126,7 @@ export default function TeamEditForm({ teamId }) {
       }
     } catch (err) {
       console.error("Error updating team:", err);
-      setError("An error occurred while updating the team");
+      setError("An error occurred while updating the team: " + err.message);
     } finally {
       setIsSaving(false);
     }
@@ -133,9 +175,37 @@ export default function TeamEditForm({ teamId }) {
           value={team.name}
           onChange={handleChange}
           className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
-          required
           placeholder="Enter team name"
         />
+      </div>
+
+      {/* Season Selection */}
+      <div className="mb-4">
+        <label
+          htmlFor="season"
+          className="block text-text-primary font-medium mb-2"
+        >
+          Season
+        </label>
+        <select
+          id="season"
+          name="season"
+          value={team.season}
+          onChange={handleChange}
+          className="w-full px-4 py-3 border border-background rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary transition-all duration-300"
+        >
+          <option value="">Select a season</option>
+          {seasons.map((season) => (
+            <option key={season._id} value={season._id}>
+              {season.name} {season.year} {season.isActive ? "(Active)" : ""}
+            </option>
+          ))}
+        </select>
+        {seasons.length === 0 && (
+          <p className="text-sm text-red-500 mt-1">
+            No seasons available. Please create a season first.
+          </p>
+        )}
       </div>
 
       <div className="mb-6">
@@ -185,6 +255,7 @@ export default function TeamEditForm({ teamId }) {
             <input
               type="file"
               id="logo"
+              name="logo"
               accept="image/*"
               ref={fileInputRef}
               onChange={handleFileChange}
@@ -204,6 +275,7 @@ export default function TeamEditForm({ teamId }) {
           type="button"
           onClick={() => router.back()}
           className="bg-background text-text-primary py-3 px-6 rounded-lg hover:bg-gray-200 transition duration-300"
+          disabled={isSaving}
         >
           Cancel
         </button>
