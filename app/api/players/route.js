@@ -1,6 +1,6 @@
+import { NextResponse } from "next/server";
 import Player from "@/models/player.model";
 import dbConnection from "@/utils/dbconnection";
-import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes (increased to match sponsor file size)
@@ -20,15 +20,31 @@ export async function POST(req) {
       position: formData.get("position"),
       jerseyNumber: formData.get("jerseyNumber"),
       nationality: formData.get("nationality"),
-      bio: formData.get("bio"),
+      bio: formData.get("bio") || "",
       featured: formData.get("featured") === "true",
       marquee: formData.get("marquee") === "true",
     };
 
-    // Validate required fields
-    if (!playerData.firstName || !playerData.lastName) {
+    // Parse seasons array from JSON string
+    const seasonsString = formData.get("seasons");
+    let seasons = [];
+
+    try {
+      if (seasonsString) {
+        seasons = JSON.parse(seasonsString);
+      }
+    } catch (e) {
+      console.error("Error parsing seasons:", e);
       return NextResponse.json(
-        { success: false, message: "First name and last name are required" },
+        { success: false, message: "Invalid seasons format" },
+        { status: 400 }
+      );
+    }
+
+    // Validate that at least one season is selected
+    if (!seasons || seasons.length === 0) {
+      return NextResponse.json(
+        { success: false, message: "At least one season must be selected" },
         { status: 400 }
       );
     }
@@ -104,6 +120,7 @@ export async function POST(req) {
 
     // Add the image URL to player data
     playerData.image = imagePath;
+    playerData.seasons = seasons; // Add seasons to player data
 
     // Create and save the new player
     const newPlayer = new Player(playerData);
@@ -129,19 +146,30 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   await dbConnection();
 
   try {
-    const players = await Player.find();
+    const url = new URL(req.url);
+    const seasonId = url.searchParams.get("seasonId");
+
+    // If seasonId is provided, filter players by season
+    let players;
+    if (seasonId) {
+      players = await Player.find({ seasons: { $in: [seasonId] } });
+    } else {
+      players = await Player.find();
+    }
+
     return NextResponse.json({ success: true, data: players });
   } catch (error) {
+    console.error("Error fetching players:", error);
     return NextResponse.json(
       {
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error.message || "Failed to fetch players",
       },
-      { status: error.status || 500 }
+      { status: 500 }
     );
   }
 }

@@ -32,6 +32,8 @@ export default function PlayerForm() {
   const [success, setSuccess] = useState("");
   const [fileError, setFileError] = useState("");
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [seasons, setSeasons] = useState([]);
+  const [selectedSeasons, setSelectedSeasons] = useState([]);
   const fileInputRef = useRef(null);
   const router = useRouter();
 
@@ -55,6 +57,24 @@ export default function PlayerForm() {
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [player.image]);
+
+  // Fetch seasons when component mounts
+  useEffect(() => {
+    const fetchSeasons = async () => {
+      try {
+        const res = await fetch("/api/seasons");
+        const jsonRes = await res.json();
+
+        if (jsonRes.success) {
+          setSeasons(jsonRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching seasons:", err);
+      }
+    };
+
+    fetchSeasons();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -95,6 +115,11 @@ export default function PlayerForm() {
     setSuccess("");
 
     try {
+      // Validate seasons
+      if (selectedSeasons.length === 0) {
+        throw new Error("Please select at least one season for the player");
+      }
+
       // Create FormData object
       const formData = new FormData();
 
@@ -113,6 +138,9 @@ export default function PlayerForm() {
       if (player.image instanceof File) {
         formData.append("image", player.image);
       }
+
+      // Add seasons
+      formData.append("seasons", JSON.stringify(selectedSeasons));
 
       // Send to API
       const response = await fetch("/api/players", {
@@ -143,6 +171,7 @@ export default function PlayerForm() {
           featured: false,
         });
         setPreviewUrl(null);
+        setSelectedSeasons([]); // Reset selected seasons
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -455,6 +484,68 @@ export default function PlayerForm() {
         </div>
         <p className="text-xs text-text-secondary mt-1">
           Featured players will be highlighted on the team page
+        </p>
+      </div>
+
+      {/* Player Seasons Selection */}
+      <div
+        className={`mb-6 ${
+          error && error.includes("season")
+            ? "border-l-4 border-red-500 pl-3"
+            : ""
+        }`}
+      >
+        <label className="block text-text-primary font-medium mb-2">
+          Player Seasons *
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          {seasons.length > 0 ? (
+            seasons.map((season) => (
+              <div key={season._id} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`season-${season._id}`}
+                  checked={selectedSeasons.includes(season._id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedSeasons([...selectedSeasons, season._id]);
+                    } else {
+                      setSelectedSeasons(
+                        selectedSeasons.filter((id) => id !== season._id)
+                      );
+                    }
+                  }}
+                  className={`w-4 h-4 ${
+                    error && error.includes("season")
+                      ? "border-red-500 text-red-500"
+                      : "text-brand-primary"
+                  }`}
+                />
+                <label
+                  htmlFor={`season-${season._id}`}
+                  className="ml-2 text-sm"
+                >
+                  {season.name} {season.year}
+                  {season.isActive ? " (Active)" : ""}
+                </label>
+              </div>
+            ))
+          ) : (
+            <p className="text-red-500 text-sm py-2">
+              No seasons available. Please create a season first.
+            </p>
+          )}
+        </div>
+        <p
+          className={`text-xs mt-1 ${
+            error && error.includes("season")
+              ? "text-red-500"
+              : "text-text-secondary"
+          }`}
+        >
+          {error && error.includes("season")
+            ? error
+            : "Select which season(s) this player belongs to"}
         </p>
       </div>
 

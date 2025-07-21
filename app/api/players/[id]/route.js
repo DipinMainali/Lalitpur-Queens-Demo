@@ -151,18 +151,16 @@ export async function PATCH(req, { params }) {
 }
 
 //get specific player filtered from id
-export async function GET(_req, { params }) {
+export async function GET(req, { params }) {
   await dbConnection();
 
   try {
-    const player = await Player.findOne({ _id: params.id });
+    const { id } = params;
+    const player = await Player.findById(id);
 
     if (!player) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Player not found",
-        },
+        { success: false, message: "Player not found" },
         { status: 404 }
       );
     }
@@ -172,9 +170,83 @@ export async function GET(_req, { params }) {
     return NextResponse.json(
       {
         success: false,
-        message: error.message || "Internal Server Error",
+        message: error.message || "Failed to fetch player",
       },
-      { status: error.status || 500 }
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(req, { params }) {
+  await dbConnection();
+
+  try {
+    const { id } = params;
+    const formData = await req.formData();
+
+    // Get existing player to update
+    const player = await Player.findById(id);
+
+    if (!player) {
+      return NextResponse.json(
+        { success: false, message: "Player not found" },
+        { status: 404 }
+      );
+    }
+
+    // Update player fields
+    player.firstName = formData.get("firstName") || player.firstName;
+    player.lastName = formData.get("lastName") || player.lastName;
+    player.DOB = formData.get("DOB") || player.DOB;
+    player.height = formData.get("height") || player.height;
+    player.position = formData.get("position") || player.position;
+    player.jerseyNumber = formData.get("jerseyNumber") || player.jerseyNumber;
+    player.nationality = formData.get("nationality") || player.nationality;
+    player.bio = formData.get("bio") || player.bio;
+    player.featured = formData.get("featured") === "true";
+
+    // Update seasons
+    const seasonsString = formData.get("seasons");
+    if (seasonsString) {
+      try {
+        const seasons = JSON.parse(seasonsString);
+        if (Array.isArray(seasons)) {
+          player.seasons = seasons;
+        }
+      } catch (e) {
+        console.error("Error parsing seasons:", e);
+      }
+    }
+
+    // Validate that at least one season is selected
+    if (!player.seasons || player.seasons.length === 0) {
+      return NextResponse.json(
+        { success: false, message: "At least one season must be selected" },
+        { status: 400 }
+      );
+    }
+
+    // Handle image update if provided
+    const imageFile = formData.get("image");
+    if (imageFile && imageFile instanceof File) {
+      // Process image file and update player.image
+    }
+
+    await player.save();
+
+    return NextResponse.json({
+      success: true,
+      message: "Player updated successfully",
+      data: player,
+    });
+  } catch (error) {
+    console.error("Error updating player:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Failed to update player",
+      },
+      { status: 500 }
     );
   }
 }
