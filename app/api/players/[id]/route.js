@@ -43,6 +43,28 @@ export async function PATCH(req, { params }) {
       );
     }
 
+    // Handle seasons update
+    const seasonsString = formData.get("seasons");
+    if (seasonsString) {
+      try {
+        const seasons = JSON.parse(seasonsString);
+        // Validate seasons
+        if (!Array.isArray(seasons) || seasons.length === 0) {
+          return NextResponse.json(
+            { success: false, message: "At least one season must be selected" },
+            { status: 400 }
+          );
+        }
+        player.seasons = seasons;
+      } catch (e) {
+        console.error("Error parsing seasons:", e);
+        return NextResponse.json(
+          { success: false, message: "Invalid seasons format" },
+          { status: 400 }
+        );
+      }
+    }
+
     // Handle image upload to Cloudinary
     const imageFile = formData.get("image");
     let imagePath = player.image;
