@@ -9,7 +9,7 @@ export default function MatchForm({ initialData = null }) {
 
   // Tournament information
   const [tournament, setTournament] = useState(
-    initialData?.tournament || "Nepal Volleyball Championship"
+    initialData?.tournament || "Vatsalya Everest Women's Volleyball League"
   );
   const [stage, setStage] = useState(initialData?.stage || "Group Stage");
   const [gameDay, setGameDay] = useState(initialData?.gameDay || 1);
@@ -30,7 +30,7 @@ export default function MatchForm({ initialData = null }) {
       : ""
   );
   const [location, setLocation] = useState(
-    initialData?.location || "Dasarath Stadium"
+    initialData?.location || "NSC Covered Hall, Kathmandu"
   );
 
   // Teams information - Home team is always Lalitpur Queens by default

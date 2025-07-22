@@ -43,6 +43,9 @@ export default function Home() {
   // State for current player in marquee
   const [currentPlayer, setCurrentPlayer] = useState(0);
 
+  // State for seasons data
+  const [seasons, setSeasons] = useState([]);
+
   // Fetch matches data when the component mounts
   useEffect(() => {
     const fetchMatches = async () => {
@@ -158,6 +161,25 @@ export default function Home() {
     fetchPointsTable();
   }, []);
 
+  // Fetch seasons data when the component mounts
+  useEffect(() => {
+    const fetchSeasons = async () => {
+      try {
+        const res = await fetch("/api/seasons");
+        const jsonRes = await res.json();
+        if (jsonRes.success) {
+          setSeasons(jsonRes.data);
+        } else {
+          console.error("Error fetching seasons:", jsonRes.message);
+        }
+      } catch (err) {
+        console.error("Error fetching seasons:", err);
+      }
+    };
+
+    fetchSeasons();
+  }, []);
+
   // Format date as "May 15, 2024"
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -217,10 +239,7 @@ export default function Home() {
       <HeroSection images={images} />
 
       {/* Matches Section */}
-      <MatchesSection
-        upcomingMatches={upcomingMatches}
-        latestResults={latestResults}
-      />
+      <MatchesSection seasons={seasons} />
 
       {/* Marquee Player Section */}
       <MarqueePlayer />

@@ -1,34 +1,75 @@
 import React, { useState, useEffect } from "react";
 
 // MatchesSection component
-function MatchesSection({ upcomingMatches, latestResults, seasons }) {
-  const [activeTab, setActiveTab] = useState("upcoming"); // 'upcoming' or 'latest'
-  const [selectedSeason, setSelectedSeason] = useState(""); // Track selected season ID
+function MatchesSection({ seasons }) {
   const [filteredUpcomingMatches, setFilteredUpcomingMatches] = useState([]);
   const [filteredLatestResults, setFilteredLatestResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("upcoming");
+  const [selectedSeason, setSelectedSeason] = useState("");
+  const [seasonDropdownOpen, setSeasonDropdownOpen] = useState(false);
 
-  // Filter matches when season changes
+  // Initialize with active season if available
   useEffect(() => {
-    if (selectedSeason) {
-      // Filter upcoming matches by season
-      setFilteredUpcomingMatches(
-        upcomingMatches?.filter(
-          (match) => match.season?._id === selectedSeason
-        ) || []
-      );
-
-      // Filter latest results by season
-      setFilteredLatestResults(
-        latestResults?.filter(
-          (match) => match.season?._id === selectedSeason
-        ) || []
-      );
-    } else {
-      // If no season selected, show all
-      setFilteredUpcomingMatches(upcomingMatches || []);
-      setFilteredLatestResults(latestResults || []);
+    if (seasons && seasons.length > 0) {
+      // Find active season or use first one
+      const activeSeason = seasons.find((season) => season.isActive);
+      setSelectedSeason(activeSeason ? activeSeason._id : seasons[0]._id);
     }
-  }, [selectedSeason, upcomingMatches, latestResults]);
+  }, [seasons]);
+
+  // Fetch matches when season changes
+  useEffect(() => {
+    const fetchMatches = async () => {
+      if (!selectedSeason) return;
+
+      setIsLoading(true);
+      try {
+        const res = await fetch(`/api/matches?season=${selectedSeason}`);
+        const jsonRes = await res.json();
+
+        if (jsonRes.success) {
+          // Filter and set matches
+          const upMatches = jsonRes.data.filter(
+            (match) =>
+              match.matchStatus === "Scheduled" ||
+              match.matchStatus === "Postponed" ||
+              match.matchStatus === "In Progress"
+          );
+
+          const results = jsonRes.data.filter(
+            (match) => match.matchStatus === "Completed"
+          );
+
+          // Sort matches
+          upMatches.sort(
+            (a, b) => new Date(a.matchDateTime) - new Date(b.matchDateTime)
+          );
+          results.sort(
+            (a, b) => new Date(b.matchDateTime) - new Date(a.matchDateTime)
+          );
+
+          setFilteredUpcomingMatches(upMatches);
+          setFilteredLatestResults(results);
+        }
+      } catch (error) {
+        console.error("Error fetching matches by season:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMatches();
+  }, [selectedSeason]);
+
+  // Get current season name
+  const getCurrentSeasonName = () => {
+    if (!selectedSeason) return "All Seasons";
+    const season = seasons.find((s) => s._id === selectedSeason);
+    return season
+      ? `${season.name} ${season.year}${season.isActive ? " (Active)" : ""}`
+      : "Select Season";
+  };
 
   return (
     <section className="w-full bg-brand-secondary bg-opacity-10 py-16">
@@ -43,34 +84,106 @@ function MatchesSection({ upcomingMatches, latestResults, seasons }) {
           </p>
         </div>
 
-        {/* Season Selector */}
+        {/* Season Selector - Dropdown style */}
         {seasons && seasons.length > 0 && (
           <div className="flex justify-center mb-6">
-            <div className="inline-flex bg-white rounded-full p-1 shadow-sm">
+            <div className="relative inline-block w-64">
               <button
-                className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
-                  !selectedSeason
-                    ? "bg-brand-primary text-white"
-                    : "hover:bg-background"
-                }`}
-                onClick={() => setSelectedSeason("")}
+                type="button"
+                className="inline-flex w-full justify-between items-center rounded-md border border-brand-secondary bg-white px-4 py-2.5 text-sm font-medium text-brand-primary shadow-sm hover:bg-brand-secondary/5 focus:ring-2 focus:ring-brand-secondary/30 focus:outline-none transition-all duration-300"
+                onClick={() => setSeasonDropdownOpen(!seasonDropdownOpen)}
+                aria-expanded={seasonDropdownOpen}
+                aria-haspopup="true"
               >
-                All Seasons
-              </button>
-              {seasons.map((season) => (
-                <button
-                  key={season._id}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-all ${
-                    selectedSeason === season._id
-                      ? "bg-brand-primary text-white"
-                      : "hover:bg-background"
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-brand-secondary mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  {getCurrentSeasonName()}
+                </div>
+                <svg
+                  className={`h-5 w-5 text-brand-secondary transform transition-transform duration-300 ${
+                    seasonDropdownOpen ? "rotate-180" : ""
                   }`}
-                  onClick={() => setSelectedSeason(season._id)}
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  {season.name} {season.year}
-                  {season.isActive && " (Active)"}
-                </button>
-              ))}
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {seasonDropdownOpen && (
+                <div
+                  className="absolute right-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none divide-y divide-background/80"
+                  role="menu"
+                  aria-orientation="vertical"
+                  tabIndex="-1"
+                >
+                  <div className="py-1" role="none">
+                    {seasons.map((season) => (
+                      <button
+                        key={season._id}
+                        onClick={() => {
+                          setSelectedSeason(season._id);
+                          setSeasonDropdownOpen(false);
+                        }}
+                        className={`block w-full text-left px-4 py-2.5 text-sm transition-colors duration-200 ${
+                          selectedSeason === season._id
+                            ? "bg-brand-secondary/10 text-brand-primary font-medium"
+                            : "text-text-primary hover:bg-background/20"
+                        }`}
+                        role="menuitem"
+                      >
+                        <div className="flex items-center">
+                          {selectedSeason === season._id && (
+                            <svg
+                              className="h-4 w-4 mr-2 text-brand-secondary"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                          <span
+                            className={
+                              selectedSeason === season._id ? "ml-0" : "ml-6"
+                            }
+                          >
+                            {season.name} {season.year}
+                            {season.isActive && (
+                              <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-accent/20 text-accent rounded-full">
+                                Active
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -99,31 +212,100 @@ function MatchesSection({ upcomingMatches, latestResults, seasons }) {
           </button>
         </div>
 
-        {/* Match List */}
-        <div className="space-y-6">
-          {activeTab === "upcoming" ? (
-            filteredUpcomingMatches && filteredUpcomingMatches.length > 0 ? (
-              filteredUpcomingMatches
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-brand-secondary"></div>
+          </div>
+        ) : (
+          /* Match List */
+          <div className="space-y-6">
+            {activeTab === "upcoming" ? (
+              filteredUpcomingMatches && filteredUpcomingMatches.length > 0 ? (
+                filteredUpcomingMatches
+                  .slice(0, 3)
+                  .map((match) => (
+                    <UpcomingMatchCard key={match._id} match={match} />
+                  ))
+              ) : (
+                <div className="text-center py-10 bg-white rounded-lg shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-16 h-16 mx-auto mb-4 text-background"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"
+                    />
+                  </svg>
+                  <p className="text-2xl font-semibold text-text-secondary mb-2">
+                    No upcoming matches
+                  </p>
+                  <p className="text-text-secondary">
+                    No upcoming matches scheduled for {getCurrentSeasonName()}
+                  </p>
+                </div>
+              )
+            ) : filteredLatestResults && filteredLatestResults.length > 0 ? (
+              filteredLatestResults
                 .slice(0, 3)
                 .map((match) => (
-                  <UpcomingMatchCard key={match._id} match={match} />
+                  <CompletedMatchCard key={match._id} match={match} />
                 ))
             ) : (
-              <p className="text-center text-text-secondary text-lg">
-                No upcoming matches scheduled at the moment.
-              </p>
-            )
-          ) : filteredLatestResults && filteredLatestResults.length > 0 ? (
-            filteredLatestResults
-              .slice(0, 3)
-              .map((match) => (
-                <CompletedMatchCard key={match._id} match={match} />
-              ))
-          ) : (
-            <p className="text-center text-text-secondary text-lg">
-              No latest results available.
-            </p>
-          )}
+              <div className="text-center py-10 bg-white rounded-lg shadow-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-16 h-16 mx-auto mb-4 text-background"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5"
+                  />
+                </svg>
+                <p className="text-2xl font-semibold text-text-secondary mb-2">
+                  No match results
+                </p>
+                <p className="text-text-secondary">
+                  No completed matches for {getCurrentSeasonName()}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* View All Button */}
+        <div className="flex justify-center mt-8">
+          <a
+            href="/Matches"
+            className="px-6 py-3 bg-white border border-brand-secondary text-brand-primary hover:bg-brand-secondary hover:text-white font-medium rounded-full shadow-sm hover:shadow-md transform transition-all duration-300 hover:translate-y-[-2px] flex items-center"
+          >
+            View All Matches
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 ml-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </a>
         </div>
       </div>
     </section>
