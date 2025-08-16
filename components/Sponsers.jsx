@@ -44,7 +44,8 @@ export default function Sponsors() {
         </h2>
         <div className="h-0.5 w-16 bg-brand-primary mx-auto mb-4"></div>
         <p className="text-text-secondary mb-8 max-w-md mx-auto text-sm">
-          Organizations that support our vision for women's sports excellence
+          Organizations that support our vision for women&apos;s sports
+          excellence
         </p>
 
         {/* Simple tabs */}
