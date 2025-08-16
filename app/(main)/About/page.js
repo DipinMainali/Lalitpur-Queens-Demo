@@ -75,7 +75,7 @@ export default function About() {
               <span className="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary"></span>
             </h2>
             <p className="text-text-secondary mt-6 max-w-3xl mx-auto">
-              Lalitpur Queens is proudly owned by Rupse Holidays, a company
+              Lalitpur Queens is proudly owned by Rupse Sports , a company
               committed to promoting sports excellence and creating
               opportunities for athletes in Nepal.
             </p>
@@ -142,7 +142,7 @@ export default function About() {
                   Rupse Holidays
                 </h3>
                 <p className="text-text-secondary mb-6">
-                  Rupse Holidays has a long-standing commitment to sports
+                  Rupse Sports has a long-standing commitment to sports
                   development and community engagement across Nepal. The
                   company&apos;s investment in Lalitpur Queens represents their
                   dedication to growing women&apos;s sports and creating
