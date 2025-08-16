@@ -5,11 +5,16 @@ import Sponsers from "@/components/Sponsers";
 import Footer from "@/components/Footer";
 
 import "@/app/globals.css";
+import { icon } from "@fortawesome/fontawesome-svg-core";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Lalitpur Queens - Women's Volleyball Team",
+  keywords: "Lalitpur Queens, women's volleyball, sports",
+  icons: {
+    icon: "public/images/favicon.png",
+  },
   description: "Official website of Lalitpur Queens women's volleyball team",
 };
 

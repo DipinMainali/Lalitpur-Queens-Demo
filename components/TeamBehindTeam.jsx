@@ -21,7 +21,7 @@ const TeamBehindTeam = () => {
       role: "Assistant Coach",
       image: "/images/staff/assistant-coach.jpg",
       bio: "Specializes in defensive strategies and player development.",
-      achievement: "Former University Champion Coach",
+      achievement: "FIVB Coaches Course Level I",
     },
   ];
 
