@@ -23,7 +23,7 @@ export default function About() {
       title: "Director",
       image: "/images/about-owners/SureshGiri-Director.jpg",
       quote:
-        "We're building more than a team—we're creating a movement that celebrates the power, grace, and determination of women athletes.",
+        "We&apos;re building more than a team—we&apos;re creating a movement that celebrates the power, grace, and determination of women athletes.",
     },
   ];
 
@@ -104,7 +104,9 @@ export default function About() {
 
                     {/* Hidden Quote that appears on hover */}
                     <div className="absolute inset-x-0 bottom-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                      <p className="italic text-sm">"{owner.quote}"</p>
+                      <p className="italic text-sm">
+                        &quot;{owner.quote}&quot;
+                      </p>
                     </div>
                   </div>
 
@@ -142,8 +144,8 @@ export default function About() {
                 <p className="text-text-secondary mb-6">
                   Rupse Holidays has a long-standing commitment to sports
                   development and community engagement across Nepal. The
-                  company's investment in Lalitpur Queens represents their
-                  dedication to growing women's sports and creating
+                  company&apos;s investment in Lalitpur Queens represents their
+                  dedication to growing women&apos;s sports and creating
                   inspirational role models.
                 </p>
                 <a
