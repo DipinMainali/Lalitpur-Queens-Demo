@@ -83,7 +83,7 @@ export default function Sponsors() {
             {Object.keys(groupedSponsors).map((tier) => (
               <div key={tier}>
                 <h3 className="text-xl font-medium text-center mb-6">
-                  <span className="text-brand-primary">{tier}</span> Partners
+                  <span className="text-brand-primary">{tier}</span>
                 </h3>
 
                 <div className="flex flex-wrap justify-center">
