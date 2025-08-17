@@ -71,7 +71,7 @@ const NewsDetails = () => {
           News article not found
         </h2>
         <p className="text-gray-500 mb-6">
-          The article you're looking for may have been moved or deleted
+          The article you&apos;re looking for may have been moved or deleted
         </p>
         <button
           onClick={() => router.push("/News")}
