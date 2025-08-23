@@ -22,8 +22,8 @@ export default function Footer() {
           <Image
             src="/images/Lalitpur-queens-logo.png" // Replace with the actual logo path
             alt="Lalitpur Queens Logo"
-            width={500} // Increase size for a larger logo
-            height={500}
+            width={300} // Increase size for a larger logo
+            height={300}
             className="opacity-100"
           />
         </div>
