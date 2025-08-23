@@ -203,14 +203,14 @@ const TeamBehindTeam = () => {
 const StaffCard = ({ staff }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all duration-300">
-      {/* Image Container */}
-      <div className="h-64 relative overflow-hidden">
+      {/* Image Container - Changed from fixed height to aspect ratio */}
+      <div className="relative w-full aspect-[4/3] overflow-hidden">
         <Image
           src={staff.image}
           alt={staff.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"
-          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out"
+          className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-700 ease-out"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = `https://placehold.co/400x300/10316B/FFFFFF?text=${staff.name.charAt(
@@ -221,7 +221,7 @@ const StaffCard = ({ staff }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
-      {/* Content Container */}
+      {/* Content Container - Rest of the component remains the same */}
       <div className="p-6">
         {/* Role Tag */}
         <div className="inline-block bg-gray-100 px-3 py-1 rounded-md text-text-secondary text-xs font-medium mb-2">
