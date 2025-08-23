@@ -13,7 +13,7 @@ export const metadata = {
   title: "Lalitpur Queens - Women's Volleyball Team",
   keywords: "Lalitpur Queens, women's volleyball, sports",
   icons: {
-    icon: "public/images/favicon.png",
+    icon: "/images/Lalitpur-queens-logo.png",
   },
   description: "Official website of Lalitpur Queens women's volleyball team",
 };

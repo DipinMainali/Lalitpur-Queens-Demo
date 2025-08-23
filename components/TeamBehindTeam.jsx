@@ -43,6 +43,15 @@ const TeamBehindTeam = () => {
       bio: "Media professional with background in sports journalism and PR.",
       achievement: "National Award Winning Sports Documentary Producer.",
     },
+
+    {
+      id: 6,
+      name: "Safal KC",
+      role: "Official Photographer",
+      image: "/images/staff/official-photographer.jpg",
+      bio: "Capturing the spirit and passion of our team through the lens.",
+      achievement: "Award-winning sports photographer.",
+    },
   ];
 
   const teamValues = [

@@ -71,7 +71,7 @@ export default function About() {
           {/* Section Header with Animated Bar */}
           <div className="relative mb-16 text-center">
             <h2 className="text-4xl font-bold text-text-primary inline-block relative">
-              Meet Our Owners
+              Our Executive Board
               <span className="absolute -bottom-3 left-0 right-0 h-1 bg-gradient-to-r from-brand-primary to-brand-secondary"></span>
             </h2>
             <p className="text-text-secondary mt-6 max-w-3xl mx-auto">

@@ -31,7 +31,7 @@ export default function PlayerForm() {
     nationality: "",
     image: null,
     bio: "",
-    featured: false,
+    featured: "",
   });
 
   const [currentImagePath, setCurrentImagePath] = useState(null);
@@ -53,6 +53,7 @@ export default function PlayerForm() {
       try {
         // Fetch player data
         const playerRes = await fetch(`/api/players/${id}`);
+
         const playerJsonRes = await playerRes.json();
 
         // Fetch seasons data
@@ -82,7 +83,6 @@ export default function PlayerForm() {
             const seasonIds = fetchedPlayer.seasons.map((season) =>
               typeof season === "object" && season._id ? season._id : season
             );
-            console.log("Setting selected seasons:", seasonIds);
             setSelectedSeasons(seasonIds);
           }
         } else {
@@ -163,8 +163,6 @@ export default function PlayerForm() {
         throw new Error("Please select at least one season for the player");
       }
 
-      console.log("Submitting with seasons:", selectedSeasons);
-
       // Create FormData object
       const formData = new FormData();
 
@@ -177,6 +175,8 @@ export default function PlayerForm() {
       formData.append("jerseyNumber", player.jerseyNumber);
       formData.append("nationality", player.nationality);
       formData.append("bio", player.bio);
+
+      // Convert featured boolean to string "true"/"false" for proper form submission
       formData.append("featured", player.featured);
 
       // Add image if present
@@ -189,13 +189,16 @@ export default function PlayerForm() {
 
       // Send to API
       console.log("Sending request to update player...");
+      console.log("FormData contents:");
+      formData.forEach((value, key) => {
+        console.log(`  ${key}: ${value}`);
+      });
       const response = await fetch(`/api/players/${id}`, {
         method: "PATCH",
         body: formData,
       });
 
       const result = await response.json();
-      console.log("API response:", result);
 
       if (!response.ok) {
         throw new Error(result.message || "Failed to update player");
@@ -514,13 +517,15 @@ export default function PlayerForm() {
           <input
             type="checkbox"
             id="featured"
-            checked={player.featured}
-            onChange={(e) =>
+            checked={player.featured} // Ensure boolean comparison
+            onChange={(e) => {
+              const isChecked = e.target.checked;
+              console.log("Featured checkbox changed to:", isChecked); // Debug log
               setPlayer((prevPlayer) => ({
                 ...prevPlayer,
-                featured: e.target.checked,
-              }))
-            }
+                featured: isChecked,
+              }));
+            }}
             className="w-5 h-5 text-brand-secondary bg-gray-100 rounded border-background focus:ring-brand-primary"
           />
           <label

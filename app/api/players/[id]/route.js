@@ -31,6 +31,7 @@ export async function PATCH(req, { params }) {
 
   try {
     const formData = await req.formData();
+    console.log("Received form data:", formData);
 
     let player = await Player.findById(id);
     if (!player) {
@@ -45,6 +46,7 @@ export async function PATCH(req, { params }) {
 
     // Handle seasons update
     const seasonsString = formData.get("seasons");
+    4;
     if (seasonsString) {
       try {
         const seasons = JSON.parse(seasonsString);
@@ -147,7 +149,10 @@ export async function PATCH(req, { params }) {
     player.jerseyNumber = formData.get("jerseyNumber") || player.jerseyNumber;
     player.nationality = formData.get("nationality") || player.nationality;
     player.bio = formData.get("bio") || player.bio;
-    player.featured = formData.get("featured") === "true" || player.featured;
+    console.log("form player.featured:", formData.get("featured"));
+    player.featured = formData.get("featured");
+    //featured player new updated value
+    console.log("Updated featured status:", player.featured);
     player.marquee = formData.get("marquee") === "true" || player.marquee;
 
     const updatedPlayer = await player.save();
