@@ -3,6 +3,9 @@
 export const metadata = {
   title: "Admin Panel",
   description: "Admin panel for managing website content",
+  icons: {
+    icon: "/images/Lalitpur-queens-logo.png", // Same icon path as main layout
+  },
 };
 
 import "@/app/globals.css";
