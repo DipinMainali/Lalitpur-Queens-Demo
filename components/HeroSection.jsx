@@ -439,8 +439,7 @@ const HeroSection = ({ images }) => {
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[85%] h-[20px] bg-brand-secondary opacity-30 blur-2xl rounded-full"></div>
 
                   <Image
-                    src="/images/hero-team.png
-                    "
+                    src="/images/hero-team.png"
                     alt="Lalitpur Queens Players"
                     width={900}
                     height={800}
