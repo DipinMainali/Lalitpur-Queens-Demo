@@ -7,9 +7,25 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes (increased from 1MB)
 
 export async function POST(req) {
   await dbConnection();
-
   try {
+    console.log("[VPS] Starting sponsor creation process");
     const formData = await req.formData();
+
+    // Log received data without sensitive info
+    console.log("[VPS] Form data received:", {
+      name: formData.get("name"),
+      hasLogo: formData.get("logo") instanceof File,
+      website: formData.get("website"),
+      tier: formData.get("tier"),
+    });
+
+    // Verify Cloudinary credentials are available
+    console.log("[VPS] Cloudinary config available:", {
+      cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: !!process.env.CLOUDINARY_API_KEY,
+      api_secret: !!process.env.CLOUDINARY_API_SECRET,
+    });
+
     const name = formData.get("name");
     const logoFile = formData.get("logo");
     const website = formData.get("website");
@@ -53,6 +69,12 @@ export async function POST(req) {
 
     // If logo file exists, upload to Cloudinary
     if (logoFile && logoFile instanceof File && logoFile.size > 0) {
+      console.log("[VPS] Preparing to upload logo:", {
+        size: logoFile.size,
+        type: logoFile.type,
+        name: logoFile.name,
+      });
+
       try {
         // Prepare file for upload
         const bytes = await logoFile.arrayBuffer();
@@ -81,8 +103,18 @@ export async function POST(req) {
         });
 
         logoUrl = uploadResult.secure_url;
+        console.log("[VPS] Upload successful:", {
+          url: logoUrl,
+          resourceType: uploadResult.resource_type,
+          format: uploadResult.format,
+        });
       } catch (uploadError) {
-        console.error("Upload error details:", uploadError);
+        // Enhanced error logging
+        console.error("[VPS] Upload error details:", {
+          message: uploadError.message,
+          name: uploadError.name,
+          stack: uploadError.stack,
+        });
         return NextResponse.json(
           {
             success: false,
@@ -114,7 +146,11 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error creating sponsor:", error);
+    console.error("[VPS] Error creating sponsor:", {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    });
     return NextResponse.json(
       {
         success: false,
