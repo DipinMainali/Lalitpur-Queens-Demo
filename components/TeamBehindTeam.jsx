@@ -52,6 +52,14 @@ const TeamBehindTeam = () => {
       bio: "Capturing the spirit and passion of our team through the lens.",
       achievement: "Award-winning sports photographer.",
     },
+    {
+      id: 7,
+      name: "Shila Giri",
+      role: "Physiotherapist",
+      image: "/images/staff/physio.jpg",
+      bio: "Expert in sports injuries and rehabilitation.",
+      achievement: "Certified Sports Physiotherapist with 5+ years experience.",
+    },
   ];
 
   const teamValues = [
