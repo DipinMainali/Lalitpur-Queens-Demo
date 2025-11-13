@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import NewsDetailsClient from "@/components/NewsDetailsClient";
+import News from "@/models/news.model";
+import dbConnection from "@/utils/dbconnection";
 
 // Utility function to generate excerpt from HTML content
 function generateExcerpt(htmlContent, maxLength = 160) {
@@ -21,7 +23,7 @@ function generateExcerpt(htmlContent, maxLength = 160) {
   return plainText.substring(0, maxLength).trim() + "...";
 }
 
-// Fetch news data with improved error handling
+// Fetch news data directly from database (bypassing API route)
 async function getNews(id) {
   try {
     // Validate ID
@@ -30,77 +32,38 @@ async function getNews(id) {
       return null;
     }
 
-    // Determine the base URL - prioritize environment variables
-    let baseUrl;
+    console.log("Fetching news directly from database for ID:", id);
 
-    if (process.env.NEXT_PUBLIC_BASE_URL) {
-      baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    } else if (process.env.NEXTAUTH_URL) {
-      baseUrl = process.env.NEXTAUTH_URL;
-    } else {
-      // Fallback to localhost for development
-      baseUrl = "http://localhost:3000";
-    }
+    // Connect to database
+    await dbConnection();
 
-    console.log(`Fetching news from: ${baseUrl}/api/news/${id}`);
+    // Fetch news directly from database
+    const news = await News.findOne({ _id: id }).lean();
 
-    // Add timeout to fetch request
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-
-    const res = await fetch(`${baseUrl}/api/news/${encodeURIComponent(id)}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      signal: controller.signal,
-      cache: "no-store", // Changed from next.revalidate to cache option
-    });
-
-    clearTimeout(timeoutId);
-
-    console.log(`API Response Status: ${res.status}`);
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        console.log(`News not found for ID: ${id}`);
-        return null;
-      }
-      console.error(`HTTP error! status: ${res.status} for news ID: ${id}`);
-      const errorText = await res.text();
-      console.error("Error response:", errorText);
+    if (!news) {
+      console.log(`News not found for ID: ${id}`);
       return null;
     }
 
-    const data = await res.json();
-    console.log("API Response data structure:", {
-      success: data.success,
-      hasData: !!data.data,
-      dataKeys: data.data ? Object.keys(data.data) : [],
-    });
-
-    // Validate response structure
-    if (!data.success || !data.data) {
-      console.error("Invalid API response structure:", data);
-      return null;
-    }
+    // Convert MongoDB document to plain object and handle _id
+    const newsData = {
+      ...news,
+      _id: news._id.toString(),
+      id: news._id.toString(),
+      createdAt: news.createdAt?.toISOString() || new Date().toISOString(),
+      updatedAt: news.updatedAt?.toISOString() || new Date().toISOString(),
+    };
 
     // Add excerpt to news data
     const newsWithExcerpt = {
-      ...data.data,
-      excerpt: generateExcerpt(data.data.content),
-      // Ensure we have an id field for the ShareButton component
-      id: data.data._id || data.data.id,
+      ...newsData,
+      excerpt: generateExcerpt(newsData.content),
     };
 
     console.log("Successfully fetched news:", newsWithExcerpt.title);
     return newsWithExcerpt;
   } catch (error) {
-    if (error.name === "AbortError") {
-      console.error("Fetch timeout for news ID:", id);
-    } else {
-      console.error("Error in getNews for ID:", id, error);
-    }
+    console.error("Error in getNews for ID:", id, error);
     return null;
   }
 }
@@ -125,6 +88,7 @@ export async function generateMetadata({ params }) {
     // Get base URL for absolute URLs - prioritize production URL
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
+      process.env.NEXT_PUBLIC_MAIN_URL ||
       process.env.NEXTAUTH_URL ||
       (process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
@@ -218,36 +182,20 @@ export async function generateStaticParams() {
   }
 
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.NEXTAUTH_URL ||
-      (process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000");
+    console.log("Generating static params for news articles");
 
-    const res = await fetch(`${baseUrl}/api/news`, {
-      cache: "no-store",
-    });
+    // Connect to database
+    await dbConnection();
 
-    if (!res.ok) {
-      console.error("Failed to fetch news list for static generation");
-      return [];
-    }
-
-    const data = await res.json();
-
-    if (!data.success || !Array.isArray(data.data)) {
-      console.error("Invalid data structure for static generation");
-      return [];
-    }
+    // Fetch all published news directly from database
+    const newsList = await News.find({ status: "published" })
+      .select("_id")
+      .lean();
 
     // Generate params for all published news
-    const params = data.data
-      .filter((news) => news.status === "published") // Only published news
-      .map((news) => ({
-        id: (news._id || news.id).toString(),
-      }))
-      .filter((param) => param.id); // Filter out undefined IDs
+    const params = newsList.map((news) => ({
+      id: news._id.toString(),
+    }));
 
     console.log(`Generating static params for ${params.length} news articles`);
     return params;
@@ -260,8 +208,11 @@ export async function generateStaticParams() {
 // Dynamic params - allow dynamic routes
 export const dynamicParams = true;
 
-// Disable static generation for this route to allow dynamic data
+// Use dynamic rendering for fresh data
 export const dynamic = "force-dynamic";
+
+// Revalidate every 60 seconds
+export const revalidate = 60;
 
 // Main page component with enhanced error handling
 export default async function NewsDetailPage({ params }) {
