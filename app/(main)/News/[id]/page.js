@@ -30,25 +30,36 @@ async function getNews(id) {
       return null;
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL;
+    // Determine the base URL - prioritize environment variables
+    let baseUrl;
+
+    if (process.env.NEXT_PUBLIC_BASE_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    } else if (process.env.NEXTAUTH_URL) {
+      baseUrl = process.env.NEXTAUTH_URL;
+    } else {
+      // Fallback to localhost for development
+      baseUrl = "http://localhost:3000";
+    }
+
+    console.log(`Fetching news from: ${baseUrl}/api/news/${id}`);
 
     // Add timeout to fetch request
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeoutt
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
     const res = await fetch(`${baseUrl}/api/news/${encodeURIComponent(id)}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
       signal: controller.signal,
-      next: {
-        revalidate: 3600, // Cache for 1 hour
-        tags: [`news-${id}`], // For on-demand revalidation
-      },
+      cache: "no-store", // Changed from next.revalidate to cache option
     });
 
     clearTimeout(timeoutId);
+
+    console.log(`API Response Status: ${res.status}`);
 
     if (!res.ok) {
       if (res.status === 404) {
@@ -56,10 +67,17 @@ async function getNews(id) {
         return null;
       }
       console.error(`HTTP error! status: ${res.status} for news ID: ${id}`);
+      const errorText = await res.text();
+      console.error("Error response:", errorText);
       return null;
     }
 
     const data = await res.json();
+    console.log("API Response data structure:", {
+      success: data.success,
+      hasData: !!data.data,
+      dataKeys: data.data ? Object.keys(data.data) : [],
+    });
 
     // Validate response structure
     if (!data.success || !data.data) {
@@ -71,8 +89,11 @@ async function getNews(id) {
     const newsWithExcerpt = {
       ...data.data,
       excerpt: generateExcerpt(data.data.content),
+      // Ensure we have an id field for the ShareButton component
+      id: data.data._id || data.data.id,
     };
 
+    console.log("Successfully fetched news:", newsWithExcerpt.title);
     return newsWithExcerpt;
   } catch (error) {
     if (error.name === "AbortError") {
@@ -89,11 +110,10 @@ export async function generateMetadata({ params }) {
   try {
     const resolvedParams = await params;
     const news = await getNews(resolvedParams.id);
-    console.log(news);
 
     if (!news) {
       return {
-        title: "News Not Found - Volleyball Nepal",
+        title: "News Not Found - Lalitpur Queens",
         description: "The requested news article was not found.",
         robots: {
           index: false,
@@ -106,7 +126,9 @@ export async function generateMetadata({ params }) {
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
       process.env.NEXTAUTH_URL ||
-      "https://www.rupsesports.com";
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
 
     // Construct absolute page URL for Open Graph and canonical
     const pageUrl = `${baseUrl}/News/${resolvedParams.id}`;
@@ -116,29 +138,32 @@ export async function generateMetadata({ params }) {
 
     // Construct full image URL - ensure it's absolute
     let imageUrl = news.image;
-    if (!imageUrl?.startsWith("http")) {
+    if (imageUrl && !imageUrl.startsWith("http")) {
       imageUrl = `${baseUrl}${
-        news.image?.startsWith("/") ? news.image : "/" + news.image
+        imageUrl.startsWith("/") ? imageUrl : "/" + imageUrl
       }`;
+    } else if (!imageUrl) {
+      imageUrl = `${baseUrl}/images/placeholder-news.jpg`;
     }
 
     // Format date for Open Graph
-    const publishedTime =
-      news.createdAt instanceof Date
-        ? news.createdAt.toISOString()
-        : new Date(news.createdAt).toISOString();
+    const publishedTime = news.createdAt
+      ? new Date(news.createdAt).toISOString()
+      : new Date().toISOString();
 
     return {
       metadataBase: new URL(baseUrl),
-      title: `${news.title}`,
+      title: `${news.title} - Lalitpur Queens`,
       description: description,
-      keywords: news.tags?.join(", ") || "volleyball, news, Nepal, sports",
-      authors: [{ name: news.author || "Volleyball Nepal" }],
+      keywords:
+        news.tags?.join(", ") ||
+        "volleyball, news, Nepal, sports, Lalitpur Queens",
+      authors: [{ name: news.author || "Lalitpur Queens" }],
       openGraph: {
         title: news.title,
         description: description,
         url: pageUrl,
-        siteName: "Volleyball Nepal",
+        siteName: "Lalitpur Queens",
         images: [
           {
             url: imageUrl,
@@ -150,7 +175,7 @@ export async function generateMetadata({ params }) {
         ],
         type: "article",
         publishedTime: publishedTime,
-        authors: [news.author || "Volleyball Nepal"],
+        authors: [news.author || "Lalitpur Queens"],
         tags: news.tags || ["volleyball", "sports"],
         locale: "en_US",
       },
@@ -159,8 +184,8 @@ export async function generateMetadata({ params }) {
         title: news.title,
         description: description,
         images: [imageUrl],
-        creator: "@volleyballnepal",
-        site: "@volleyballnepal",
+        creator: "@lalitpurqueens",
+        site: "@lalitpurqueens",
       },
       alternates: {
         canonical: pageUrl,
@@ -179,8 +204,8 @@ export async function generateMetadata({ params }) {
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
-      title: "News - Volleyball Nepal",
-      description: "Latest volleyball news and updates from Nepal",
+      title: "News - Lalitpur Queens",
+      description: "Latest volleyball news and updates from Lalitpur Queens",
     };
   }
 }
@@ -196,12 +221,12 @@ export async function generateStaticParams() {
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
       process.env.NEXTAUTH_URL ||
-      "https://www.rupsesports.com";
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
+
     const res = await fetch(`${baseUrl}/api/news`, {
-      next: {
-        revalidate: 3600, // 1 hour
-        tags: ["news-list"],
-      },
+      cache: "no-store",
     });
 
     if (!res.ok) {
@@ -220,7 +245,7 @@ export async function generateStaticParams() {
     const params = data.data
       .filter((news) => news.status === "published") // Only published news
       .map((news) => ({
-        id: news.id?.toString() || news._id?.toString(),
+        id: (news._id || news.id).toString(),
       }))
       .filter((param) => param.id); // Filter out undefined IDs
 
@@ -232,8 +257,11 @@ export async function generateStaticParams() {
   }
 }
 
-// Add revalidation for on-demand ISR
-export const revalidate = 3600; // 1 hour
+// Dynamic params - allow dynamic routes
+export const dynamicParams = true;
+
+// Disable static generation for this route to allow dynamic data
+export const dynamic = "force-dynamic";
 
 // Main page component with enhanced error handling
 export default async function NewsDetailPage({ params }) {
@@ -245,6 +273,7 @@ export default async function NewsDetailPage({ params }) {
       notFound();
     }
 
+    console.log("Fetching news for ID:", resolvedParams.id);
     const news = await getNews(resolvedParams.id);
 
     if (!news) {
@@ -258,6 +287,7 @@ export default async function NewsDetailPage({ params }) {
       notFound();
     }
 
+    console.log("Rendering news details for:", news.title);
     return <NewsDetailsClient news={news} />;
   } catch (error) {
     console.error("Error in NewsDetailPage:", error);
