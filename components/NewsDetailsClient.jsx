@@ -14,25 +14,6 @@ const NewsDetailsClient = ({ news }) => {
     setIsMounted(true);
   }, []);
 
-  // Validate news data
-  if (!news) {
-    return (
-      <div className="bg-gradient-to-b from-white to-blue-50 text-gray-800 min-h-screen pt-20 pb-16 px-4 md:px-8 lg:px-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-10 text-center">
-            <p className="text-gray-500 text-lg">News article not found.</p>
-            <button
-              onClick={() => router.push("/News")}
-              className="mt-6 bg-[#10316b] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-[#0b8457]"
-            >
-              ← Back to News
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Get current URL only on client side using useMemo
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined" || !isMounted) {
@@ -96,9 +77,9 @@ const NewsDetailsClient = ({ news }) => {
   const handleTwitterShare = () => {
     if (!shareUrl) return;
 
-    const twitterText = `${news.title}\n${shareUrl}`;
+    const twitterText = `${news?.title || ""}\n${shareUrl}`;
     const hashtags =
-      news.tags && Array.isArray(news.tags) && news.tags.length > 0
+      news?.tags && Array.isArray(news.tags) && news.tags.length > 0
         ? news.tags.join(",")
         : "volleyball,nepal";
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -123,8 +104,8 @@ const NewsDetailsClient = ({ news }) => {
   const handleWhatsAppShare = () => {
     if (!shareUrl) return;
 
-    const whatsappText = `${news.title}\n\n${
-      news.excerpt || ""
+    const whatsappText = `${news?.title || ""}\n\n${
+      news?.excerpt || ""
     }\n\n${shareUrl}`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
       whatsappText
@@ -136,7 +117,26 @@ const NewsDetailsClient = ({ news }) => {
   // Get image source with fallback
   const imageSrc = imageError
     ? "/images/placeholder-news.jpg"
-    : news.image || "/images/placeholder-news.jpg";
+    : news?.image || "/images/placeholder-news.jpg";
+
+  // Validate news data - AFTER all hooks
+  if (!news) {
+    return (
+      <div className="bg-gradient-to-b from-white to-blue-50 text-gray-800 min-h-screen pt-20 pb-16 px-4 md:px-8 lg:px-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden p-10 text-center">
+            <p className="text-gray-500 text-lg">News article not found.</p>
+            <button
+              onClick={() => router.push("/News")}
+              className="mt-6 bg-[#10316b] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-[#0b8457]"
+            >
+              ← Back to News
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gradient-to-b from-white to-blue-50 text-gray-800 min-h-screen pt-20 pb-16 px-4 md:px-8 lg:px-16">
