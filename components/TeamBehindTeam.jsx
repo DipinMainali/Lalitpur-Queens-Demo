@@ -23,14 +23,7 @@ const TeamBehindTeam = () => {
       bio: "Specializes in defensive strategies and player development.",
       achievement: "FIVB Coaches Course Level I",
     },
-    {
-      id: 3,
-      name: "Shila Giri",
-      role: "Physiotherapist",
-      image: "/images/staff/physio.jpg",
-      bio: "Expert in sports injuries and rehabilitation.",
-      achievement: "Certified Sports Physiotherapist with 5+ years experience.",
-    },
+    
   ];
 
   const managementStaff = [

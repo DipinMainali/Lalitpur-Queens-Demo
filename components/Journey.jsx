@@ -69,7 +69,7 @@ function JourneySection() {
           ></path>
         </svg>
       ),
-      value: "1+",
+      value: "2+",
       label: "Years of Excellence",
     },
     {
@@ -89,7 +89,7 @@ function JourneySection() {
           ></path>
         </svg>
       ),
-      value: "1",
+      value: "2",
       label: "Runner Up Title",
     },
     {
